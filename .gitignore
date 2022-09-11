@@ -1,3 +1,7 @@
+__pycache__/
+test/
 allNotes/
-likedFonts.txt
 test.py
+todo.py
+errors.txt
+key.key
