@@ -1,3 +1,4 @@
+from errorHandler import handleError
 from cryptography.fernet import Fernet
 
 def getKey():
@@ -28,7 +29,10 @@ def decrypyNote(noteId):
         outfile.write(decrypyed)
         
 def fileCryption(cryptionType, noteId):
-    if cryptionType == 'decrypt':
-        decrypyNote(noteId)
-    if cryptionType == 'encrypt':
-        encrypyNote(noteId)
+    try:
+        if cryptionType == 'decrypt':
+            decrypyNote(noteId)
+        if cryptionType == 'encrypt':
+            encrypyNote(noteId)
+    except Exception as err:
+        handleError(err)

@@ -1,4 +1,5 @@
 #this is a post-it application built with Python and pygame
+#*-------------built in imports----------------
 from math import floor
 import textwrap
 import pygame as pg
@@ -7,7 +8,7 @@ import sys
 import json
 from time import gmtime, strftime, localtime
 from random import randint
-
+#!-----------local imports---------------------
 from errorHandler import handleError
 
 if __name__ == '__main__':
@@ -65,7 +66,10 @@ if __name__ == '__main__':
         "largeStencil": pg.font.SysFont('stencil', 35),
         "largeHPSimplifiedBDIT": pg.font.SysFont('largeHPSimplifiedBDIT', 35),
         "largeHPSimplified": pg.font.SysFont('hpsimplified', 35),
-        "largeArial": pg.font.SysFont('arial', 35)
+        "largeArial": pg.font.SysFont('arial', 35),
+        #!------------- medium fonts ------------------------------------------
+        "mediumConsolas": pg.font.SysFont('consolas', 20),
+        #!------------- small fonts -------------------------------------------
     }
     #allPygameFonts = pg.font.get_fonts()
     
@@ -146,23 +150,27 @@ if __name__ == '__main__':
                 for child in self.children:
                     try:
                         if type(child) == Button:
-                            child.check_click(mouse)
+                            #//child.check_click(mouse)
                             child.draw_button(screen)
                         if type(child) == InputBox:
-                            pass
+                            child.update()
+                            child.draw(screen)
                     except Exception as err:
                         handleError(err)
-                
-            
+
+    
+    def buttonFunct():
+        print('hit button')
+    
     class Button(pg.sprite.Sprite):
         instances = []
-        user = None
-        def __init__(self, width, height, x, y, color = RED, text = False, textColor = BLACK, textFont = defaultButtonFont):
+        #user = None
+        def __init__(self, width, height, x, y, color = RED, text = False, textColor = BLACK, textFont = defaultButtonFont, parent = False):
             self.__class__.instances.append(self)
             pg.sprite.Sprite.__init__(self)
             self.image = pg.Surface([width, height])
             self.rect = self.image.get_rect(topleft = (x, y))
-            self.onClickFunction = False
+            self.onClickFunction = buttonFunct
             self.color = color
             self.textColor = textColor
             self.textFont = allFonts[textFont] if textFont in allFonts else defaultButtonFont
@@ -178,13 +186,17 @@ if __name__ == '__main__':
             #* other various settings
             self.disabled = False
             self.active = False
+            self.parent = parent #Modal
+            childToParent(self, self.parent)
             
         def check_click(self, mouse):
             if self.rect.collidepoint(mouse):
-                if self.onClickFunction and not self.disabled:
-                    self.onClickFunction()
-                else:
-                    print(f"hit button")
+                if not self.disabled:
+                    if self.parent:
+                        if self.parent.active:
+                            self.onClickFunction()
+                    else:
+                        self.onClickFunction()
         
         def draw_button(self, screen):
             screen.blit(self.image, self.rect)
@@ -195,7 +207,7 @@ if __name__ == '__main__':
                 
     class InputBox:
         instances = []
-        def __init__ (self, x, y, width, height, text = '', textFont = defaultTextInputFont, changeable = True, activeColor = BLACK, inactiveColor = LIGHTGREY):
+        def __init__ (self, x, y, width, height, text = '', textFont = defaultTextInputFont, changeable = True, activeColor = BLACK, inactiveColor = LIGHTGREY, parent = False):
             self.__class__.instances.append(self)
             self.rect = pg.Rect(x, y, width, height)
             self.color = inactiveColor
@@ -207,13 +219,21 @@ if __name__ == '__main__':
             self.active = False
             self.changable = changeable
             self.static = False
+            self.parent = parent #Modal
+            childToParent(self, self.parent)
         
         def handle_event(self, event):
             modalsActive = False
             for modal in Modal.instances:
                 if modal.active:
                     modalsActive = True
-            if not modalsActive:
+
+            parentActive = False
+            if self.parent:
+                if self.parent.active:
+                    parentActive = True
+
+            if not modalsActive or parentActive:
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if self.rect.collidepoint(event.pos):
                         self.active = not self.active if self.changable else self.active
@@ -259,8 +279,15 @@ if __name__ == '__main__':
                 #print(f'it is over {self.rect.x}')
             
         def draw(self, screen):
-            screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
-            pg.draw.rect(screen, self.color, self.rect, 2)
+            parentActive = False
+            if self.parent:
+                if self.parent.active:
+                    parentActive = True
+            else:
+                parentActive = True
+            if parentActive:
+                screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
+                pg.draw.rect(screen, self.color, self.rect, 2)
     
     #! ------------------------------------------------------------------        
     def blit_text(surface, text, pos, font, color = BLACK):
@@ -320,6 +347,12 @@ if __name__ == '__main__':
     #! ------------------------------------------------------------------
                         
     #*--------------------------------------
+    def childToParent(child, parent):
+        try:
+            parent.children.append(child)
+        except Exception as err:
+            handleError(err)
+    
     def check_click(mouse):
         for button in Button.instances:
             button.check_click(mouse)
@@ -327,14 +360,20 @@ if __name__ == '__main__':
             
     def drawEverything(screen):
         for button in Button.instances:
-            button.draw_button(screen)
-        newNoteButton.text = 'new note' if Button.user else 'currentUser'
+            #if (button.parent) and (button.parent.active):
+            #    print('parent is active')
+            #    button.draw_button(screen)
+            if not button.parent:
+                button.draw_button(screen)
         #print(newNoteButton.text)
         for box in InputBox.instances:
             #if box != inputBox2:
             box.update()
             box.draw(screen)
         testModal.update()
+        #! custom button/input box stuff that will be changed
+        newNoteButton.text = 'new note' if currentUser.loggedIn else 'log in'
+        statusBox.text = 'username here' if currentUser.loggedIn else 'no user'
             
     def handleEventListener(event):
         for box in InputBox.instances:
@@ -344,7 +383,12 @@ if __name__ == '__main__':
     currentUser = User()
     
     testModal = Modal(100, 100, 400, 400, 'title here')
-    testModal.active = True
+    #testModal.active = True
+    testButton = Button(100, 100, (testModal.rect.left + 100), (testModal.rect.top + 25), RED, 'test', parent=testModal)
+    def testButtonFunct():
+        currentUser.loggedIn = True
+    testButton.onClickFunction = testButtonFunct
+    testInput = InputBox(testModal.rect.left, testModal.rect.top + 100, 100, 100, parent = testModal)
     
     loginBox = 0
     
@@ -358,18 +402,19 @@ if __name__ == '__main__':
     newNoteButton = Button((screen_width/2), (screen_height/8), (screen_width/2), 0, color = BLUE, textColor = WHITE, text = 'new note')
     def newNoteFunct():
         #print('new note')
-        Button.user = 'user' if not Button.user else None
-        currentUser.loginUser('pjsanto', '')
+        #Button.user = 'user' if not Button.user else None
+        testModal.active = True if not testModal.active else False
+        #currentUser.loginUser('pjsanto', '')
     newNoteButton.onClickFunction = newNoteFunct
     #testButton = Button(100, 50, (screen_width/2), (screen_width/2), color=('#52325c'), text = 'test')
     
     #* text boxes
-    statusBox = InputBox(0, (quitButton.rect.height), screen_width, 50, 'status box', changeable = False)
+    statusBox = InputBox(0, (quitButton.rect.height), screen_width, 50, '', changeable = False)
     statusBox.static = True
     
     bottomStatusBox = statusBox
     
-    inputBox1 = InputBox(25, (bottomStatusBox.rect.bottom), (screen_width - 50), 400)
+    inputBox1 = InputBox(25, (bottomStatusBox.rect.bottom), (screen_width - 50), 400, 'ok')
     #testWords = 'wow this is cool \n ok i pull up'
     #inputBox2 = InputBox(25, -250, (screen_width - 50), 100, testWords) #(inputBox1.rect.bottom)
     
@@ -381,6 +426,8 @@ if __name__ == '__main__':
     cancelButton = Button((screen_width/2), (screen_height/8), (saveButton.rect.right), (inputBox1.rect.bottom + 5), color = RED, text = 'Cancel')
     def cancelButtonFunct():
         inputBox1.text = ''
+        #print(inputBox1.textFont.size)
+        #inputBox1.textFont = allFonts['mediumConsolas']
     cancelButton.onClickFunction = cancelButtonFunct
 
     #* timer that goes off every 800 miliseconds

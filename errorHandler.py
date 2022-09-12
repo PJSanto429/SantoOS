@@ -7,7 +7,7 @@ def get_current_time(): #this gets the current time
     fullTime = f'{time2[1]}/{time2[2]}/{time2[0]} {hour}:{time2[4]}:{time2[5]} {amPm}'
     return fullTime
 
-def handleError(error):
+def handleError(error): #logs the errors to errors.txt
     currTime = get_current_time()
     with open('errors.txt', 'a') as outfile:
         outfile.write('\n')
