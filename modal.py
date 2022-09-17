@@ -21,7 +21,8 @@ class Modal:
         children: list = [],
         textColor = BLACK,
         textFont = defaultTextInputFont,
-        backgroundColor = TEAL
+        backgroundColor = TEAL,
+        parentApp = 'none'
     ):
         self.__class__.instances.append(self)
         self.x = x
@@ -29,6 +30,7 @@ class Modal:
         self.width = width
         self.height = height
         self.textColor = textColor
+        self.parentApp = parentApp
         self.textFont = allFonts[textFont] if textFont in allFonts else defaultTextInputFont
         self.backgroundColor = backgroundColor
         self.image = pg.Surface([width, height])
@@ -57,7 +59,6 @@ class Modal:
             for child in self.children:
                 try:
                     if type(child) == Button:
-                        #//child.check_click(mouse)
                         child.draw_button(screen)
                     if type(child) == InputBox:
                         child.update()

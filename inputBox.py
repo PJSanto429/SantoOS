@@ -8,12 +8,24 @@ from errorHandler import handleError
 from randomFuncts import *
 #from modal import Modal
 
-
 pg.init()
 
 class InputBox:
     instances = []
-    def __init__ (self, x, y, width, height, text = '', textFont = defaultTextInputFont, changeable = True, activeColor = BLACK, inactiveColor = LIGHTGREY, parent = False):
+    def __init__ (
+        self,
+        x,
+        y,
+        width,
+        height,
+        text = '',
+        textFont = defaultTextInputFont,
+        changeable = True,
+        activeColor = BLACK,
+        inactiveColor = LIGHTGREY,
+        parent = False,
+        parentApp = 'none'
+    ):
         self.__class__.instances.append(self)
         self.rect = pg.Rect(x, y, width, height)
         self.color = inactiveColor
@@ -26,6 +38,7 @@ class InputBox:
         self.changable = changeable
         self.static = False
         self.edited = False
+        self.parentApp = parentApp
         self.parent = parent #Modal
         childToParent(self, self.parent)
     

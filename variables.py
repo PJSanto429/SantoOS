@@ -2,6 +2,13 @@ import pygame as pg
 
 pg.font.init()
 
+screen_width = 600
+screen_height = 600
+screen = pg.display.set_mode((screen_width, screen_height))
+pg.display.set_caption('notes app')
+#!pg.display.set_icon(pg.image.load('assets/icon3.png'))
+clock = pg.time.Clock()
+
 #colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -54,6 +61,15 @@ allFonts = {
     "smallConsolas": pg.font.SysFont('consolas', 25),
 }
 #allPygameFonts = pg.font.get_fonts()
+
+allApps = {
+    "none": False,
+    #"home": True,
+    "homeNotLoggedIn": True,
+    "homeLoggedIn": False,
+    "notes": False,
+    "calculator": False
+}
 
 defaultButtonFont = allFonts['largeConsolas']
 defaultTextInputFont = allFonts['largeConsolas']
