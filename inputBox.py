@@ -79,17 +79,9 @@ class InputBox:
         if self.static:
             self.txt_surface = self.textFont.render(self.text, True, self.color)
         else:
-            self.textWrap()
+            #self.textWrap() #! not working just yet
             
             self.txt_surface = self.textFont.render(self.text, True, self.color)
-            #if self.txt_surface.get_width() > self.rect.width - 5:
-            #self.text = drawText(self.txt_surface, self.text, BLACK, self.rect, self.textFont)
-            #print(f'self.text = {self.text}')
-            
-        #inputBox2.rect.top = self.rect.bottom
-        #if self.txt_surface.get_width() > self.rect.width:
-        #    self.rect.height += 50
-            #print(f'it is over {self.rect.x}')
         
     def draw(self, screen):
         parentActive = False
@@ -102,7 +94,7 @@ class InputBox:
             screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
             pg.draw.rect(screen, self.color, self.rect, 2)
                 
-#! ------------------------------------------------------------------        
+#! -----------these two do not work----------------------------------
 def blit_text(surface, text, pos, font, color = BLACK):
     words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
     space = font.size(' ')[0]  # The width of a space.

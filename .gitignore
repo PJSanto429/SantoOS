@@ -1,6 +1,9 @@
 __pycache__/
 test/
 allNotes/
+assets/cow-dancing.gif
+assets/cow-spinning.gif
+assets/spinningCow
 test.py
 todo.py
 errors.txt

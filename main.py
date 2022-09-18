@@ -5,12 +5,14 @@ from textwrap import TextWrapper
 import sys
 from time import gmtime, strftime, localtime
 from random import randint
+from glob import glob
 #!-----------local imports---------------------
 from errorHandler import handleError
 from button import Button
 from inputBox import InputBox
 from modal import Modal
 from user import currentUser
+from clock import Clock
 from variables import *
 
 from notesApp import *
@@ -38,6 +40,11 @@ if __name__ == '__main__':
             if allApps[box.parentApp]:
                 box.update()
                 box.draw(screen)
+                
+        for clock in Clock.instances:
+            print('clock type ==> ', type(clock))
+        #    clock.update()
+        #    clock.draw(screen)
         #for modal in Modal.instances:
         #    modal.update(screen)
         loginModal.update(screen)
@@ -48,6 +55,8 @@ if __name__ == '__main__':
         statusBox.text = 'username here' if currentUser.loggedIn else 'no user'
         
         userNameHeader.text = currentUser.userName
+        userNameHeader.rect.width = userNameHeader.textFont.size(userNameHeader.text)[0]
+        userNameHeader.rect.centerx = (screen_width / 2)
         
         #!login modal
         #loginStatusBox.text = '' if not loginModal.active else loginStatusBox.text
@@ -73,8 +82,8 @@ if __name__ == '__main__':
                 box.handle_event(event)  
 
     #* timer that goes off every 150 miliseconds
-    #fontTimer = pg.USEREVENT + 1
-    #pg.time.set_timer(fontTimer, 150)
+    cowGifTimer = pg.USEREVENT + 1
+    pg.time.set_timer(cowGifTimer, 100)
 
     while True:
         allEvents = pg.event.get()
@@ -84,6 +93,10 @@ if __name__ == '__main__':
                 handleQuit()
             if event.type == pg.MOUSEBUTTONDOWN:
                 check_click(mouse)
+            if event.type == cowGifTimer:
+                currentCowImage += 1 if currentCowImage < 20 else -20
+                dancingCowGif.picture = pg.image.load(f'assets/dancingCow/frame_{currentCowImage}.gif').convert_alpha()
+                dancingCowGif.picture = pg.transform.scale(dancingCowGif.picture, (dancingCowGif.rect.width, dancingCowGif.rect.width))
             handleEventListener(event)
 
         screen.fill(DARKGREY) #* sets the screen a certain color

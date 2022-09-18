@@ -33,7 +33,29 @@ inactiveColor = LIGHTGREY
 
 #fonts
 allFonts = {
-    # large fonts
+    #!------------- extra large fonts ------------------------------------
+    "extraLargeAlgerian": pg.font.SysFont('algerian', 55),
+    "extraLargeBauhaus": pg.font.SysFont('bauhaus93', 55),
+    "extraLargeConsolas": pg.font.SysFont('consolas', 55),
+    "extraLargeImpact": pg.font.SysFont('impact', 55),
+    "extraLargeLucidaConsole": pg.font.SysFont('lucidaconsole', 55),
+    "extraLargeSegoeuiBlack": pg.font.SysFont('segoeuiblack', 55),
+    "extraLargeAgencyfb": pg.font.SysFont('agencyfb', 55),
+    "extraLargeBlackAdderitc": pg.font.SysFont('blackadderitc', 55),
+    "extraLargeBritannic": pg.font.SysFont('britannic', 55),
+    "extraLargeCastellar": pg.font.SysFont('castellar', 55),
+    "extraLargeColonna": pg.font.SysFont('colonna', 55),
+    "extraLargeEngravers": pg.font.SysFont('engravers', 55),
+    "extraLargeLucidaHandwriting": pg.font.SysFont('lucidahandwriting', 55),
+    "extraLargeLucidaSansTypewriter": pg.font.SysFont('lucidasanstypewriter', 55),
+    "extraLargeMagneto": pg.font.SysFont('magneto', 55),
+    "extraLargeNiagaraSolid": pg.font.SysFont('niagarasolid', 55),
+    "extraLargeOldEnglishText": pg.font.SysFont('oldenglishtext', 55),
+    "extraLargeStencil": pg.font.SysFont('stencil', 55),
+    "extraLargeHPSimplifiedBDIT": pg.font.SysFont('largeHPSimplifiedBDIT', 55),
+    "extraLargeHPSimplified": pg.font.SysFont('hpsimplified', 55),
+    "extraLargeArial": pg.font.SysFont('arial', 55),
+    #!------------- large fonts ------------------------------------------
     "largeAlgerian": pg.font.SysFont('algerian', 35),
     "largeBauhaus": pg.font.SysFont('bauhaus93', 35),
     "largeConsolas": pg.font.SysFont('consolas', 35),
