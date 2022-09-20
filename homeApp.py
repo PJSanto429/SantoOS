@@ -7,6 +7,7 @@ from button import Button
 from inputBox import InputBox
 from modal import Modal
 from clock import Clock
+from randomFuncts import handleQuit
 from user import *
 from variables import *
 
@@ -15,22 +16,29 @@ topHeader = InputBox(0, 10, 50, 0, 'SantoOS', 'extraLargeMagneto', False, parent
 topHeader.rect.width = topHeader.textFont.size(topHeader.text)[0]
 topHeader.rect.centerx = (screen_width / 2)
 
+powerOffButton = Button(0, 0, 120, 120, parentApp='homeNotLoggedIn', picture='assets/powerOffLogo.png')
+powerOffButton.rect.right = screen_width
+def powerOffButtonFunct():
+    handleQuit()
+powerOffButton.onClickFunction = powerOffButtonFunct
+
 mainLogo = Button(0, (topHeader.rect.bottom + 100), 350, 350, parentApp='homeNotLoggedIn', picture='assets/mainIcon.png') # 
 mainLogo.rect.centerx = screen_width / 2
+def mainLogoButtonFunct():
+    pass
+mainLogo.onClickFunction = mainLogoButtonFunct
 
 currentCowImage = 1
 dancingCowGif = Button(0, 0, 120, 120, picture='assets/dancingCow/frame_0.gif', parentApp='homeNotLoggedIn')
+
+clock1 = Clock(15, (mainLogo.rect.bottom + 15), 50, 0, GREEN, showDate=True, showTime=True, parentApp='homeNotLoggedIn')
+clock1.rect.width = clock1.textFont.size(clock1.text)[0]
+clock1.rect.centerx = (screen_width / 2)
 
 openLoginButton = Button((screen_width/4), (screen_width - (screen_height/8)), (screen_width/2), (screen_height/8), color = BLUE, textColor = WHITE, text = 'login', parentApp='homeNotLoggedIn')
 def openLoginFunct():
     loginModal.active = True if not loginModal.active else False
 openLoginButton.onClickFunction = openLoginFunct
-
-def mainLogoFunct():
-    print('main logo hit')
-    #allApps["notes"] = True
-    #allApps["homeNotLoggedIn"] = False
-mainLogo.onClickFunction = mainLogoFunct
 
 #* --------------- logged in stuff ---------------------
 spacer = 18.75
@@ -43,6 +51,13 @@ openCalculatorButton = Button((openNotesAppButton.rect.right + spacer), (openNot
 
 testAppButton = Button((openCalculatorButton.rect.right + spacer), (openNotesAppButton.rect.y), (openNotesAppButton.rect.width), (openNotesAppButton.rect.height), GREEN, 'Other', parentApp='homeLoggedIn')
 
-openNotesSettingsButton = Button(0, 550, 250, 50, BLACK, 'settings', WHITE, parentApp='homeLoggedIn')
+openNotesSettingsButton = Button(0, 0, 125, 125, BLACK, '', WHITE, parentApp='homeLoggedIn', picture='assets/settingsLogo2.png')
+openNotesSettingsButton.rect.bottom = screen_height
 
-clock1 = Clock((openNotesSettingsButton.rect.right + 25), (openNotesSettingsButton.rect.y), 50, 0, RED)
+logoutButton = Button(0, 0, 250, 50, RED, 'Logout', parentApp='homeLoggedIn')
+logoutButton.rect.width = (logoutButton.textFont.size(logoutButton.text)[0]) + 50
+logoutButton.rect.bottom = screen_height
+logoutButton.rect.right = screen_width
+def logoutButtonFunc():
+    currentUser.logoutUser()
+logoutButton.onClickFunction = logoutButtonFunc

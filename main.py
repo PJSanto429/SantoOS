@@ -42,13 +42,11 @@ if __name__ == '__main__':
                 box.draw(screen)
                 
         for clock in Clock.instances:
-            print('clock type ==> ', type(clock))
-        #    clock.update()
-        #    clock.draw(screen)
-        #for modal in Modal.instances:
-        #    modal.update(screen)
-        loginModal.update(screen)
-        #notLoggedInModal.update(screen)
+            if allApps[clock.parentApp]:
+                clock.update()
+                clock.draw(screen)
+        for modal in Modal.instances:
+            modal.update(screen)
 
         #! custom button/input box stuff that will be changed
         newNoteButton.text = 'new note' if currentUser.loggedIn else 'log in'

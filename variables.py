@@ -5,7 +5,7 @@ pg.font.init()
 screen_width = 600
 screen_height = 600
 screen = pg.display.set_mode((screen_width, screen_height))
-pg.display.set_caption('notes app')
+pg.display.set_caption('Santo OS')
 #!pg.display.set_icon(pg.image.load('assets/icon3.png'))
 clock = pg.time.Clock()
 
@@ -86,7 +86,7 @@ allFonts = {
 
 allApps = {
     "none": False,
-    #"home": True,
+    "all": True,
     "homeNotLoggedIn": True,
     "homeLoggedIn": False,
     "notes": False,
@@ -95,3 +95,4 @@ allApps = {
 
 defaultButtonFont = allFonts['largeConsolas']
 defaultTextInputFont = allFonts['largeConsolas']
+defaultClockFont = allFonts['largeConsolas']

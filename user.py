@@ -45,6 +45,14 @@ class User:
             handleError(err)
             #print('error ==> ', err)
             return False, 'error'
+    
+    def logoutUser(self):
+        self.name = ''
+        self.userName = ''
+        self.password = None
+        self.loggedIn = False
+        allApps['homeNotLoggedIn'] = True
+        allApps['homeLoggedIn'] = False
 
 # current user
 currentUser = User()
