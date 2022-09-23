@@ -37,20 +37,15 @@ if __name__ == '__main__':
                 button.draw_button(screen)
                 
         for box in InputBox.instances:
-            if allApps[box.parentApp]:
+            if not button.parent and allApps[box.parentApp]:
                 box.update()
                 box.draw(screen)
-                
-        for clock in Clock.instances:
-            if allApps[clock.parentApp]:
-                clock.update()
-                clock.draw(screen)
+
         for modal in Modal.instances:
             modal.update(screen)
 
         #! custom button/input box stuff that will be changed
-        newNoteButton.text = 'new note' if currentUser.loggedIn else 'log in'
-        statusBox.text = 'username here' if currentUser.loggedIn else 'no user'
+        #statusBox.text = 'username here' if currentUser.loggedIn else 'no user'
         
         userNameHeader.text = currentUser.userName
         userNameHeader.rect.width = userNameHeader.textFont.size(userNameHeader.text)[0]
@@ -82,6 +77,11 @@ if __name__ == '__main__':
     #* timer that goes off every 150 miliseconds
     cowGifTimer = pg.USEREVENT + 1
     pg.time.set_timer(cowGifTimer, 100)
+    
+    allApps['homeNotLoggedIn'] = False
+    allApps['homeLoggedIn'] = True
+    currentUser.loggedIn = True
+    currentUser.userName = 'pjsanto'
 
     while True:
         allEvents = pg.event.get()
@@ -97,7 +97,7 @@ if __name__ == '__main__':
                 dancingCowGif.picture = pg.transform.scale(dancingCowGif.picture, (dancingCowGif.rect.width, dancingCowGif.rect.width))
             handleEventListener(event)
 
-        screen.fill(DARKGREY) #* sets the screen a certain color
+        screen.fill(TEAL) #* sets the screen a certain color
         mouse = pg.mouse.get_pos() #* gets the position of the mouse
 
         drawEverything(screen)

@@ -21,7 +21,7 @@ class Modal:
         children: list = [],
         textColor = BLACK,
         textFont = defaultTextInputFont,
-        backgroundColor = TEAL,
+        backgroundColor = DARKGREY,
         parentApp = 'none'
     ):
         self.__class__.instances.append(self)
@@ -50,18 +50,22 @@ class Modal:
             self.title = False
             handleError(err)
         self.children = children if type(children) == list else [children]
+        #print('children length', len(children))
         self.active = False
         
     def update(self, screen):
         if self.active:
+            #print('title ==> ', self.title)
+            self.textImage = self.textFont.render(self.title, True, self.textColor)
+            self.textRect = self.textImage.get_rect(top = self.rect.top + 15, left = self.rect.left + 15)
             screen.blit(self.image, self.rect)
             screen.blit(self.textImage, self.textRect)
-            for child in self.children:
-                try:
-                    if type(child) == Button:
-                        child.draw_button(screen)
-                    if type(child) == InputBox:
-                        child.update()
-                        child.draw(screen)
-                except Exception as err:
-                    handleError(err)
+            for button in Button.instances:
+                if button.parent:
+                    if button.parent == self:
+                        button.draw_button(screen)
+            for inputBox in InputBox.instances:
+                if inputBox.parent:
+                    if inputBox.parent == self:
+                        inputBox.update()
+                        inputBox.draw(screen)

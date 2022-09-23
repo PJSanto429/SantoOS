@@ -27,6 +27,7 @@ TEAL = (0,128,128)
 GRAY = (128, 128, 128)
 LIGHTGREY = (170, 170, 170)
 DARKGREY = (100, 100, 100)
+VERYDARKGREY = (40, 40, 40)
 
 activeColor = BLACK
 inactiveColor = LIGHTGREY
@@ -87,10 +88,14 @@ allFonts = {
 allApps = {
     "none": False,
     "all": True,
+    #!----home----
     "homeNotLoggedIn": True,
     "homeLoggedIn": False,
-    "notes": False,
-    "calculator": False
+    #!----notes----
+    "notesMain": False,
+    "notesNew": False,
+    #!----calculator ----
+    "calculatorMain": False
 }
 
 defaultButtonFont = allFonts['largeConsolas']

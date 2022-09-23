@@ -11,7 +11,6 @@ def buttonFunct():
     print('hit button')
 class Button(pg.sprite.Sprite):
     instances = []
-    #user = None
     def __init__(
         self,
         x,
@@ -56,7 +55,8 @@ class Button(pg.sprite.Sprite):
         self.active = False
         self.parentApp = parentApp
         self.parent = parent #Modal
-        childToParent(self, self.parent)
+        #if self.parent:
+        #    childToParent(self, parent)
         
     def check_click(self, mouse):
         if self.parent:

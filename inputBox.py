@@ -24,7 +24,10 @@ class InputBox:
         activeColor = BLACK,
         inactiveColor = LIGHTGREY,
         parent = False,
-        parentApp = 'none'
+        parentApp = 'none',
+        group = 'input box',
+        useDate = False,
+        useTime = False
     ):
         self.__class__.instances.append(self)
         self.rect = pg.Rect(x, y, width, height)
@@ -40,7 +43,11 @@ class InputBox:
         self.edited = False
         self.parentApp = parentApp
         self.parent = parent #Modal
-        childToParent(self, self.parent)
+        #if self.parent:
+        #   childToParent(self, self.parent)
+        self.group = group
+        self.useDate = useDate
+        self.useTime = useTime
     
     def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -74,13 +81,18 @@ class InputBox:
         #print(textLinesToBe)
                     
     def update(self):
-        self.color = DARKGREY if self.static else self.color
-        self.txt_surface = self.textFont.render(self.text, True, self.color)
-        if self.static:
+        if self.group == 'input box':
+            self.color = DARKGREY if self.static else self.color
             self.txt_surface = self.textFont.render(self.text, True, self.color)
-        else:
-            #self.textWrap() #! not working just yet
-            
+            if self.static:
+                self.txt_surface = self.textFont.render(self.text, True, self.color)
+            else:
+                #self.textWrap() #! not working just yet
+                self.txt_surface = self.textFont.render(self.text, True, self.color)
+                
+        if self.group == 'clock':
+            localTime = currentTime(self.useDate, self.useTime)
+            self.text = f'{localTime}'
             self.txt_surface = self.textFont.render(self.text, True, self.color)
         
     def draw(self, screen):
