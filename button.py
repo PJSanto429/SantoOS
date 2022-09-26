@@ -59,6 +59,7 @@ class Button(pg.sprite.Sprite):
         #    childToParent(self, parent)
         
     def check_click(self, mouse):
+        parentActive = False
         if self.parent:
             if self.parent.active:
                 parentActive = True

@@ -15,7 +15,8 @@ class Clock(InputBox):
         useTime = True,
         textFont = defaultClockFont,
         parent = False,
-        parentApp = 'none'
+        parentApp = 'none',
+        center = False
         #! input box stuff
         ): super().__init__(
             x,
@@ -30,6 +31,7 @@ class Clock(InputBox):
             parent,
             parentApp,
             'clock',
+            center,
             useDate,
             useTime
         )

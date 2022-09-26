@@ -46,6 +46,7 @@ if __name__ == '__main__':
 
         #! custom button/input box stuff that will be changed
         #statusBox.text = 'username here' if currentUser.loggedIn else 'no user'
+        #print('length ==> ', len(notesTitleInput.text))
         
         userNameHeader.text = currentUser.userName
         userNameHeader.rect.width = userNameHeader.textFont.size(userNameHeader.text)[0]

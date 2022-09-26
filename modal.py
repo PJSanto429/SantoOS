@@ -18,11 +18,12 @@ class Modal:
         width: int,
         height: int,
         title,
-        children: list = [],
+        #children: list = [],
         textColor = BLACK,
         textFont = defaultTextInputFont,
         backgroundColor = DARKGREY,
-        parentApp = 'none'
+        parentApp = 'none',
+        parent = False
     ):
         self.__class__.instances.append(self)
         self.x = x
@@ -31,6 +32,7 @@ class Modal:
         self.height = height
         self.textColor = textColor
         self.parentApp = parentApp
+        self.parent = parent
         self.textFont = allFonts[textFont] if textFont in allFonts else defaultTextInputFont
         self.backgroundColor = backgroundColor
         self.image = pg.Surface([width, height])
@@ -38,8 +40,20 @@ class Modal:
         try:
             self.title = title
             self.textImage = self.textFont.render(self.title, True, self.textColor)
-            self.textRect = self.textImage.get_rect(top = self.rect.top + 15, left = self.rect.left + 15)
-            self.textBottom = self.textFont.size(' ')[1]
+            self.textRect = self.textImage.get_rect(top = self.rect.top + 15, left = self.rect.left + 15)#, centerx = self.rect.centerx/2)
+            #print('text rect ==> ', self.textRect.centerx)
+            #print('--------------------')
+            #print('modal center ==> ', self.rect.centerx)
+            #print('text rect center x ==> ', self.textRect.centerx)
+            #print('------------------------------')
+            
+            textSize = self.textFont.size(self.title)
+            #print('center x ==> ', self.textRect.centerx)
+            self.textRect.width = textSize[0]
+            self.textRect.centerx = self.rect.width/2
+            #print('center x ==> ', self.textRect.centerx)
+            #print(self.textRect.width)
+            
             try:
                 self.image.fill(self.backgroundColor)
             except Exception as err:
@@ -49,13 +63,11 @@ class Modal:
         except Exception as err:
             self.title = False
             handleError(err)
-        self.children = children if type(children) == list else [children]
-        #print('children length', len(children))
+        #//self.children = children if type(children) == list else [children]
         self.active = False
         
     def update(self, screen):
         if self.active:
-            #print('title ==> ', self.title)
             self.textImage = self.textFont.render(self.title, True, self.textColor)
             self.textRect = self.textImage.get_rect(top = self.rect.top + 15, left = self.rect.left + 15)
             screen.blit(self.image, self.rect)
@@ -69,3 +81,7 @@ class Modal:
                     if inputBox.parent == self:
                         inputBox.update()
                         inputBox.draw(screen)
+            for modal in Modal.instances:
+                if modal.parent:
+                    if modal.parent == self:
+                        modal.update(screen)

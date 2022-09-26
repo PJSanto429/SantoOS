@@ -4,9 +4,9 @@ def firstStartUp():
     from cryptography.fernet import Fernet
     from errorHandler import handleError
     
-    if not path.exists('key.key'):
+    if not path.exists('allNotes/key.key'):
         key = Fernet.generate_key()
-        with open('key.key', 'wb') as file:
+        with open('allNotes/key.key', 'wb') as file:
             file.write(key)
             file.close()
 

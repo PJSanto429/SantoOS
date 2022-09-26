@@ -1,4 +1,3 @@
-from re import L
 import pygame as pg
 
 #!-----local imports-----
@@ -12,16 +11,14 @@ from variables import *
 from randomFuncts import *
 
 #*------------------ notes main --------
-notesMainHeader = InputBox(0, 15, 50, 0, 'Notes', textFont='extraLargeConsolas', changeable=False, inactiveColor=BLACK, parentApp='notesMain')
+notesMainHeader = InputBox(0, 15, 50, 0, 'Notes', textFont='extraLargeConsolas', changeable=False, inactiveColor=BLACK, parentApp='notesMain', center=True)
 headerTextSize = notesMainHeader.textFont.size(notesMainHeader.text)
-notesMainHeader.rect.width = headerTextSize[0]
-notesMainHeader.rect.centerx = screen_width/2
 
-clock2 = Clock(0, 0, parentApp='notesMain')
+clock2 = Clock(0, 0, parentApp='notesMain', center=True)
 clock2TextSize = clock2.textFont.size(clock2.text)
 clock2.rect.bottom = (screen_height - (clock2TextSize[1] + 20))
-clock2.rect.width = clock2TextSize[0]
-clock2.rect.centerx = screen_width/2
+#clock2.rect.width = clock2TextSize[0]
+#clock2.rect.centerx = screen_width/2
 
 newNoteButton = Button(0, (headerTextSize[1] + 35), (screen_width), (screen_height/6), color = GREEN, text='New Note', parentApp='notesMain')
 def newNoteFunct():
@@ -54,25 +51,31 @@ goToNotesHomeButton.onClickFunction = goToNotesHomeButtonFunct
 #quitButton.onClickFunction = quitButtonFunct
 
 #* text boxes
-notesStatusBox = InputBox(0, (screen_height/8), screen_width, 50, '', changeable = False, parentApp='notesNew')
-#notesStatusBox.static = True
 
-mainNotesInput = InputBox(25, (notesStatusBox.rect.bottom), (screen_width - 50), 400, 'ok', parentApp='notesNew')
+notesTitleInput = InputBox(25, 0, (screen_width - 50), 50, '', parentApp='notesNew', )
+
+mainNotesInput = InputBox(25, (notesTitleInput.rect.bottom + 15), (screen_width - 50), 400, 'ok', parentApp='notesNew')
 
 notesDoneButton = Button(0, (mainNotesInput.rect.bottom + 5), (screen_width/2), (screen_height/8), color = BLUE, text = 'Done', parentApp='notesNew')
 doneRect = notesDoneButton.rect
 def notesDoneButtonFunct():
-    #first check if the current note is saved
-    askSaveNoteModal.active = True if not askSaveNoteModal.active else False
-    #allApps['notesNew'] = False
-    #allApps['notesMain'] = True
+    if not currentUser.currentNoteSaved:
+        askSaveNoteModal.active = True if not askSaveNoteModal.active else False
+    else:
+        allApps['notesNew'] = False
+        allApps['notesMain'] = True
 notesDoneButton.onClickFunction = notesDoneButtonFunct
 
-saveNoteButton = Button(doneRect.right, (mainNotesInput.rect.bottom + 5), (screen_width/2), (screen_height/8), color = GREEN, text = 'save note', parentApp='notesNew')
+saveNoteButton = Button(doneRect.right, (mainNotesInput.rect.bottom + 5), (screen_width/2), (screen_height/8), color = GREEN, text = 'Save Note', parentApp='notesNew')
 def saveNoteButtonFunct():
     #save the note here
-    print('save button')
+    currentUser.createSaveHandler('note title', mainNotesInput.text)
+    #print('save button')
 saveNoteButton.onClickFunction = saveNoteButtonFunct
+
+notesDoneButton.rect.bottom = saveNoteButton.rect.bottom = screen_height
+
+print('distance ==> ', notesDoneButton.rect.top - mainNotesInput.rect.bottom)
 
 askSaveNoteModal = Modal((screen_width/4), 100, 300, 150, 'Save note?', backgroundColor=FUCHSIA, parentApp='notesNew')
 askSaveNoteModal.rect.centerx = screen_width/2
@@ -82,5 +85,10 @@ askRect = askSaveNoteModal.rect
 
 yesSaveNoteButton = Button((askRect.left), (askRect.bottom - 50), (askRect.width / 2), 50, GREEN, 'Yes', parent=askSaveNoteModal, parentApp='notesNew')
 yesSaveRect = yesSaveNoteButton.rect
+def yesSaveNoteFunct():
+    currentUser.createSaveHandler('note title', mainNotesInput.text)
+yesSaveNoteButton.onClickFunction = yesSaveNoteFunct
 
 dontSaveNoteButton = Button((yesSaveRect.right), (yesSaveRect.y), (yesSaveRect.width), (yesSaveRect.height), RED, 'No', parent=askSaveNoteModal, parentApp='notesNew')
+
+notesNewStatusbar = InputBox(15, (mainNotesInput.rect.bottom + 10), (screen_width - 30), 0, '', inactiveColor=WHITE, changeable=False, parentApp='notesNew')

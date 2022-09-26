@@ -2,7 +2,7 @@ from errorHandler import handleError
 from cryptography.fernet import Fernet
 
 def getKey():
-    key = (open('key.key', 'rb')).read()
+    key = (open('allNotes/key.key', 'rb')).read()
     return key
 
 def encrypyNote(noteId):

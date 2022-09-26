@@ -7,6 +7,7 @@ from button import Button
 from inputBox import InputBox
 from modal import Modal
 from variables import *
+from randomFuncts import *
 
 class User:
     instances = []
@@ -16,6 +17,9 @@ class User:
         self.name = ''
         self.userName = ''
         self.password = None
+        #note stuff
+        self.currentNote = None
+        self.currentNoteSaved = True
         
     def loginUser(self, userName, password):
         userName = '' if userName == 'username here' else userName
@@ -53,6 +57,54 @@ class User:
         self.loggedIn = False
         allApps['homeNotLoggedIn'] = True
         allApps['homeLoggedIn'] = False
+        
+    def createSaveHandler(self, newNoteTitle, newNoteBody):
+        if self.currentNote:
+            self.saveNote(newNoteTitle, newNoteBody)
+        else:
+            self.createNewNote(newNoteTitle, newNoteBody)
+        
+    def createNewNote(self, newNoteTitle, newNoteBody):
+        try:
+            with open('allNotes/allUsers.json', 'r') as infile:
+                inData = json.load(infile)
+            inData["noteNum"] += 1
+            noteNum = str(inData["noteNum"] + 1)
+            while len(noteNum) < 4:
+                noteNum = f'0{noteNum}'
+            self.currentNote = noteNum
+            noteData = {
+                "title": newNoteTitle,
+                "body": newNoteBody,
+                "createdAt": currentTime(),
+                "updatedAt": currentTime()
+            }
+            with open(f'allNotes/{noteNum}.json') as outfile:
+                x = json.dumps(noteData)
+                outfile.write(x)
+            self.currentNoteSaved = True
+            return True
+        except:
+            return False
+        
+        #with open('allNotes/allUsers.json', 'r') as infile:
+        #    inData = json.load(infile)
+        with open('allNotes/allUsers.json', 'w') as outfile:
+            json.dump(inData, outfile)
+        
+    def saveNote(self, newNoteTitle, newNoteBody):
+        try:
+            with open(f'allNotes/{self.currentNote}.json', 'r') as infile:
+                inData = json.load(infile)
+            inData["title"] = newNoteTitle
+            inData["body"] = newNoteBody
+            inData["updatedAt"] = currentTime()
+            with open(f'allNotes/{self.currentNote}.json', 'w') as outfile:
+                json.dump(inData, outfile)
+            return True
+        except Exception as err:
+            print('error ==> ', err)
+            return False
 
 # current user
 currentUser = User()

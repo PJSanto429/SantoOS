@@ -12,9 +12,9 @@ from user import *
 from variables import *
 
 #*------------------ not logged in stuff -------------------
-topHeader = InputBox(0, 10, 50, 0, 'SantoOS', 'extraLargeMagneto', False, parentApp='homeNotLoggedIn', inactiveColor=BLACK)
-topHeader.rect.width = topHeader.textFont.size(topHeader.text)[0]
-topHeader.rect.centerx = (screen_width / 2)
+topHeader = InputBox(0, 10, 50, 0, 'SantoOS', 'extraLargeMagneto', False, parentApp='homeNotLoggedIn', inactiveColor=BLACK, center=True)
+#topHeader.rect.width = topHeader.textFont.size(topHeader.text)[0]
+#topHeader.rect.centerx = (screen_width / 2)
 
 powerOffButton = Button(0, 0, 120, 120, parentApp='homeNotLoggedIn', picture='assets/powerOffLogo.png')
 powerOffButton.rect.right = screen_width

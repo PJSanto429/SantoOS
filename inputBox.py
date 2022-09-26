@@ -3,9 +3,9 @@ import textwrap
 from math import floor
 
 #!------local imports------
-from variables import *
 from errorHandler import handleError
 from randomFuncts import *
+from variables import *
 #from modal import Modal
 
 pg.init()
@@ -26,6 +26,7 @@ class InputBox:
         parent = False,
         parentApp = 'none',
         group = 'input box',
+        center = False,
         useDate = False,
         useTime = False
     ):
@@ -43,6 +44,9 @@ class InputBox:
         self.edited = False
         self.parentApp = parentApp
         self.parent = parent #Modal
+        self.center = center
+        if self.center:
+            self.centerText()
         #if self.parent:
         #   childToParent(self, self.parent)
         self.group = group
@@ -68,6 +72,11 @@ class InputBox:
                     self.text = self.text[:-1]
                 else:
                     self.text += event.unicode
+                    
+    def centerText(self):
+        textSize = self.textFont.size(self.text)
+        self.rect.width = textSize[0]
+        self.rect.centerx = screen_width/2
                     
     def textWrap(self): #not working yet
         textLines = []
