@@ -101,8 +101,8 @@ if __name__ == '__main__':
         #print('------------------------------')
     testButton.onClickFunction = testButtonFunct
     
-    allApps['homeNotLoggedIn'] = False
-    allApps['none'] = True
+    #allApps['homeNotLoggedIn'] = False
+    #allApps['none'] = True
     #allApps['notesMain'] = True
     #currentUser.loggedIn = True
     #currentUser.userName = 'pjsanto'
