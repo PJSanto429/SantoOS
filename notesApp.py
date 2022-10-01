@@ -6,6 +6,7 @@ from button import Button
 from inputBox import InputBox
 from modal import Modal
 from clock import Clock
+from loading import Loading
 from user import *
 from variables import *
 from randomFuncts import *
@@ -23,12 +24,13 @@ clock2.rect.bottom = (screen_height - (clock2TextSize[1] + 20))
 newNoteButton = Button(0, (headerTextSize[1] + 35), (screen_width), (screen_height/6), color = GREEN, text='New Note', parentApp='notesMain')
 def newNoteFunct():
     allApps['notesMain'] = False
-    allApps['notesNew'] = True
+    allApps['notesEdit'] = True
 newNoteButton.onClickFunction = newNoteFunct
 
 allNotesButton = Button(0, 0, (screen_width), (screen_height/6), color=BLUE, text='All Notes', parentApp='notesMain')
 def allNotesButtonFunct():
-    print('goto all notes')
+    allApps['notesMain'] = False
+    allApps['notesAll'] = True
 allNotesButton.onClickFunction = allNotesButtonFunct
 allNotesButton.rect.centery = screen_height / 2
 
@@ -44,51 +46,50 @@ def goToNotesHomeButtonFunct():
     allApps['homeLoggedIn'] = True
 goToNotesHomeButton.onClickFunction = goToNotesHomeButtonFunct
 
-#*------------------ new note ----------
-#quitButton = Button(0, 0, (screen_width/2), (screen_height/8), text = 'quit', textFont = 'largeConsolas', parentApp='notesNew')
-#def quitButtonFunct():
-#    handleQuit()
-#quitButton.onClickFunction = quitButtonFunct
+#*------------------ edit/create note ----------
+noteData = currentUser.getNoteInfo()
+notesTitleInput = InputBox(25, 5, (screen_width - 50), 50, noteData[0], parentApp='notesEdit', )
 
-#* text boxes
+mainNotesInput = InputBox(25, (notesTitleInput.rect.bottom + 15), (screen_width - 50), 400, noteData[1], parentApp='notesEdit', allowWrap=True)
 
-notesTitleInput = InputBox(25, 0, (screen_width - 50), 50, '', parentApp='notesNew', )
-
-mainNotesInput = InputBox(25, (notesTitleInput.rect.bottom + 15), (screen_width - 50), 400, 'ok', parentApp='notesNew')
-
-notesDoneButton = Button(0, (mainNotesInput.rect.bottom + 5), (screen_width/2), (screen_height/8), color = BLUE, text = 'Done', parentApp='notesNew')
+notesDoneButton = Button(0, (mainNotesInput.rect.bottom + 5), (screen_width/2), (screen_height/8), color = BLUE, text = 'Done', parentApp='notesEdit')
 doneRect = notesDoneButton.rect
 def notesDoneButtonFunct():
     if not currentUser.currentNoteSaved:
         askSaveNoteModal.active = True if not askSaveNoteModal.active else False
     else:
-        allApps['notesNew'] = False
+        allApps['notesEdit'] = False
         allApps['notesMain'] = True
 notesDoneButton.onClickFunction = notesDoneButtonFunct
 
-saveNoteButton = Button(doneRect.right, (mainNotesInput.rect.bottom + 5), (screen_width/2), (screen_height/8), color = GREEN, text = 'Save Note', parentApp='notesNew')
+saveNoteButton = Button(doneRect.right, (mainNotesInput.rect.bottom + 5), (screen_width/2), (screen_height/8), color = GREEN, text = 'Save Note', parentApp='notesEdit')
 def saveNoteButtonFunct():
     #save the note here
-    currentUser.createSaveHandler('note title', mainNotesInput.text)
+    #print('hit save button')
+    success = currentUser.createSaveHandler(notesTitleInput.text, mainNotesInput.text)
+    print(success)
+    #currentUser.currentNote = None
     #print('save button')
 saveNoteButton.onClickFunction = saveNoteButtonFunct
 
 notesDoneButton.rect.bottom = saveNoteButton.rect.bottom = screen_height
 
-print('distance ==> ', notesDoneButton.rect.top - mainNotesInput.rect.bottom)
-
-askSaveNoteModal = Modal((screen_width/4), 100, 300, 150, 'Save note?', backgroundColor=FUCHSIA, parentApp='notesNew')
+askSaveNoteModal = Modal((screen_width/4), 100, 300, 150, 'Save note?', backgroundColor=FUCHSIA, parentApp='notesEdit')
 askSaveNoteModal.rect.centerx = screen_width/2
 askSaveNoteModal.rect.centery = screen_height/2
 
 askRect = askSaveNoteModal.rect
 
-yesSaveNoteButton = Button((askRect.left), (askRect.bottom - 50), (askRect.width / 2), 50, GREEN, 'Yes', parent=askSaveNoteModal, parentApp='notesNew')
+yesSaveNoteButton = Button((askRect.left), (askRect.bottom - 50), (askRect.width / 2), 50, GREEN, 'Yes', parent=askSaveNoteModal, parentApp='notesEdit')
 yesSaveRect = yesSaveNoteButton.rect
 def yesSaveNoteFunct():
-    currentUser.createSaveHandler('note title', mainNotesInput.text)
+    currentUser.createSaveHandler(notesTitleInput.text, mainNotesInput.text)
 yesSaveNoteButton.onClickFunction = yesSaveNoteFunct
 
-dontSaveNoteButton = Button((yesSaveRect.right), (yesSaveRect.y), (yesSaveRect.width), (yesSaveRect.height), RED, 'No', parent=askSaveNoteModal, parentApp='notesNew')
+dontSaveNoteButton = Button((yesSaveRect.right), (yesSaveRect.y), (yesSaveRect.width), (yesSaveRect.height), RED, 'No', parent=askSaveNoteModal, parentApp='notesEdit')
 
-notesNewStatusbar = InputBox(15, (mainNotesInput.rect.bottom + 10), (screen_width - 30), 0, '', inactiveColor=WHITE, changeable=False, parentApp='notesNew')
+notesEditStatusbar = InputBox(15, (mainNotesInput.rect.bottom + 10), (screen_width - 30), 0, '', inactiveColor=WHITE, changeable=False, parentApp='notesEdit')
+
+#*------------------------------ all notes -----------------------------------
+allNotesHeader = InputBox(0, 15, 50, 0, 'My Notes', textFont='extraLargeConsolas', changeable=False, inactiveColor=BLACK, parentApp='notesAll', center=True)
+allMyNotes = currentUser.getNoteInfo()

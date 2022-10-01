@@ -6,7 +6,7 @@ screen_width = 600
 screen_height = 600
 screen = pg.display.set_mode((screen_width, screen_height))
 pg.display.set_caption('Santo OS')
-#!pg.display.set_icon(pg.image.load('assets/icon3.png'))
+pg.display.set_icon(pg.image.load('assets/greenSnake.png'))
 clock = pg.time.Clock()
 
 #colors
@@ -23,8 +23,9 @@ NAVYBLUE = (0, 0, 128)
 OLIVE = (128, 128, 0)
 PURPLE = (128, 0, 128)
 TEAL = (0,128,128)
+LIGHTTEAL = (0, 255, 240)
 
-GRAY = (128, 128, 128)
+GREY = (128, 128, 128)
 LIGHTGREY = (170, 170, 170)
 DARKGREY = (100, 100, 100)
 VERYDARKGREY = (40, 40, 40)
@@ -79,23 +80,67 @@ allFonts = {
     "largeHPSimplified": pg.font.SysFont('hpsimplified', 35),
     "largeArial": pg.font.SysFont('arial', 35),
     #!------------- medium fonts ------------------------------------------
+    "mediumAlgerian": pg.font.SysFont('algerian', 30),
+    "mediumBauhaus": pg.font.SysFont('bauhaus93', 30),
     "mediumConsolas": pg.font.SysFont('consolas', 30),
+    "mediumImpact": pg.font.SysFont('impact', 30),
+    "mediumLucidaConsole": pg.font.SysFont('lucidaconsole', 30),
+    "mediumSegoeuiBlack": pg.font.SysFont('segoeuiblack', 30),
+    "mediumAgencyfb": pg.font.SysFont('agencyfb', 30),
+    "mediumBlackAdderitc": pg.font.SysFont('blackadderitc', 30),
+    "mediumBritannic": pg.font.SysFont('britannic', 30),
+    "mediumCastellar": pg.font.SysFont('castellar', 30),
+    "mediumColonna": pg.font.SysFont('colonna', 30),
+    "mediumEngravers": pg.font.SysFont('engravers', 30),
+    "mediumLucidaHandwriting": pg.font.SysFont('lucidahandwriting', 30),
+    "mediumLucidaSansTypewriter": pg.font.SysFont('lucidasanstypewriter', 30),
+    "mediumMagneto": pg.font.SysFont('magneto', 30),
+    "mediumNiagaraSolid": pg.font.SysFont('niagarasolid', 30),
+    "mediumOldEnglishText": pg.font.SysFont('oldenglishtext', 30),
+    "mediumStencil": pg.font.SysFont('stencil', 30),
+    "mediumHPSimplifiedBDIT": pg.font.SysFont('largeHPSimplifiedBDIT', 30),
+    "mediumHPSimplified": pg.font.SysFont('hpsimplified', 30),
+    "mediumArial": pg.font.SysFont('arial', 30),
     #!------------- small fonts -------------------------------------------
-    "smallConsolas": pg.font.SysFont('consolas', 25),
+    "smallAlgerian": pg.font.SysFont('algerian', 20),
+    "smallBauhaus": pg.font.SysFont('bauhaus93', 20),
+    "smallConsolas": pg.font.SysFont('consolas', 20),
+    "smallImpact": pg.font.SysFont('impact', 20),
+    "smallLucidaConsole": pg.font.SysFont('lucidaconsole', 20),
+    "smallSegoeuiBlack": pg.font.SysFont('segoeuiblack', 20),
+    "smallAgencyfb": pg.font.SysFont('agencyfb', 20),
+    "smallBlackAdderitc": pg.font.SysFont('blackadderitc', 20),
+    "smallBritannic": pg.font.SysFont('britannic', 20),
+    "smallCastellar": pg.font.SysFont('castellar', 20),
+    "smallColonna": pg.font.SysFont('colonna', 20),
+    "smallEngravers": pg.font.SysFont('engravers', 20),
+    "smallLucidaHandwriting": pg.font.SysFont('lucidahandwriting', 20),
+    "smallLucidaSansTypewriter": pg.font.SysFont('lucidasanstypewriter', 20),
+    "smallMagneto": pg.font.SysFont('magneto', 20),
+    "smallNiagaraSolid": pg.font.SysFont('niagarasolid', 20),
+    "smallOldEnglishText": pg.font.SysFont('oldenglishtext', 20),
+    "smallStencil": pg.font.SysFont('stencil', 20),
+    "smallHPSimplifiedBDIT": pg.font.SysFont('largeHPSimplifiedBDIT', 20),
+    "smallHPSimplified": pg.font.SysFont('hpsimplified', 20),
+    "smallArial": pg.font.SysFont('arial', 20),
 }
+print('len ==> ', len(allFonts))
 #allPygameFonts = pg.font.get_fonts()
 
 allApps = {
-    "none": False,
+    "none": False, #? pretty much a testbed
     "all": True,
     #!----home----
     "homeNotLoggedIn": True,
     "homeLoggedIn": False,
     #!----notes----
     "notesMain": False,
-    "notesNew": False,
+    "notesEdit": False,
+    "notesAll": False,
     #!----calculator ----
-    "calculatorMain": False
+    "calculatorMain": False,
+    #!----bomb game----
+    "bombGameMain": False,
 }
 
 defaultButtonFont = allFonts['largeConsolas']

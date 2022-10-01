@@ -1,6 +1,5 @@
-import pygame as pg
+#import pygame as pg
 #!---------- local imports -------------------
-#from errorHandler import get_current_time
 from inputBox import InputBox
 from variables import *
 from randomFuncts import *
@@ -17,21 +16,23 @@ class Clock(InputBox):
         parent = False,
         parentApp = 'none',
         center = False
-        #! input box stuff
         ): super().__init__(
-            x,
-            y,
-            50,
-            0,
-            f'{currentTime(useDate, useTime)}',
-            textFont,
-            False,
-            activeColor,
-            color,
-            parent,
-            parentApp,
-            'clock',
-            center,
-            useDate,
-            useTime
+            #! input box stuff
+            x = x,
+            y = y,
+            width = 50,
+            height = 0,
+            text = f'{currentTime(useDate, useTime)}',
+            textFont = textFont,
+            changeable = False,
+            activeColor = activeColor,
+            inactiveColor = color,
+            parent = parent,
+            parentApp = parentApp,
+            group = 'clock',
+            center = center,
+            allowWrap = False,
+            showRect = False,
+            useDate = useDate,
+            useTime = useTime
         )

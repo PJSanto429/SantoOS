@@ -41,19 +41,6 @@ class Modal:
             self.title = title
             self.textImage = self.textFont.render(self.title, True, self.textColor)
             self.textRect = self.textImage.get_rect(top = self.rect.top + 15, left = self.rect.left + 15)#, centerx = self.rect.centerx/2)
-            #print('text rect ==> ', self.textRect.centerx)
-            #print('--------------------')
-            #print('modal center ==> ', self.rect.centerx)
-            #print('text rect center x ==> ', self.textRect.centerx)
-            #print('------------------------------')
-            
-            textSize = self.textFont.size(self.title)
-            #print('center x ==> ', self.textRect.centerx)
-            self.textRect.width = textSize[0]
-            self.textRect.centerx = self.rect.width/2
-            #print('center x ==> ', self.textRect.centerx)
-            #print(self.textRect.width)
-            
             try:
                 self.image.fill(self.backgroundColor)
             except Exception as err:
@@ -61,9 +48,8 @@ class Modal:
                 self.backgroundColor = RED
                 handleError(err)
         except Exception as err:
-            self.title = False
+            self.title = ''
             handleError(err)
-        #//self.children = children if type(children) == list else [children]
         self.active = False
         
     def update(self, screen):

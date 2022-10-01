@@ -35,9 +35,25 @@ clock1 = Clock(15, (mainLogo.rect.bottom + 15), GREEN, parentApp='homeNotLoggedI
 clock1.rect.width = clock1.textFont.size(clock1.text)[0]
 clock1.rect.centerx = (screen_width / 2)
 
-openLoginButton = Button((screen_width/4), (screen_width - (screen_height/8)), (screen_width/2), (screen_height/8), color = BLUE, textColor = WHITE, text = 'login', parentApp='homeNotLoggedIn')
+openCreateUserButton = Button(0, (screen_height - (screen_height/8)), (screen_width/2), (screen_height/8), color=GREEN, text='create user', parentApp='homeNotLoggedIn')
+openCreateRect = openCreateUserButton.rect
+def openCreateUserFunct():
+    loginModal.active = False
+    newUserModal.active = True if not newUserModal.active else False
+    #!changing parents and text
+    loginStatusMessageBox.parent = loginStatusBox.parent = cancelLoginButton.parent = loginButton.parent = userNameInput.parent = passwordInput.parent = newUserModal
+    loginStatusMessageBox.inactiveColor = loginStatusBox.inactiveColor = userNameInput.inactiveColor = passwordInput.inactiveColor = WHITE
+    loginButton.text = 'Create'
+openCreateUserButton.onClickFunction = openCreateUserFunct
+
+openLoginButton = Button((openCreateRect.right), (openCreateRect.y), (openCreateRect.width), (openCreateRect.height), color = BLUE, textColor = WHITE, text = 'login', parentApp='homeNotLoggedIn')
 def openLoginFunct():
+    newUserModal.active = False
     loginModal.active = True if not loginModal.active else False
+    #!changing parents and text
+    loginStatusMessageBox.parent = loginStatusBox.parent = cancelLoginButton.parent = loginButton.parent = userNameInput.parent = passwordInput.parent = loginModal
+    loginStatusMessageBox.inactiveColor = loginStatusBox.inactiveColor = userNameInput.inactiveColor = passwordInput.inactiveColor = LIGHTGREY
+    loginButton.text = 'Login'
 openLoginButton.onClickFunction = openLoginFunct
 
 #* --------------- logged in stuff ---------------------

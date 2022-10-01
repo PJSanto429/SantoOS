@@ -27,6 +27,8 @@ class InputBox:
         parentApp = 'none',
         group = 'input box',
         center = False,
+        allowWrap = False,
+        showRect = True,
         useDate = False,
         useTime = False
     ):
@@ -36,12 +38,15 @@ class InputBox:
         self.activeColor = activeColor
         self.inactiveColor = inactiveColor
         self.text = text
+        self.allowWrap = allowWrap
+        self.showRect = showRect
         self.textFont = allFonts[textFont] if textFont in allFonts else defaultTextInputFont
         self.txt_surface = self.textFont.render(self.text, True, self.color)
         self.active = False
         self.changable = changeable
         self.static = False
         self.edited = False
+        self.cursor = False
         self.parentApp = parentApp
         self.parent = parent #Modal
         self.center = center
@@ -54,40 +59,69 @@ class InputBox:
         self.useTime = useTime
     
     def handle_event(self, event):
-        if event.type == pg.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
-                self.active = not self.active if self.changable else self.active
-            else:
-                self.active = False
-            self.color = self.activeColor if self.active else self.inactiveColor
-        
-        if event.type == pg.KEYDOWN:
-            if self.active and self.changable:
-                if not self.edited:
-                    self.edited = True
-                    self.text = ''
-                #if event.key == pg.K_RETURN:
-                #    self.text = ''
-                if event.key == pg.K_BACKSPACE:
-                    self.text = self.text[:-1]
+        try:
+            maxChars = floor(self.rect.width / (self.textFont.size(' ')[0]))
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if self.rect.collidepoint(event.pos):
+                    self.active = not self.active if self.changable else self.active
+                    if len(self.text) > 0:
+                        if not self.active and self.text[-1] == '|':
+                            self.text = self.text[:-1]
                 else:
-                    self.text += event.unicode
+                    self.active = False
+                    if len(self.text) > 0:
+                        self.text = self.text[:-1] if self.text[-1] == '|' else self.text
+                self.color = self.activeColor if self.active else self.inactiveColor
+            
+            if event.type == pg.KEYDOWN:
+                if self.active and self.changable:
+                    if not self.edited:
+                        self.edited = True
+                        self.text = ''
+                    if event.key == pg.K_BACKSPACE:
+                        if len(self.text) > 1:
+                            self.text = self.text[:-1] if self.text[-1] != '|' else self.text[:-2]
+                    if (event.unicode).isprintable() and event.unicode != '|':
+                        if len(self.text) > 0 and self.text[-1] == '|':
+                            self.text = self.text[:-1]
+                        if not self.allowWrap and len(self.text) >= maxChars:
+                            self.text = self.text
+                        else:
+                            self.text += event.unicode
+        except Exception as err:
+            pass
                     
     def centerText(self):
         textSize = self.textFont.size(self.text)
         self.rect.width = textSize[0]
         self.rect.centerx = screen_width/2
                     
-    def textWrap(self): #not working yet
-        textLines = []
-        textWidth = self.textFont.size(' ')[0]
-        maxChars = floor(self.rect.width / textWidth)
-        textLinesToBe = textwrap.wrap(self.text, maxChars)
-        #self.text = textLinesToBe[0] if len(textLinesToBe) > 0 else self.text
-        #print(textLinesToBe)
-        
-        #print(f'{self.textFont.size(self.text)[0]} ==> {len(self.text)}')
-        #print(textLinesToBe)
+    def textWrap(self, textLines):
+        x = self.rect.x + 5
+        y = self.rect.y + 5
+        for line in textLines:
+            for word in line:
+                wordSurface = self.textFont.render(word, True, self.color)
+                wordWidth, wordHeight = wordSurface.get_size()
+                if x + wordWidth >= self.rect.width:
+                    x = self.rect.x
+                    y += wordHeight
+                screen.blit(wordSurface, (x, y))
+                x += wordWidth
+            x = self.rect.x
+            y += wordHeight
+            
+    def showHideCursor(self):
+        try:
+            if self.active:
+                if not self.cursor:
+                    self.text += '|'
+                    self.cursor = True
+                else:
+                    self.text = self.text[:-1] if self.text[-1] == '|' else self.text
+                    self.cursor = False
+        except:
+            pass
                     
     def update(self):
         if self.group == 'input box':
@@ -96,8 +130,13 @@ class InputBox:
             if self.static:
                 self.txt_surface = self.textFont.render(self.text, True, self.color)
             else:
-                #self.textWrap() #! not working just yet
-                self.txt_surface = self.textFont.render(self.text, True, self.color)
+                if self.allowWrap:
+                    textWidth = self.textFont.size(' ')[0]
+                    maxChars = floor(self.rect.width / textWidth) - 1
+                    textLines = ' ' if len(self.text) == 0 else textwrap.wrap(self.text, maxChars)
+                    self.textWrap(textLines)
+                else:
+                    self.txt_surface = self.textFont.render(self.text, True, self.color)
                 
         if self.group == 'clock':
             localTime = currentTime(self.useDate, self.useTime)
@@ -112,62 +151,7 @@ class InputBox:
         else:
             parentActive = True
         if parentActive:
-            screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
-            pg.draw.rect(screen, self.color, self.rect, 2)
-                
-#! -----------these two do not work----------------------------------
-def blit_text(surface, text, pos, font, color = BLACK):
-    words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
-    space = font.size(' ')[0]  # The width of a space.
-    max_width, max_height = surface.get_size()
-    x, y = pos
-    for line in words:
-        for word in line:
-            word_surface = font.render(word, 0, color)
-            word_width, word_height = word_surface.get_size()
-            if x + word_width >= max_width:
-                x = pos[0]  # Reset the x.
-                y += word_height  # Start on new row.
-            surface.blit(word_surface, (x, y))
-            x += word_width + space
-        x = pos[0]  # Reset the x.
-        y += word_height  # Start on new row.
-        
-def drawText(surface, text, color, rect, font, aa=False, bkg=None):
-    rect = pg.Rect(rect)
-    y = rect.top
-    lineSpacing = -2
-
-    # get the height of the font
-    fontHeight = font.size("Tg")[1]
-
-    while text:
-        i = 1
-
-        # determine if the row of text will be outside our area
-        if y + fontHeight > rect.bottom:
-            break
-
-        # determine maximum width of line
-        while font.size(text[:i])[0] < rect.width and i < len(text):
-            i += 1
-
-        # if we've wrapped the text, then adjust the wrap to the last word      
-        if i < len(text): 
-            i = text.rfind(" ", 0, i) + 1
-
-        # render the line and blit it to the surface
-        if bkg:
-            image = font.render(text[:i], 1, color, bkg)
-            image.set_colorkey(bkg)
-        else:
-            image = font.render(text[:i], aa, color)
-
-        surface.blit(image, (rect.left, y))
-        y += fontHeight + lineSpacing
-
-        # remove the text we just blitted
-        text = text[i:]
-
-    return text
-#! ------------------------------------------------------------------
+            if not self.allowWrap:
+                screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
+            if self.showRect:
+                pg.draw.rect(screen, self.color, self.rect, 2)
