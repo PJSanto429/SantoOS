@@ -1,6 +1,5 @@
 #from modal import *
-from modal import Modal
-from variables import * 
+from variables import *
 
 class Loading():
     instances = []
@@ -11,11 +10,12 @@ class Loading():
         width,
         height,
         time = 10,
-        title = 'title',
+        loadingTitle = 'loading...',
+        loadedTitle = 'done!',
+        backgroundColor = VERYDARKGREY,
+        loadedColor = GREEN,
         textColor = BLACK,
         textFont = defaultClockFont,
-        backgroundColor = DARKGREY,
-        loadedColor = GREEN,
         parentApp = 'none',
         parent = False
     ):
@@ -26,7 +26,9 @@ class Loading():
         self.height = height
         self.time = time
         self.setTime = 0
-        self.title = title
+        self.title = ''
+        self.loadingTitle = loadingTitle
+        self.loadedTitle = loadedTitle
         self.textColor = textColor
         self.textFont = textFont
         self.backgroundColor = backgroundColor
@@ -42,6 +44,7 @@ class Loading():
         self.parent = parent
         self.active = self.finished = False
         self.dist = (self.width - self.offset) / self.time
+        self.activationTime = 0
         
     def activate(self):
         self.setTime = 0
@@ -51,18 +54,19 @@ class Loading():
 
     def update(self, screen):
         if self.active:
+            self.title = self.loadingTitle if not self.finished else self.loadedTitle
             if self.setTime < self.time:
-                self.setTime = round(pg.time.get_ticks()/1000) - self.activationTime
-                self.loadedImage = pg.Surface([self.setTime * self.dist, self.height - self.offset])
+                self.setTime = (pg.time.get_ticks() / 1000) - self.activationTime
+                try:
+                    self.loadedImage = pg.Surface([(self.setTime * self.dist), self.height - self.offset])
+                except:
+                    pass
                 self.loadedRect = self.loadedImage.get_rect(topleft = (self.x + (self.offset / 2), self.y + self.offset / 2))
             else:
                 self.finished = True
             self.loadedImage.fill(self.loadedColor)
+            self.textImage = self.textFont.render(self.title, True, self.textColor)
+            self.textRect = self.textImage.get_rect(bottom = self.rect.top - 5, centerx = self.rect.centerx)
             screen.blit(self.image, self.rect)
             screen.blit(self.loadedImage, self.loadedRect)
-        else:
-            self.setTime = 0
-        #! text stuff - not used yet
-        #self.textImage = self.textFont.render(self.title, True, self.textColor)
-        #self.textRect = self.textImage.get_rect(top = self.rect.top + 15, left = self.rect.left + 15)
-        #screen.blit(self.textImage, self.textRect)
+            screen.blit(self.textImage, self.textRect)

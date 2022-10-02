@@ -124,7 +124,6 @@ allFonts = {
     "smallHPSimplified": pg.font.SysFont('hpsimplified', 20),
     "smallArial": pg.font.SysFont('arial', 20),
 }
-print('len ==> ', len(allFonts))
 #allPygameFonts = pg.font.get_fonts()
 
 allApps = {

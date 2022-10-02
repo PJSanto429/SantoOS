@@ -6,6 +6,7 @@ from errorHandler import handleError
 from randomFuncts import *
 from button import Button
 from inputBox import InputBox
+from loading import Loading
 
 pg.init()
 
@@ -67,6 +68,10 @@ class Modal:
                     if inputBox.parent == self:
                         inputBox.update()
                         inputBox.draw(screen)
+            for loading in Loading.instances:
+                if loading.parent:
+                    if loading.parent == self:
+                        loading.update()
             for modal in Modal.instances:
                 if modal.parent:
                     if modal.parent == self:

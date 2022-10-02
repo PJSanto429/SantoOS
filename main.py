@@ -3,11 +3,6 @@
 # date started - 9/2/22 (2/9/22 for non-Americans)
 #*-------------built in imports----------------
 import pygame as pg
-#from textwrap import TextWrapper
-#import sys
-#from time import gmtime, strftime, localtime
-#from random import randint
-#from glob import glob
 #!-----------local imports---------------------
 from errorHandler import handleError
 from button import Button
@@ -57,10 +52,6 @@ if __name__ == '__main__':
         userNameHeader.rect.centerx = (screen_width / 2)
         
         #!login modal
-        if testing.active:
-            testBar.text = 'loading...' if not testing.finished else 'done!'
-        else:
-            testBar.text = 'ready to load'
         if not loginModal.active and not newUserModal.active:
             loginStatusBox.text = ''
             loginStatusMessageBox.text = ''
@@ -89,16 +80,10 @@ if __name__ == '__main__':
     
     cursorTimer = pg.USEREVENT + 2
     pg.time.set_timer(cursorTimer, 500) #* 500 miliseconds
-    
-    testing = Loading(50, 300, 500, 50, 10)
-    testBar = InputBox(50, 150, 50, 0, '', changeable=False)
+    testing = Loading(50, 300, 500, 50, 10, loadedColor=GREEN)
     testButton = Button(50, 450, 300, 100, RED, 'start loading')
     def testButtonFunct():
         testing.activate()
-        #print(testing.setTime)
-        #testing.setTime = 0
-        #print(testing.setTime)
-        #print('------------------------------')
     testButton.onClickFunction = testButtonFunct
     
     #allApps['homeNotLoggedIn'] = False
@@ -109,7 +94,6 @@ if __name__ == '__main__':
 
     while True:
         #ticks = pg.time.get_ticks()
-        #print(ticks)
         allEvents = pg.event.get()
         for event in allEvents:
             keys = pg.key.get_pressed()
