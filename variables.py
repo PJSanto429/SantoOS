@@ -6,7 +6,7 @@ screen_width = 600
 screen_height = 600
 screen = pg.display.set_mode((screen_width, screen_height))
 pg.display.set_caption('Santo OS')
-pg.display.set_icon(pg.image.load('assets/greenSnake.png'))
+pg.display.set_icon(pg.image.load('assets/greenSnake.png').convert_alpha())
 clock = pg.time.Clock()
 
 #colors
@@ -130,12 +130,12 @@ allApps = {
     "none": False, #? pretty much a testbed
     "all": True,
     #!----home----
-    "homeNotLoggedIn": True,
+    "homeLoading": True,
+    "homeNotLoggedIn": False,
     "homeLoggedIn": False,
     #!----notes----
     "notesMain": False,
     "notesEdit": False,
-    "notesAll": False,
     #!----calculator ----
     "calculatorMain": False,
     #!----bomb game----

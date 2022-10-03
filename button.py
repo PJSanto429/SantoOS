@@ -54,9 +54,7 @@ class Button(pg.sprite.Sprite):
         self.disabled = False
         self.active = False
         self.parentApp = parentApp
-        self.parent = parent #Modal
-        #if self.parent:
-        #    childToParent(self, parent)
+        self.parent = parent
         
     def check_click(self, mouse):
         parentActive = False
@@ -74,8 +72,6 @@ class Button(pg.sprite.Sprite):
                     self.onClickFunction()
     
     def draw_button(self, screen):
-        #if self.parent:
-        #    if self.parent.active:
         screen.blit(self.image, self.rect)
         if self.picture:
             screen.blit(self.picture, self.rect)

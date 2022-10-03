@@ -1,6 +1,9 @@
 #from modal import *
 from variables import *
 
+def doneEventFunct():
+    print('done loading')
+
 class Loading():
     instances = []
     def __init__(
@@ -45,12 +48,19 @@ class Loading():
         self.active = self.finished = False
         self.dist = (self.width - self.offset) / self.time
         self.activationTime = 0
+        self.doneLoadingFunct = doneEventFunct
+        self.doneloadingFunctDone = False
         
     def activate(self):
         self.setTime = 0
-        self.finished = False
+        self.doneloadingFunctDone = self.finished = False
         self.activationTime = round(pg.time.get_ticks()/1000)
         self.active = True
+    
+    def loadingDone(self):
+        if not self.doneloadingFunctDone:
+            self.doneloadingFunctDone = True
+            self.doneLoadingFunct()
 
     def update(self, screen):
         if self.active:
@@ -64,6 +74,7 @@ class Loading():
                 self.loadedRect = self.loadedImage.get_rect(topleft = (self.x + (self.offset / 2), self.y + self.offset / 2))
             else:
                 self.finished = True
+                self.loadingDone()
             self.loadedImage.fill(self.loadedColor)
             self.textImage = self.textFont.render(self.title, True, self.textColor)
             self.textRect = self.textImage.get_rect(bottom = self.rect.top - 5, centerx = self.rect.centerx)

@@ -18,8 +18,6 @@ headerTextSize = notesMainHeader.textFont.size(notesMainHeader.text)
 clock2 = Clock(0, 0, parentApp='notesMain', center=True)
 clock2TextSize = clock2.textFont.size(clock2.text)
 clock2.rect.bottom = (screen_height - (clock2TextSize[1] + 20))
-#clock2.rect.width = clock2TextSize[0]
-#clock2.rect.centerx = screen_width/2
 
 newNoteButton = Button(0, (headerTextSize[1] + 35), (screen_width), (screen_height/6), color = GREEN, text='New Note', parentApp='notesMain')
 def newNoteFunct():
@@ -27,14 +25,29 @@ def newNoteFunct():
     allApps['notesEdit'] = True
 newNoteButton.onClickFunction = newNoteFunct
 
-allNotesButton = Button(0, 0, (screen_width), (screen_height/6), color=BLUE, text='All Notes', parentApp='notesMain')
-def allNotesButtonFunct():
-    allApps['notesMain'] = False
-    allApps['notesAll'] = True
-allNotesButton.onClickFunction = allNotesButtonFunct
-allNotesButton.rect.centery = screen_height / 2
+openViewModal = Modal(0, 0, 400, 200, 'Choose Note', WHITE, backgroundColor=MAROON, parentApp='notesMain')
+openViewModal.rect.center = ((screen_width / 2), (screen_height / 2))
+openViewRect = openViewModal.rect
 
-openNoteSettingsButton = Button(0, (allNotesButton.rect.bottom + 35), (screen_width/2), (screen_height/6), color=VERYDARKGREY, text='Note Settings', textColor=WHITE, parentApp='notesMain')
+chooseNoteInput = InputBox((openViewRect.x), (openViewRect.top + openViewModal.textRect.height + 15), (openViewRect.width), 50, 'note title', activeColor=GREEN, allowWrap=True, parentApp='notesMain', parent=openViewModal)
+
+cancelChooseNoteButton = Button(openViewRect.x, 0, (openViewRect.width / 2), 50, RED, 'Cancel', parent=openViewModal, parentApp='notesMain')
+def cancelChooseNoteFunct():
+    openViewModal.active = False
+cancelChooseNoteButton.onClickFunction = cancelChooseNoteFunct
+cancelChooseRect = cancelChooseNoteButton.rect
+
+submitChooseNoteButton = Button(cancelChooseRect.right, 0, cancelChooseRect.width, cancelChooseRect.height, GREEN, 'Open', parent=openViewModal, parentApp='notesMain')
+submitChooseNoteButton.rect.bottom = cancelChooseNoteButton.rect.bottom = openViewRect.bottom
+
+openViewButton = Button(0, 0, (screen_width), (screen_height/6), color=BLUE, text='View Note', parentApp='notesMain')
+def openViewButtonFunct():
+    openViewModal.active = True
+    
+openViewButton.onClickFunction = openViewButtonFunct
+openViewButton.rect.centery = screen_height / 2
+
+openNoteSettingsButton = Button(0, (openViewButton.rect.bottom + 35), (screen_width/2), (screen_height/6), color=VERYDARKGREY, text='Note Settings', textColor=WHITE, parentApp='notesMain')
 openNoteSettingsButton.rect.bottom = (clock2.rect.bottom - 20)
 def openNoteSettingsButtonFunct():
     print('open notes settings')
@@ -42,6 +55,7 @@ openNoteSettingsButton.onClickFunction = openNoteSettingsButtonFunct
 
 goToNotesHomeButton = Button((openNoteSettingsButton.rect.right), (openNoteSettingsButton.rect.y), (screen_width/2), (screen_height/6), color=RED, text='Home', parentApp='notesMain')
 def goToNotesHomeButtonFunct():
+    openViewModal.active = False
     allApps['notesMain'] = False
     allApps['homeLoggedIn'] = True
 goToNotesHomeButton.onClickFunction = goToNotesHomeButtonFunct
@@ -89,7 +103,3 @@ yesSaveNoteButton.onClickFunction = yesSaveNoteFunct
 dontSaveNoteButton = Button((yesSaveRect.right), (yesSaveRect.y), (yesSaveRect.width), (yesSaveRect.height), RED, 'No', parent=askSaveNoteModal, parentApp='notesEdit')
 
 notesEditStatusbar = InputBox(15, (mainNotesInput.rect.bottom + 10), (screen_width - 30), 0, '', inactiveColor=WHITE, changeable=False, parentApp='notesEdit')
-
-#*------------------------------ all notes -----------------------------------
-allNotesHeader = InputBox(0, 15, 50, 0, 'My Notes', textFont='extraLargeConsolas', changeable=False, inactiveColor=BLACK, parentApp='notesAll', center=True)
-allMyNotes = currentUser.getNoteInfo()

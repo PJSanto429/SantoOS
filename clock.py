@@ -29,6 +29,7 @@ class Clock(InputBox):
             inactiveColor = color,
             parent = parent,
             parentApp = parentApp,
+            maxChars = False,
             group = 'clock',
             center = center,
             allowWrap = False,

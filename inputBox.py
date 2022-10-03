@@ -25,6 +25,7 @@ class InputBox:
         inactiveColor = LIGHTGREY,
         parent = False,
         parentApp = 'none',
+        maxChars = 1000,
         group = 'input box',
         center = False,
         allowWrap = False,
@@ -38,6 +39,7 @@ class InputBox:
         self.activeColor = activeColor
         self.inactiveColor = inactiveColor
         self.text = text
+        self.maxChars = maxChars
         self.allowWrap = allowWrap
         self.showRect = showRect
         self.textFont = allFonts[textFont] if textFont in allFonts else defaultTextInputFont
@@ -57,8 +59,17 @@ class InputBox:
         self.group = group
         self.useDate = useDate
         self.useTime = useTime
+        
+    def isActive(self):
+        parentActive = False
+        if self.parent:
+            if self.parent.active:
+                parentActive = True
+        else:
+            parentActive = True
+        return parentActive
     
-    def handle_event(self, event):
+    def handle_event(self, event, keys):
         try:
             maxChars = floor(self.rect.width / (self.textFont.size(' ')[0]))
             if event.type == pg.MOUSEBUTTONDOWN:
@@ -124,33 +135,28 @@ class InputBox:
             pass
                     
     def update(self):
-        if self.group == 'input box':
-            self.color = DARKGREY if self.static else self.color
-            self.txt_surface = self.textFont.render(self.text, True, self.color)
-            if self.static:
+        if self.isActive():
+            if self.group == 'input box':
+                self.color = DARKGREY if self.static else self.color
                 self.txt_surface = self.textFont.render(self.text, True, self.color)
-            else:
-                if self.allowWrap:
-                    textWidth = self.textFont.size(' ')[0]
-                    maxChars = floor(self.rect.width / textWidth) - 1
-                    textLines = ' ' if len(self.text) == 0 else textwrap.wrap(self.text, maxChars)
-                    self.textWrap(textLines)
-                else:
+                if self.static:
                     self.txt_surface = self.textFont.render(self.text, True, self.color)
-                
-        if self.group == 'clock':
-            localTime = currentTime(self.useDate, self.useTime)
-            self.text = f'{localTime}'
-            self.txt_surface = self.textFont.render(self.text, True, self.color)
+                else:
+                    if self.allowWrap:
+                        textWidth = self.textFont.size(' ')[0]
+                        maxChars = floor(self.rect.width / textWidth) - 1
+                        textLines = ' ' if len(self.text) == 0 else textwrap.wrap(self.text, maxChars)
+                        self.textWrap(textLines)
+                    else:
+                        self.txt_surface = self.textFont.render(self.text, True, self.color)
+                    
+            if self.group == 'clock':
+                localTime = currentTime(self.useDate, self.useTime)
+                self.text = f'{localTime}'
+                self.txt_surface = self.textFont.render(self.text, True, self.color)
         
     def draw(self, screen):
-        parentActive = False
-        if self.parent:
-            if self.parent.active:
-                parentActive = True
-        else:
-            parentActive = True
-        if parentActive:
+        if self.isActive():
             if not self.allowWrap:
                 screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
             if self.showRect:

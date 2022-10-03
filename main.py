@@ -3,6 +3,7 @@
 # date started - 9/2/22 (2/9/22 for non-Americans)
 #*-------------built in imports----------------
 import pygame as pg
+from random import randint
 #!-----------local imports---------------------
 from errorHandler import handleError
 from button import Button
@@ -10,7 +11,8 @@ from inputBox import InputBox
 from modal import Modal
 from loading import Loading
 from user import currentUser
-#from clock import Clock
+from graphics import *
+from clock import Clock
 from variables import *
 
 from notesApp import *
@@ -19,7 +21,6 @@ from homeApp import *
 if __name__ == '__main__':
     pg.init()
     pg.font.init()
-    #wrapper = TextWrapper(initial_indent="* ")
     
     #*--------------------------------------
     def check_click(mouse):
@@ -46,7 +47,6 @@ if __name__ == '__main__':
             modal.update(screen)
 
         #! custom button/input box stuff that will be changed
-        
         userNameHeader.text = currentUser.userName
         userNameHeader.rect.width = userNameHeader.textFont.size(userNameHeader.text)[0]
         userNameHeader.rect.centerx = (screen_width / 2)
@@ -59,7 +59,7 @@ if __name__ == '__main__':
             passwordInput.text = 'password'
             userNameInput.edited = passwordInput.edited = False
 
-    def handleEventListener(event):
+    def handleEventListener(event, keys):
         for box in InputBox.instances:
             modalsActive = False
             for modal in Modal.instances:
@@ -72,7 +72,7 @@ if __name__ == '__main__':
                     parentActive = True
             
             if not modalsActive or parentActive:
-                box.handle_event(event)  
+                box.handle_event(event, keys)
 
     #!----timers-----
     cowGifTimer = pg.USEREVENT + 1
@@ -80,14 +80,8 @@ if __name__ == '__main__':
     
     cursorTimer = pg.USEREVENT + 2
     pg.time.set_timer(cursorTimer, 500) #* 500 miliseconds
-    testing = Loading(50, 300, 500, 50, 10, loadedColor=GREEN)
-    testButton = Button(50, 450, 300, 100, RED, 'start loading')
-    def testButtonFunct():
-        testing.activate()
-    testButton.onClickFunction = testButtonFunct
     
-    #allApps['homeNotLoggedIn'] = False
-    #allApps['none'] = True
+    #allApps['homeLoading'] = False
     #allApps['notesMain'] = True
     #currentUser.loggedIn = True
     #currentUser.userName = 'pjsanto'
@@ -95,26 +89,30 @@ if __name__ == '__main__':
     while True:
         #ticks = pg.time.get_ticks()
         allEvents = pg.event.get()
+        keys = pg.key.get_pressed()
         for event in allEvents:
-            keys = pg.key.get_pressed()
-            if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
+            if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
                 handleQuit()
             if event.type == pg.MOUSEBUTTONDOWN:
                 check_click(mouse)
+            #if keys[pg.K_LCTRL] and keys[pg.K_F1]: #need to add a delay
+            #    crt.active = True if not crt.active else False
+            #!----timer events----
             if event.type == cowGifTimer:
                 currentCowImage += 1 if currentCowImage < 20 else -20
                 dancingCowGif.picture = pg.image.load(f'assets/dancingCow/frame_{currentCowImage}.gif').convert_alpha()
                 dancingCowGif.picture = pg.transform.scale(dancingCowGif.picture, (dancingCowGif.rect.width, dancingCowGif.rect.width))
             if event.type == cursorTimer:
                 for box in InputBox.instances:
-                    box.showHideCursor()    
+                    box.showHideCursor()
             
-            handleEventListener(event)
+            handleEventListener(event, keys)
 
         screen.fill(TEAL)
         mouse = pg.mouse.get_pos()
 
         drawEverything(screen)
+        crt.draw()
         
         pg.display.flip()
         clock.tick(60)

@@ -41,7 +41,7 @@ class Modal:
         try:
             self.title = title
             self.textImage = self.textFont.render(self.title, True, self.textColor)
-            self.textRect = self.textImage.get_rect(top = self.rect.top + 15, left = self.rect.left + 15)#, centerx = self.rect.centerx/2)
+            self.textRect = self.textImage.get_rect(top = self.rect.top + 15, left = self.rect.left + 15)
             try:
                 self.image.fill(self.backgroundColor)
             except Exception as err:

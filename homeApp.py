@@ -7,9 +7,24 @@ from button import Button
 from inputBox import InputBox
 from modal import Modal
 from clock import Clock
+from loading import Loading
 from randomFuncts import handleQuit
 from user import *
 from variables import *
+
+#*------------------ loading ------------------------------
+mainLoader = Loading(50, 300, 500, 50, 10, loadedColor=LIGHTTEAL, parentApp='homeLoading', loadingTitle='System Starting...')
+startSystemButton = Button(0, 0, 300, 100, BLACK, 'Start System', textColor=WHITE, parentApp='homeLoading')
+startSystemButton.rect.center = ((screen_width / 2), (screen_height / 2))
+def startSystemButtonFunct():
+    startSystemButton.parentApp = 'none'
+    mainLoader.activate()
+startSystemButton.onClickFunction = startSystemButtonFunct
+
+def mainLoaderDoneFunct():
+    allApps['homeLoading'] = False
+    allApps['homeNotLoggedIn'] = True
+mainLoader.doneLoadingFunct = mainLoaderDoneFunct
 
 #*------------------ not logged in stuff -------------------
 topHeader = InputBox(0, 10, 50, 0, 'SantoOS', 'extraLargeMagneto', False, parentApp='homeNotLoggedIn', inactiveColor=BLACK, center=True)

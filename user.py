@@ -17,6 +17,7 @@ class User:
         self.userName = ''
         self.password = None
         #note stuff
+        self.allNotes = []
         self.currentNote = None
         self.currentNoteSaved = True
         
@@ -87,11 +88,14 @@ class User:
         allApps['homeNotLoggedIn'] = True
         allApps['homeLoggedIn'] = False
         
-    def getCreatedNotes(self) -> list:
+    def getCreatedNotes(self, setNotes = True) -> list:
         with open('allNotes/allUsers.json') as infile:
             inData = json.load(infile)
         myNotes = inData[self.userName][0]['createdNotes']
-        return myNotes
+        if setNotes:
+            self.allNotes = myNotes
+        else:
+            return myNotes
                 
     def getNoteInfo(self):
         if self.currentNote:
