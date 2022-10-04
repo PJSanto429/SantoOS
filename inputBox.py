@@ -49,13 +49,12 @@ class InputBox:
         self.static = False
         self.edited = False
         self.cursor = False
+        self.full = False
         self.parentApp = parentApp
         self.parent = parent #Modal
         self.center = center
         if self.center:
             self.centerText()
-        #if self.parent:
-        #   childToParent(self, self.parent)
         self.group = group
         self.useDate = useDate
         self.useTime = useTime
@@ -69,7 +68,7 @@ class InputBox:
             parentActive = True
         return parentActive
     
-    def handle_event(self, event, keys):
+    def handle_event(self, event, keys): #keys not being used yet
         try:
             maxChars = floor(self.rect.width / (self.textFont.size(' ')[0]))
             if event.type == pg.MOUSEBUTTONDOWN:
@@ -92,14 +91,14 @@ class InputBox:
                     if event.key == pg.K_BACKSPACE:
                         if len(self.text) > 1:
                             self.text = self.text[:-1] if self.text[-1] != '|' else self.text[:-2]
-                    if (event.unicode).isprintable() and event.unicode != '|':
+                    if (event.unicode).isprintable() and event.unicode != '|' and not self.full:
                         if len(self.text) > 0 and self.text[-1] == '|':
                             self.text = self.text[:-1]
                         if not self.allowWrap and len(self.text) >= maxChars:
                             self.text = self.text
                         else:
                             self.text += event.unicode
-        except Exception as err:
+        except:
             pass
                     
     def centerText(self):
@@ -107,27 +106,30 @@ class InputBox:
         self.rect.width = textSize[0]
         self.rect.centerx = screen_width/2
                     
-    def textWrap(self, textLines):
+    def textWrap(self):
+        offset = self.rect.x
         x = self.rect.x + 5
         y = self.rect.y + 5
-        for line in textLines:
+        for line in self.textLines:
             for word in line:
                 wordSurface = self.textFont.render(word, True, self.color)
                 wordWidth, wordHeight = wordSurface.get_size()
-                if x + wordWidth >= self.rect.width:
-                    x = self.rect.x
+                if (x - offset + wordWidth) >= self.rect.width:
+                    x = self.rect.x + 5
                     y += wordHeight
                 screen.blit(wordSurface, (x, y))
                 x += wordWidth
-            x = self.rect.x
+            x = self.rect.x + 5
             y += wordHeight
             
     def showHideCursor(self):
         try:
             if self.active:
                 if not self.cursor:
-                    self.text += '|'
-                    self.cursor = True
+                    textWidth = self.textFont.size(' ')[0]
+                    if not (len(self.textLines[-1]) + 1) * textWidth > self.rect.width:
+                        self.text += '|'
+                        self.cursor = True
                 else:
                     self.text = self.text[:-1] if self.text[-1] == '|' else self.text
                     self.cursor = False
@@ -143,10 +145,14 @@ class InputBox:
                     self.txt_surface = self.textFont.render(self.text, True, self.color)
                 else:
                     if self.allowWrap:
-                        textWidth = self.textFont.size(' ')[0]
+                        textWidth, textHeight = self.textFont.size(' ')
                         maxChars = floor(self.rect.width / textWidth) - 1
-                        textLines = ' ' if len(self.text) == 0 else textwrap.wrap(self.text, maxChars)
-                        self.textWrap(textLines)
+                        self.textLines = ' ' if len(self.text) == 0 else textwrap.wrap(self.text, maxChars)
+                        if (textHeight * len(self.textLines)) >= self.rect.height:
+                            self.full = True
+                        else:
+                            self.full = False
+                        self.textWrap()
                     else:
                         self.txt_surface = self.textFont.render(self.text, True, self.color)
                     

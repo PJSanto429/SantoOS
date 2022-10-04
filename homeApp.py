@@ -13,7 +13,7 @@ from user import *
 from variables import *
 
 #*------------------ loading ------------------------------
-mainLoader = Loading(50, 300, 500, 50, 10, loadedColor=LIGHTTEAL, parentApp='homeLoading', loadingTitle='System Starting...')
+mainLoader = Loading(50, 300, 500, 50, 10, loadedColor=GREEN, parentApp='homeLoading', loadingTitle='System Starting...')
 startSystemButton = Button(0, 0, 300, 100, BLACK, 'Start System', textColor=WHITE, parentApp='homeLoading')
 startSystemButton.rect.center = ((screen_width / 2), (screen_height / 2))
 def startSystemButtonFunct():
@@ -28,8 +28,6 @@ mainLoader.doneLoadingFunct = mainLoaderDoneFunct
 
 #*------------------ not logged in stuff -------------------
 topHeader = InputBox(0, 10, 50, 0, 'SantoOS', 'extraLargeMagneto', False, parentApp='homeNotLoggedIn', inactiveColor=BLACK, center=True)
-#topHeader.rect.width = topHeader.textFont.size(topHeader.text)[0]
-#topHeader.rect.centerx = (screen_width / 2)
 
 powerOffButton = Button(0, 0, 120, 120, parentApp='homeNotLoggedIn', picture='assets/powerOffLogo.png')
 powerOffButton.rect.right = screen_width

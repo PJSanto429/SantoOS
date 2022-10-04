@@ -25,11 +25,11 @@ def newNoteFunct():
     allApps['notesEdit'] = True
 newNoteButton.onClickFunction = newNoteFunct
 
-openViewModal = Modal(0, 0, 400, 200, 'Choose Note', WHITE, backgroundColor=MAROON, parentApp='notesMain')
+openViewModal = Modal(0, 0, 300, 200, 'Choose Note', WHITE, backgroundColor=MAROON, parentApp='notesMain')
 openViewModal.rect.center = ((screen_width / 2), (screen_height / 2))
 openViewRect = openViewModal.rect
 
-chooseNoteInput = InputBox((openViewRect.x), (openViewRect.top + openViewModal.textRect.height + 15), (openViewRect.width), 50, 'note title', activeColor=GREEN, allowWrap=True, parentApp='notesMain', parent=openViewModal)
+chooseNoteInput = InputBox((openViewRect.x), (openViewRect.top + openViewModal.textRect.height + 15), (openViewRect.width), 100, 'note title', activeColor=GREEN, allowWrap=True, parentApp='notesMain', parent=openViewModal)
 
 cancelChooseNoteButton = Button(openViewRect.x, 0, (openViewRect.width / 2), 50, RED, 'Cancel', parent=openViewModal, parentApp='notesMain')
 def cancelChooseNoteFunct():
@@ -38,11 +38,14 @@ cancelChooseNoteButton.onClickFunction = cancelChooseNoteFunct
 cancelChooseRect = cancelChooseNoteButton.rect
 
 submitChooseNoteButton = Button(cancelChooseRect.right, 0, cancelChooseRect.width, cancelChooseRect.height, GREEN, 'Open', parent=openViewModal, parentApp='notesMain')
+def submitChooseNoteFunct():
+    print('choose note input ==>', chooseNoteInput.text)
+submitChooseNoteButton.onClickFunction = submitChooseNoteFunct
 submitChooseNoteButton.rect.bottom = cancelChooseNoteButton.rect.bottom = openViewRect.bottom
 
 openViewButton = Button(0, 0, (screen_width), (screen_height/6), color=BLUE, text='View Note', parentApp='notesMain')
 def openViewButtonFunct():
-    openViewModal.active = True
+    openViewModal.active = True if not openViewModal.active else False
     
 openViewButton.onClickFunction = openViewButtonFunct
 openViewButton.rect.centery = screen_height / 2

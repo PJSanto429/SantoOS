@@ -96,6 +96,9 @@ class User:
             self.allNotes = myNotes
         else:
             return myNotes
+        
+    def findNote(noteTitle):
+        pass
                 
     def getNoteInfo(self):
         if self.currentNote:

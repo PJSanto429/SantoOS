@@ -23,10 +23,10 @@ if __name__ == '__main__':
     pg.font.init()
     
     #*--------------------------------------
-    def check_click(mouse):
+    def checkClick(mouse):
         for button in Button.instances:
             if allApps[button.parentApp]:
-                button.check_click(mouse)
+                button.check_click(mouse, Modal.instances)
         #add other class instances here
             
     def drawEverything(screen):
@@ -94,9 +94,9 @@ if __name__ == '__main__':
             if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
                 handleQuit()
             if event.type == pg.MOUSEBUTTONDOWN:
-                check_click(mouse)
-            #if keys[pg.K_LCTRL] and keys[pg.K_F1]: #need to add a delay
-            #    crt.active = True if not crt.active else False
+                checkClick(mouse)
+            if event.type == pg.KEYDOWN and keys[pg.K_LCTRL] and keys[pg.K_F1]:
+                crt.activateDeactivate()
             #!----timer events----
             if event.type == cowGifTimer:
                 currentCowImage += 1 if currentCowImage < 20 else -20
