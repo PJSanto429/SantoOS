@@ -1,3 +1,4 @@
+from locale import currency
 import pygame as pg
 
 #!-----local imports-----
@@ -21,6 +22,7 @@ clock2.rect.bottom = (screen_height - (clock2TextSize[1] + 20))
 
 newNoteButton = Button(0, (headerTextSize[1] + 35), (screen_width), (screen_height/6), color = GREEN, text='New Note', parentApp='notesMain')
 def newNoteFunct():
+    currentUser.currentNote = None
     allApps['notesMain'] = False
     allApps['notesEdit'] = True
 newNoteButton.onClickFunction = newNoteFunct
@@ -46,7 +48,6 @@ submitChooseNoteButton.rect.bottom = cancelChooseNoteButton.rect.bottom = openVi
 openViewButton = Button(0, 0, (screen_width), (screen_height/6), color=BLUE, text='View Note', parentApp='notesMain')
 def openViewButtonFunct():
     openViewModal.active = True if not openViewModal.active else False
-    
 openViewButton.onClickFunction = openViewButtonFunct
 openViewButton.rect.centery = screen_height / 2
 
@@ -65,9 +66,12 @@ goToNotesHomeButton.onClickFunction = goToNotesHomeButtonFunct
 
 #*------------------ edit/create note ----------
 noteData = currentUser.getNoteInfo()
-notesTitleInput = InputBox(25, 5, (screen_width - 50), 50, noteData[0], parentApp='notesEdit', )
+notesTitleInput = InputBox(25, 5, (screen_width - 50), 50, noteData[0], parentApp='notesEdit')
 
 mainNotesInput = InputBox(25, (notesTitleInput.rect.bottom + 15), (screen_width - 50), 400, noteData[1], parentApp='notesEdit', allowWrap=True)
+def notesInputChange():
+    currentUser.currentNoteSaved = False
+notesTitleInput.onChange = mainNotesInput.onChange = notesInputChange
 
 notesDoneButton = Button(0, (mainNotesInput.rect.bottom + 5), (screen_width/2), (screen_height/8), color = BLUE, text = 'Done', parentApp='notesEdit')
 doneRect = notesDoneButton.rect
@@ -79,14 +83,17 @@ def notesDoneButtonFunct():
         allApps['notesMain'] = True
 notesDoneButton.onClickFunction = notesDoneButtonFunct
 
+notesEditStatusbar = InputBox(15, (mainNotesInput.rect.bottom + 10), (screen_width - 30), 0, '', inactiveColor=WHITE, changeable=False, parentApp='notesEdit')
+
 saveNoteButton = Button(doneRect.right, (mainNotesInput.rect.bottom + 5), (screen_width/2), (screen_height/8), color = GREEN, text = 'Save Note', parentApp='notesEdit')
 def saveNoteButtonFunct():
     #save the note here
-    #print('hit save button')
     success = currentUser.createSaveHandler(notesTitleInput.text, mainNotesInput.text)
-    print(success)
-    #currentUser.currentNote = None
-    #print('save button')
+    currentUser.currentNoteSaved = success
+    if success:
+        notesEditStatusbar.text = 'note saved successfully'
+    else:
+        notesEditStatusbar.text = 'note save unsuccessful'
 saveNoteButton.onClickFunction = saveNoteButtonFunct
 
 notesDoneButton.rect.bottom = saveNoteButton.rect.bottom = screen_height
@@ -100,9 +107,27 @@ askRect = askSaveNoteModal.rect
 yesSaveNoteButton = Button((askRect.left), (askRect.bottom - 50), (askRect.width / 2), 50, GREEN, 'Yes', parent=askSaveNoteModal, parentApp='notesEdit')
 yesSaveRect = yesSaveNoteButton.rect
 def yesSaveNoteFunct():
-    currentUser.createSaveHandler(notesTitleInput.text, mainNotesInput.text)
+    success = currentUser.createSaveHandler(notesTitleInput.text, mainNotesInput.text)
+    if success:
+        mainNotesInput.text = notesTitleInput.text = ''
+        askSaveNoteModal.active = False
+        currentUser.currentNote = None
+        allApps['notesMain'] = True
+        allApps['notesEdit'] = False
+        notesEditStatusbar.text = ''
+    else:
+        askSaveNoteModal.active = False
+        notesEditStatusbar.text = 'Failed to save'
 yesSaveNoteButton.onClickFunction = yesSaveNoteFunct
 
 dontSaveNoteButton = Button((yesSaveRect.right), (yesSaveRect.y), (yesSaveRect.width), (yesSaveRect.height), RED, 'No', parent=askSaveNoteModal, parentApp='notesEdit')
-
-notesEditStatusbar = InputBox(15, (mainNotesInput.rect.bottom + 10), (screen_width - 30), 0, '', inactiveColor=WHITE, changeable=False, parentApp='notesEdit')
+def dontSaveNoteFunct():
+    mainNotesInput.text = 'Body'
+    notesTitleInput.text = 'Title'
+    notesEditStatusbar.text = ''
+    askSaveNoteModal.active = False
+    currentUser.currentNote = None
+    currentUser.currentNoteSaved = True
+    allApps['notesMain'] = True
+    allApps['notesEdit'] = False
+dontSaveNoteButton.onClickFunction = dontSaveNoteFunct

@@ -88,17 +88,33 @@ class User:
         allApps['homeNotLoggedIn'] = True
         allApps['homeLoggedIn'] = False
         
-    def getCreatedNotes(self, setNotes = True) -> list:
-        with open('allNotes/allUsers.json') as infile:
+    def handlePermissions(self, noteId, noteData):
+        with open(f'allNotes/allUsers.json') as infile:
             inData = json.load(infile)
         myNotes = inData[self.userName][0]['createdNotes']
-        if setNotes:
+        sharedNotes = inData[self.userName][0]['sharedNotes']
+        if noteId in myNotes + sharedNotes:
+            return noteData
+        
+    def getCreatedNotes(self, setNotes = True) -> list:
+        with open('allNotes/allUsers.json', 'r') as infile:
+            inData = json.load(infile)
+        myNotes = inData[self.userName][0]['createdNotes']
+        if setNotes: #to set the gotten user notes as self.notes
             self.allNotes = myNotes
         else:
             return myNotes
         
-    def findNote(noteTitle):
-        pass
+    def findNote(self, noteTitle):
+        allNotes = self.getCreatedNotes(False)
+        print(allNotes)
+        print('--------------------------------')
+        for note in allNotes:
+            with open(f'allNotes/{note}.json', 'r') as infile:
+                inData = json.load(infile)
+                if noteTitle == inData['title']:
+                    return inData
+        return False
                 
     def getNoteInfo(self):
         if self.currentNote:
@@ -162,6 +178,7 @@ class User:
 
 # current user
 currentUser = User()
+
 
 #*------------------ login modal -------------------------
 loginModal = Modal(100, 100, 400, 400, 'log in', parentApp='homeNotLoggedIn')

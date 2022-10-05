@@ -51,6 +51,9 @@ if __name__ == '__main__':
         userNameHeader.rect.width = userNameHeader.textFont.size(userNameHeader.text)[0]
         userNameHeader.rect.centerx = (screen_width / 2)
         
+        if not currentUser.currentNoteSaved:
+            notesEditStatusbar.text = 'ready to save'
+        
         #!login modal
         if not loginModal.active and not newUserModal.active:
             loginStatusBox.text = ''

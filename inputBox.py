@@ -6,7 +6,6 @@ from math import floor
 from errorHandler import handleError
 from randomFuncts import *
 from variables import *
-#from modal import Modal
 
 pg.init()
 
@@ -50,6 +49,7 @@ class InputBox:
         self.edited = False
         self.cursor = False
         self.full = False
+        self.onChange = False
         self.parentApp = parentApp
         self.parent = parent #Modal
         self.center = center
@@ -67,6 +67,9 @@ class InputBox:
         else:
             parentActive = True
         return parentActive
+    
+    def onChange(self):
+        pass
     
     def handle_event(self, event, keys): #keys not being used yet
         try:
@@ -98,6 +101,7 @@ class InputBox:
                             self.text = self.text
                         else:
                             self.text += event.unicode
+                    self.onChange()
         except:
             pass
                     
@@ -127,7 +131,10 @@ class InputBox:
             if self.active:
                 if not self.cursor:
                     textWidth = self.textFont.size(' ')[0]
-                    if not (len(self.textLines[-1]) + 1) * textWidth > self.rect.width:
+                    if not self.allowWrap:
+                        self.text += '|'
+                        self.cursor = True
+                    if (not (len(self.textLines[-1]) + 1) * textWidth > self.rect.width) and self.allowWrap:
                         self.text += '|'
                         self.cursor = True
                 else:

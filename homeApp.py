@@ -1,5 +1,4 @@
 import pygame as pg #?not needed?
-from glob import glob
 
 #!-----local imports-----
 from errorHandler import handleError

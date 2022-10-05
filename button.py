@@ -7,8 +7,6 @@ from randomFuncts import *
 
 pg.init()
 
-def buttonFunct():
-    print('hit button')
 class Button(pg.sprite.Sprite):
     instances = []
     def __init__(
@@ -30,7 +28,6 @@ class Button(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface([width, height])
         self.rect = self.image.get_rect(topleft = (x, y))
-        self.onClickFunction = buttonFunct
         self.color = color
         self.picture = picture
         if self.picture:
@@ -55,6 +52,9 @@ class Button(pg.sprite.Sprite):
         self.active = False
         self.parentApp = parentApp
         self.parent = parent
+        
+    def onClickFunction(self):
+        print('hit button')
         
     def check_click(self, mouse, modals):
         modalClick = False
