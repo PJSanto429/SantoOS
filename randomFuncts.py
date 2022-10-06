@@ -7,6 +7,11 @@ def handleQuit():
     pg.quit()
     sys.exit()
     
+def checkMouseClick(event):
+    if event.type == pg.MOUSEBUTTONDOWN:
+        return pg.mouse.get_pressed()
+    return (False, False, False)
+    
 def currentTime(showDate = True, showTime = True): #this gets the current time
     time1 = localtime()
 

@@ -57,16 +57,17 @@ class Button(pg.sprite.Sprite):
         print('hit button')
         
     def check_click(self, mouse, modals):
+        parentOpen = True
+        if self.parent:
+            if not self.parent.active:
+                parentOpen = False
         modalClick = False
         for modal in modals:
             if modal.active and modal.rect.collidepoint(mouse) and modal != self.parent:
                 modalClick = True
-        if self.rect.collidepoint(mouse) and not modalClick:
-            if not self.disabled:
-                if self.parent:
-                    if self.parent.active:
-                        self.onClickFunction()
-                else:
+        if self.rect.collidepoint(mouse):
+            if parentOpen and not modalClick:
+                if not self.disabled:
                     self.onClickFunction()
     
     def draw_button(self, screen):

@@ -11,10 +11,10 @@ from inputBox import InputBox
 from modal import Modal
 from loading import Loading
 from user import currentUser
-from graphics import *
 from clock import Clock
+from graphics import *
 from variables import *
-
+#?------- apps --------------------
 from notesApp import *
 from homeApp import *
 
@@ -27,7 +27,6 @@ if __name__ == '__main__':
         for button in Button.instances:
             if allApps[button.parentApp]:
                 button.check_click(mouse, Modal.instances)
-        #add other class instances here
             
     def drawEverything(screen):
         for button in Button.instances:
@@ -96,7 +95,7 @@ if __name__ == '__main__':
         for event in allEvents:
             if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
                 handleQuit()
-            if event.type == pg.MOUSEBUTTONDOWN:
+            if checkMouseClick(event)[0]:
                 checkClick(mouse)
             if event.type == pg.KEYDOWN and keys[pg.K_LCTRL] and keys[pg.K_F1]:
                 crt.activateDeactivate()
@@ -108,7 +107,7 @@ if __name__ == '__main__':
             if event.type == cursorTimer:
                 for box in InputBox.instances:
                     box.showHideCursor()
-            
+            #!input box stuff
             handleEventListener(event, keys)
 
         screen.fill(TEAL)

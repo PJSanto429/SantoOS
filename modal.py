@@ -12,6 +12,7 @@ pg.init()
 
 class Modal:
     instances = []
+    topModal = False
     def __init__(
         self,
         x: int,
@@ -55,6 +56,7 @@ class Modal:
         
     def update(self, screen):
         if self.active:
+            self.__class__.topModal = self
             self.textImage = self.textFont.render(self.title, True, self.textColor)
             self.textRect = self.textImage.get_rect(top = self.rect.top + 15, left = self.rect.left + 15)
             screen.blit(self.image, self.rect)

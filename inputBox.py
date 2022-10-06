@@ -74,7 +74,7 @@ class InputBox:
     def handle_event(self, event, keys): #keys not being used yet
         try:
             maxChars = floor(self.rect.width / (self.textFont.size(' ')[0]))
-            if event.type == pg.MOUSEBUTTONDOWN:
+            if checkMouseClick(event)[0]:
                 if self.rect.collidepoint(event.pos):
                     self.active = not self.active if self.changable else self.active
                     if len(self.text) > 0:
@@ -85,6 +85,10 @@ class InputBox:
                     if len(self.text) > 0:
                         self.text = self.text[:-1] if self.text[-1] == '|' else self.text
                 self.color = self.activeColor if self.active else self.inactiveColor
+            #if pg.mouse.get_pressed()[2]:
+            #    if self.rect.collidepoint(event.pos):
+            #        self.active = False
+            #    self.color = self.activeColor if self.active else self.inactiveColor
             
             if event.type == pg.KEYDOWN:
                 if self.active and self.changable:

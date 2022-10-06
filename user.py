@@ -107,13 +107,11 @@ class User:
         
     def findNote(self, noteTitle):
         allNotes = self.getCreatedNotes(False)
-        print(allNotes)
-        print('--------------------------------')
         for note in allNotes:
             with open(f'allNotes/{note}.json', 'r') as infile:
                 inData = json.load(infile)
-                if noteTitle == inData['title']:
-                    return inData
+                if noteTitle == inData['title'] and inData['archived'] == 'false':
+                    return note, inData
         return False
                 
     def getNoteInfo(self):
@@ -159,9 +157,20 @@ class User:
             return True
         except:
             return False
-        #with open('allNotes/allUsers.json', 'r') as infile:
-        #    inData = json.load(infile)
         
+    def deleteNote(self):
+        try:
+            if self.currentNote:
+                with open(f'allNotes/{self.currentNote}.json', 'r') as infile:
+                    inData = json.load(infile)
+                inData["archived"] = "true"
+                with open(f'allNotes/{self.currentNote}.json', 'w') as outfile:
+                    json.dump(inData, outfile)
+                return True, 'noteDeleted'
+            return True, 'noNote'
+        except:
+            return False, 'error'
+    
     def saveNote(self, newNoteTitle, newNoteBody):
         try:
             with open(f'allNotes/{self.currentNote}.json', 'r') as infile:
