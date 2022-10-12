@@ -10,13 +10,15 @@ from button import Button
 from inputBox import InputBox
 from modal import Modal
 from loading import Loading
+from toggle import Toggle
 from user import currentUser
 from clock import Clock
 from graphics import *
 from variables import *
 #?------- apps --------------------
-from notesApp import *
-from homeApp import *
+from APPnotes import *
+from APPhome import *
+from APPcalculator import *
 
 if __name__ == '__main__':
     pg.init()
@@ -27,6 +29,10 @@ if __name__ == '__main__':
         for button in Button.instances:
             if allApps[button.parentApp]:
                 button.check_click(mouse, Modal.instances)
+                
+        for toggle in Toggle.instances:
+            if allApps[toggle.parentApp]:
+                toggle.checkClick(mouse, Modal.instances)
             
     def drawEverything(screen):
         for button in Button.instances:
@@ -43,13 +49,24 @@ if __name__ == '__main__':
                 loader.update(screen)   
 
         for modal in Modal.instances:
-            modal.update(screen)
+            if allApps[modal.parentApp]:
+                modal.update(screen)
+            else:
+                modal.active = False
+                
+        for toggle in Toggle.instances:
+            if not toggle.parent and allApps[toggle.parentApp]:
+                toggle.draw(screen)
 
         #! custom button/input box stuff that will be changed
         userNameHeader.text = currentUser.userName
         userNameHeader.rect.width = userNameHeader.textFont.size(userNameHeader.text)[0]
         userNameHeader.rect.centerx = (screen_width / 2)
         
+        print(openCalculatorButton.rect.collidepoint(mouse))
+        
+        testInput.text = 'Active' if testToggle.on else 'Not Active'
+
         if not currentUser.currentNoteSaved:
             notesEditStatusbar.text = 'ready to save'
         
@@ -84,16 +101,20 @@ if __name__ == '__main__':
     pg.time.set_timer(cursorTimer, 500) #* 500 miliseconds
     
     #allApps['homeLoading'] = False
-    #allApps['notesMain'] = True
+    #allApps['calculatorMain'] = True
+    ##allApps['none'] = True
     #currentUser.loggedIn = True
-    #currentUser.userName = 'pjsanto'
+    #currentUser.userName = 'pjsanto' 
+    
+    testToggle = Toggle(250, 250, 100, 50)
+    testInput = InputBox(0, 100, 600, 50, '', changeable=False, inactiveColor=BLACK, showRect=False, center=True)
 
     while True:
         #ticks = pg.time.get_ticks()
         allEvents = pg.event.get()
         keys = pg.key.get_pressed()
         for event in allEvents:
-            if event.type == pg.QUIT or keys[pg.K_ESCAPE]:
+            if event.type == pg.QUIT:# or keys[pg.K_ESCAPE]:
                 handleQuit()
             if checkMouseClick(event)[0]:
                 checkClick(mouse)

@@ -5,6 +5,7 @@ from variables import *
 from errorHandler import handleError
 from randomFuncts import *
 from button import Button
+from toggle import Toggle
 from inputBox import InputBox
 from loading import Loading
 
@@ -74,6 +75,10 @@ class Modal:
                 if loading.parent:
                     if loading.parent == self:
                         loading.update()
+            for toggle in Toggle.instances:
+                if toggle.parent:
+                    if toggle.parent == self:
+                        toggle.draw(screen)
             for modal in Modal.instances:
                 if modal.parent:
                     if modal.parent == self:

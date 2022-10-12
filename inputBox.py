@@ -176,5 +176,7 @@ class InputBox:
         if self.isActive():
             if not self.allowWrap:
                 screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
+                if self.center:
+                    self.centerText()
             if self.showRect:
                 pg.draw.rect(screen, self.color, self.rect, 2)

@@ -7,7 +7,7 @@ from randomFuncts import *
 
 pg.init()
 
-class Button(pg.sprite.Sprite):
+class Button():
     instances = []
     def __init__(
         self,
@@ -19,13 +19,14 @@ class Button(pg.sprite.Sprite):
         text = False,
         textColor = BLACK,
         textFont = defaultButtonFont,
+        showOutline = False,
+        outlineColor = BLACK,
         parent = False,
         parentApp = 'none',
         picture = False,
         
     ):
         self.__class__.instances.append(self)
-        pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface([width, height])
         self.rect = self.image.get_rect(topleft = (x, y))
         self.color = color
@@ -41,15 +42,18 @@ class Button(pg.sprite.Sprite):
         try:
             self.image.fill(self.color)
         except Exception as err:
-            handleError(err)
+            #handleError(err)
             self.image.fill(RED)
         self.text = text
         if self.text:
             self.textImage = self.textFont.render(self.text, True, self.textColor)
             self.textRect = self.textImage.get_rect(center = self.rect.center)
+        self.showOutline = showOutline
+        self.outlineColor = outlineColor
+        self.outLineRect = pg.Rect(x, y, width, height)
         #* other various settings
         self.disabled = False
-        self.active = False
+        #self.active = False
         self.parentApp = parentApp
         self.parent = parent
         
@@ -78,3 +82,6 @@ class Button(pg.sprite.Sprite):
             self.textImage = self.textFont.render(self.text, True, self.textColor)
             self.textRect = self.textImage.get_rect(center = self.rect.center)
             screen.blit(self.textImage, self.textRect)
+        if self.showOutline:
+            self.outLineRect = pg.Rect(self.rect)
+            pg.draw.rect(screen, self.outlineColor, self.outLineRect, 2)

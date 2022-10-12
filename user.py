@@ -55,7 +55,6 @@ class User:
         try:
             with open('allNotes/allUsers.json', 'r') as infile:
                 data = json.load(infile)
-                #print('inData type ==> ', type(data))
                 try:
                     self.userName = userName
                     if userName in data:
@@ -88,6 +87,11 @@ class User:
         allApps['homeNotLoggedIn'] = True
         allApps['homeLoggedIn'] = False
         
+    def findUser(self, username):
+        with open('allNotes/allUsers.json', 'r') as infile:
+            inData = json.load(infile)
+        return True if username in inData else False
+        
     def handlePermissions(self, noteId, noteData):
         with open(f'allNotes/allUsers.json') as infile:
             inData = json.load(infile)
@@ -105,8 +109,14 @@ class User:
         else:
             return myNotes
         
+    def getSharedNotes(self):
+        with open('allNotes/allUsers.json', 'r') as infile:
+            inData = json.load(infile)
+        sharedNotes = inData[self.userName][0]['sharedNotes']
+        return sharedNotes
+        
     def findNote(self, noteTitle):
-        allNotes = self.getCreatedNotes(False)
+        allNotes = self.getCreatedNotes(False) + self.getSharedNotes()
         for note in allNotes:
             with open(f'allNotes/{note}.json', 'r') as infile:
                 inData = json.load(infile)
@@ -137,8 +147,6 @@ class User:
             inData["noteNum"] += 1
             noteNum = str(inData["noteNum"]).zfill(4)
             inData[self.userName][0]['createdNotes'].append(noteNum)
-            #while len(noteNum) < 4:
-            #    noteNum = f'0{noteNum}'
             self.currentNote = noteNum
             noteData = {
                 "title": newNoteTitle,
@@ -161,14 +169,23 @@ class User:
     def deleteNote(self):
         try:
             if self.currentNote:
-                with open(f'allNotes/{self.currentNote}.json', 'r') as infile:
-                    inData = json.load(infile)
-                inData["archived"] = "true"
-                with open(f'allNotes/{self.currentNote}.json', 'w') as outfile:
-                    json.dump(inData, outfile)
-                return True, 'noteDeleted'
+                with open('allNotes/allUsers.json', 'r') as inUserData:
+                    inUsers = json.load(inUserData)
+                if self.currentNote in inUsers[self.userName][0]['createdNotes']:
+                    with open(f'allNotes/{self.currentNote}.json', 'r') as infile:
+                        inData = json.load(infile)
+                    inData["archived"] = "true"
+                    with open(f'allNotes/{self.currentNote}.json', 'w') as outfile:
+                        json.dump(inData, outfile)
+                    return True, 'noteDeleted'
+                if self.currentNote in inUsers[self.userName][0]['sharedNotes']:
+                    inUsers[self.userName][0]['sharedNotes'].remove(self.currentNote)
+                    with open('allNotes/allUsers.json', 'w') as outFile:
+                        json.dump(inUsers, outFile)
+                    return True, 'noteDeleted'
             return True, 'noNote'
-        except:
+        except Exception as err:
+            print(err)
             return False, 'error'
     
     def saveNote(self, newNoteTitle, newNoteBody):
@@ -184,10 +201,23 @@ class User:
         except Exception as err:
             print('error ==> ', err)
             return False
+        
+    def shareNote(self, userName):
+        try:
+            with open('allNotes/allUsers.json', 'r') as infile:
+                inData = json.load(infile)
+            if self.currentNote not in inData[userName][0]["sharedNotes"]:
+                inData[userName][0]["sharedNotes"].append(self.currentNote)
+            else:
+                return False, 'noteShared'
+            with open('allNotes/allUsers.json', 'w') as outfile:
+                json.dump(inData, outfile)
+            return True, 'success'
+        except:
+            return False, 'error'
 
 # current user
 currentUser = User()
-
 
 #*------------------ login modal -------------------------
 loginModal = Modal(100, 100, 400, 400, 'log in', parentApp='homeNotLoggedIn')

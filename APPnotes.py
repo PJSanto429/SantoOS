@@ -56,7 +56,9 @@ yesSaveRect = yesSaveNoteButton.rect
 def yesSaveNoteFunct():
     success = currentUser.createSaveHandler(notesTitleInput.text, mainNotesInput.text)
     if success:
-        mainNotesInput.text = notesTitleInput.text = ''
+        mainNotesInput.text = 'body'
+        notesTitleInput.text = 'title'
+        mainNotesInput.edited = notesTitleInput.edited = False
         askSaveNoteModal.active = False
         currentUser.currentNote = None
         allApps['notesMain'] = True
@@ -69,8 +71,9 @@ yesSaveNoteButton.onClickFunction = yesSaveNoteFunct
 
 dontSaveNoteButton = Button((yesSaveRect.right), (yesSaveRect.y), (yesSaveRect.width), (yesSaveRect.height), RED, 'No', parent=askSaveNoteModal, parentApp='notesEdit')
 def dontSaveNoteFunct():
-    mainNotesInput.text = 'Body'
-    notesTitleInput.text = 'Title'
+    mainNotesInput.text = 'body'
+    notesTitleInput.text = 'title'
+    mainNotesInput.edited = notesTitleInput.edited = False
     notesEditStatusbar.text = ''
     askSaveNoteModal.active = False
     currentUser.currentNote = None
@@ -88,6 +91,39 @@ notesMoreOptionsStatusBar = InputBox(notesMoreOptionsRect.x, (notesMoreOptionsRe
 mainDeleteNoteModal = Modal(0, 0, 350, 200, 'Delete Note?', textColor=WHITE, backgroundColor=DARKRED, parentApp='notesEdit')
 mainDeleteNoteRect = mainDeleteNoteModal.rect
 mainDeleteNoteModal.rect.center = (screen_width / 2, screen_height / 2)
+
+shareNoteModal = Modal(0, 0, 350, 300, 'Share Note', backgroundColor=PINK, parentApp='notesEdit')
+shareNoteRect = shareNoteModal.rect
+shareNoteModal.rect.center = (screen_width / 2, screen_height / 2)
+
+shareNoteInput = InputBox(shareNoteRect.left, (shareNoteRect.top + 65), shareNoteRect.width, 100, 'username', allowWrap=True, parent=shareNoteModal, parentApp='notesEdit')
+
+shareNoteStatusBar = InputBox(shareNoteRect.left, (shareNoteInput.rect.bottom + 25), shareNoteRect.width, 50, changeable=False, allowWrap=True, inactiveColor=BLACK, showRect=False, parent=shareNoteModal, parentApp='notesEdit')
+
+cancelShareNoteButton = Button(shareNoteRect.left, (shareNoteRect.bottom - 50), (shareNoteRect.width / 2), 50, RED, 'Cancel', parent=shareNoteModal, parentApp='notesEdit')
+cancelShareNoteRect = cancelShareNoteButton.rect
+def cancelShareNoteFunct():
+    shareNoteInput.text = 'username'
+    shareNoteStatusBar.text = ''
+    shareNoteModal.active = shareNoteInput.edited = False
+    notesMoreOptionsModal.active = True
+cancelShareNoteButton.onClickFunction = cancelShareNoteFunct
+
+submitShareNoteButton = Button(cancelShareNoteRect.right, cancelShareNoteRect.y, cancelShareNoteRect.width, cancelShareNoteRect.height, GREEN, 'Share', parent=shareNoteModal, parentApp='notesEdit')
+def submitShareNoteFunct():
+    userExists = currentUser.findUser(shareNoteInput.text)
+    if userExists:
+        success, message = currentUser.shareNote(shareNoteInput.text)
+        if success:
+            shareNoteStatusBar.text = 'note shared successfully'
+        else:
+            if message == 'error':
+                shareNoteStatusBar.text = 'error sharing note'
+            if message == 'noteShared':
+                shareNoteStatusBar.text = 'already shared'
+    else:
+        shareNoteStatusBar.text = 'user not found'
+submitShareNoteButton.onClickFunction = submitShareNoteFunct
 
 confirmDeleteNoteButton = Button(mainDeleteNoteRect.x, (mainDeleteNoteRect.bottom - 50), (mainDeleteNoteRect.width / 2), 50, RED, 'Confirm', parent=mainDeleteNoteModal, parentApp='notesEdit')
 confirmDeleteNoteRect = confirmDeleteNoteButton.rect
@@ -115,14 +151,20 @@ notesMoreOptionButton = Button(saveNoteRect.right, saveNoteRect.y, saveNoteRect.
 def notesMoreOptionFunct():
     mainDeleteNoteModal.active = False
     notesMoreOptionsModal.active = True if notesMoreOptionsModal.active == False else False
-    
 notesMoreOptionButton.onClickFunction = notesMoreOptionFunct
 
 mainDeleteNoteButton = Button(notesMoreOptionsRect.left, (notesMoreOptionsRect.top + 65), (notesMoreOptionsRect.width / 2), 75, RED, 'Delete Note', parent=notesMoreOptionsModal, parentApp='notesEdit')
+mainDeleteNoteRect = mainDeleteNoteButton.rect
 def mainDeleteNoteFunct():
     notesMoreOptionsModal.active = False
     mainDeleteNoteModal.active = True if mainDeleteNoteModal.active == False else False
 mainDeleteNoteButton.onClickFunction = mainDeleteNoteFunct
+
+openShareNoteButton = Button(mainDeleteNoteRect.right, mainDeleteNoteRect.y, mainDeleteNoteRect.width, mainDeleteNoteRect.height, PINK, 'Share', parent=notesMoreOptionsModal, parentApp='notesEdit')
+def openShareNoteFunct():
+    notesMoreOptionsModal.active = False
+    shareNoteModal.active = True if not shareNoteModal.active else False
+openShareNoteButton.onClickFunction = openShareNoteFunct
 
 #*------------------ notes main --------
 notesMainHeader = InputBox(0, 15, 50, 0, 'Notes', textFont='extraLargeConsolas', changeable=False, inactiveColor=BLACK, parentApp='notesMain', center=True)
@@ -149,6 +191,8 @@ chooseNoteInput = InputBox((openViewRect.x), (openViewRect.top + openViewModal.t
 cancelChooseNoteButton = Button(openViewRect.x, 0, (openViewRect.width / 2), 50, RED, 'Cancel', parent=openViewModal, parentApp='notesMain')
 def cancelChooseNoteFunct():
     openViewModal.active = False
+    chooseNoteInput.text = 'Choose Note'
+    chooseNoteInput.edited = chooseNoteInput.active = False
 cancelChooseNoteButton.onClickFunction = cancelChooseNoteFunct
 cancelChooseRect = cancelChooseNoteButton.rect
 
@@ -159,7 +203,7 @@ def submitChooseNoteFunct():
     if foundNote:
         chooseNoteInput.text = 'Choose Note'
         currentUser.currentNoteSaved = True
-        openViewModal.active = False
+        chooseNoteInput.edited = openViewModal.active = False
         currentUser.currentNote = foundNote[0]
         notesTitleInput.text = foundNote[1]['title']
         mainNotesInput.text = foundNote[1]['body']
@@ -169,7 +213,7 @@ def submitChooseNoteFunct():
     else:
         chooseNoteInput.text = 'note not found'
         chooseNoteInput.edited = chooseNoteInput.active = False
-    
+
 submitChooseNoteButton.onClickFunction = submitChooseNoteFunct
 submitChooseNoteButton.rect.bottom = cancelChooseNoteButton.rect.bottom = openViewRect.bottom
 

@@ -14,6 +14,8 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+PINK = (255, 122, 146)
+ORANGE = (255,165,0)
 
 RED = (255, 0, 0)
 DARKRED = (128, 0, 0)
@@ -139,9 +141,9 @@ allApps = {
     "notesMain": False,
     "notesEdit": False,
     #!----calculator ----
-    "calculatorMain": False,
+    "calculatorMain": False, #not made yet
     #!----bomb game----
-    "bombGameMain": False,
+    "bombGameMain": False, #not made yet
 }
 
 defaultButtonFont = allFonts['largeConsolas']
