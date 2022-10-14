@@ -149,3 +149,5 @@ allApps = {
 defaultButtonFont = allFonts['largeConsolas']
 defaultTextInputFont = allFonts['largeConsolas']
 defaultClockFont = allFonts['largeConsolas']
+defaultLoaderFont = allFonts['largeConsolas']
+defaultToggleFont = allFonts['mediumConsolas']

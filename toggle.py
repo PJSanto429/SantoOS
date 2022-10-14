@@ -13,6 +13,10 @@ class Toggle:
         onColor = GREEN,
         offColor = LIGHTGREY,
         bgColor = DARKGREY,
+        text = False,
+        textLocation = 'top',
+        textColor = BLACK,
+        textFont = defaultToggleFont,
         parent = False,
         parentApp = 'none',
     ):
@@ -23,6 +27,16 @@ class Toggle:
         self.onColor = onColor
         self.offColor = offColor
         self.bgColor = bgColor
+        
+        self.text = text
+        if self.text:
+            self.textColor = textColor
+            self.textFont = textFont
+            allLocations = ['top', 'bottom', 'left', 'right']
+            textLocation = textLocation.lower()
+            self.textLocation = textLocation if textLocation in allLocations else 'top'
+            self.textImage = self.textFont.render(self.text, True, self.textColor)
+            self.getTextLocation()
         
         self.parent = parent
         self.parentApp = parentApp
@@ -38,6 +52,16 @@ class Toggle:
         self.onImage.fill(self.onColor)
         self.offImage.fill(self.offColor)
         self.on = False
+        
+    def getTextLocation(self):
+        if self.textLocation == 'top':
+            self.textRect = self.textImage.get_rect(centerx = self.rect.centerx, bottom = self.rect.top - 8)
+        if self.textLocation == 'bottom':
+            self.textRect = self.textImage.get_rect(centerx = self.rect.centerx, top = self.rect.bottom + 10)
+        if self.textLocation == 'left':
+            self.textRect = self.textImage.get_rect(centery = self.rect.centery, right = self.rect.left - 10)
+        if self.textLocation == 'right':
+            self.textRect = self.textImage.get_rect(centery = self.rect.centery, left = self.rect.right + 10)
         
     def onChangeEvent(self):
         if self.on:
@@ -70,3 +94,7 @@ class Toggle:
             screen.blit(self.onImage, self.onRect)
         else:
             screen.blit(self.offImage, self.offRect)
+        if self.text:
+            self.textImage = self.textFont.render(self.text, True, self.textColor)
+            self.getTextLocation()
+            screen.blit(self.textImage, self.textRect)

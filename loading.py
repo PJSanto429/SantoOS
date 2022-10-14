@@ -18,7 +18,7 @@ class Loading():
         backgroundColor = VERYDARKGREY,
         loadedColor = GREEN,
         textColor = BLACK,
-        textFont = defaultClockFont,
+        textFont = defaultLoaderFont,
         parentApp = 'none',
         parent = False
     ):
@@ -57,6 +57,11 @@ class Loading():
         self.activationTime = round(pg.time.get_ticks()/1000)
         self.active = True
     
+    def deactivate(self):
+        self.active = False
+        self.activationTime = round(pg.time.get_ticks()/1000)
+        self.setTime = 0
+    
     def loadingDone(self):
         if not self.doneloadingFunctDone:
             self.doneloadingFunctDone = True
@@ -81,3 +86,9 @@ class Loading():
             screen.blit(self.image, self.rect)
             screen.blit(self.loadedImage, self.loadedRect)
             screen.blit(self.textImage, self.textRect)
+        else:
+            try:
+                self.loadedImage = pg.Surface([(self.setTime * self.dist), self.height - self.offset])
+            except:
+                pass
+            self.loadedRect = self.loadedImage.get_rect(topleft = (self.x + (self.offset / 2), self.y + self.offset / 2))

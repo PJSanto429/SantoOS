@@ -63,10 +63,6 @@ if __name__ == '__main__':
         userNameHeader.rect.width = userNameHeader.textFont.size(userNameHeader.text)[0]
         userNameHeader.rect.centerx = (screen_width / 2)
         
-        print(openCalculatorButton.rect.collidepoint(mouse))
-        
-        testInput.text = 'Active' if testToggle.on else 'Not Active'
-
         if not currentUser.currentNoteSaved:
             notesEditStatusbar.text = 'ready to save'
         
@@ -100,14 +96,17 @@ if __name__ == '__main__':
     cursorTimer = pg.USEREVENT + 2
     pg.time.set_timer(cursorTimer, 500) #* 500 miliseconds
     
-    #allApps['homeLoading'] = False
-    #allApps['calculatorMain'] = True
-    ##allApps['none'] = True
-    #currentUser.loggedIn = True
-    #currentUser.userName = 'pjsanto' 
+    # allApps['homeLoading'] = False
+    # allApps['calculatorMain'] = True
+    # allApps['none'] = True
+    # currentUser.loggedIn = True
+    # currentUser.userName = 'pjsanto' 
     
-    testToggle = Toggle(250, 250, 100, 50)
-    testInput = InputBox(0, 100, 600, 50, '', changeable=False, inactiveColor=BLACK, showRect=False, center=True)
+    testToggle = Toggle(250, 250, 100, 50, text='test toggle')
+    def testToggleFunct():
+        testInput.text = 'Active' if testToggle.on else 'Not Active'
+    testToggle.onChangeEvent = testToggleFunct
+    testInput = InputBox(0, 100, 600, 50, 'Not Active', changeable=False, inactiveColor=BLACK, showRect=False, center=True)
 
     while True:
         #ticks = pg.time.get_ticks()

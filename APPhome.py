@@ -5,6 +5,7 @@ from errorHandler import handleError
 from button import Button
 from inputBox import InputBox
 from modal import Modal
+from toggle import Toggle
 from clock import Clock
 from loading import Loading
 from randomFuncts import handleQuit
@@ -13,12 +14,11 @@ from variables import *
 
 #*------------------ loading ------------------------------
 mainLoader = Loading(50, 300, 500, 50, 10, loadedColor=GREEN, parentApp='homeLoading', loadingTitle='System Starting...')
-startSystemButton = Button(0, 0, 300, 100, BLACK, 'Start System', textColor=WHITE, parentApp='homeLoading')
-startSystemButton.rect.center = ((screen_width / 2), (screen_height / 2))
-def startSystemButtonFunct():
-    startSystemButton.parentApp = 'none'
-    mainLoader.activate()
-startSystemButton.onClickFunction = startSystemButtonFunct
+mainStartToggle = Toggle(225, 400, parentApp='homeLoading', text='start system', textLocation='bottom')
+def mainStartFunct():
+    mainStartToggle.text = 'Cancel' if mainStartToggle.on else 'Start System'
+    mainLoader.activate() if not mainLoader.active else mainLoader.deactivate()
+mainStartToggle.onChangeEvent = mainStartFunct
 
 def mainLoaderDoneFunct():
     allApps['homeLoading'] = False
