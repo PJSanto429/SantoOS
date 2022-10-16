@@ -24,6 +24,7 @@ class Button():
         parent = False,
         parentApp = 'none',
         picture = False,
+        group = 'other',
         
     ):
         self.__class__.instances.append(self)
@@ -53,13 +54,31 @@ class Button():
         self.outLineRect = pg.Rect(x, y, width, height)
         #* other various settings
         self.disabled = False
-        #self.active = False
+        self.group = group
         self.parentApp = parentApp
         self.parent = parent
         
     def onClickFunction(self):
-        print('hit button')
-        
+        if self.group == 'other':
+            print('hit button')
+        else:
+            if self.group[0] == 'calc':
+                self.calculatorStuff()
+                    
+    def calculatorStuff(self):
+        if self.group[1].eraseAll and self.text not in '-+/*=':
+            self.group[1].eraseAll = False
+            self.group[1].text = ''
+        if self.text in '-+/*':
+            if self.group[1].text != 'Enter Equation':
+                self.group[1].eraseAll = False
+                if len(self.group[1].text) > 0:
+                    if self.group[1].text[-1] in '-+/*':
+                        self.group[1].text = self.group[1].text[:-1]
+                    self.group[1].text += self.text
+        else:
+            self.group[1].text += self.text
+
     def check_click(self, mouse, modals):
         parentOpen = True
         if self.parent:

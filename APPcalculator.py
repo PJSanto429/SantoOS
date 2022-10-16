@@ -13,15 +13,31 @@ from variables import *
 #*------------------ main calculator ----------------------
 
 def doMath(equation):
-    pass
+    try:
+        completeMath = False
+        for i in '/*+-':
+            if i in equation:
+                completeMath = True
+        if completeMath:
+            while equation[-1] in '/*+-':
+                funct = funct[:-1]
+            return f'{eval(equation)}'
+        return equation
+    except:
+        return 'error'
 
 calcHeader = InputBox(0, 5, screen_width, 50, 'Calculator', changeable=False, inactiveColor=BLACK, parentApp='calculatorMain', center=True, showRect=False)
 
-calcMainInput = InputBox(0, 50, screen_width, 50, 'calc main', changeable=False, inactiveColor=BLACK, parentApp='calculatorMain')
+calcMainInput = InputBox(0, 50, screen_width, 50, 'Enter Equation', changeable=False, inactiveColor=BLACK, parentApp='calculatorMain')
 calcMainInputRect = calcMainInput.rect
+calcMainInput.eraseAll = True
 
 clearCalcButton = Button(0, calcMainInputRect.bottom, (screen_width / 2), 100, RED, 'CE', parentApp='calculatorMain', showOutline=True)
 clearCalcRect = clearCalcButton.rect
+def clearCalcFunct():
+    calcMainInput.text = 'Enter Equation'
+    calcMainInput.eraseAll = True
+clearCalcButton.onClickFunction = clearCalcFunct
 
 calcHomeButton = Button(clearCalcRect.right, clearCalcRect.y, (clearCalcRect.width / 2), clearCalcRect.height, BLUE, 'Home', parentApp='calculatorMain', showOutline=True)
 calcHomeRect = calcHomeButton.rect
@@ -33,7 +49,7 @@ calcHomeButton.onClickFunction = calcHomeFunct
 calcDivideButton = Button(calcHomeRect.right, calcHomeRect.y, calcHomeRect.width, calcHomeRect.height, ORANGE, '/', parentApp='calculatorMain', showOutline=True)
 calcDivideRect = calcDivideButton.rect
 
-calcMultiplyButton = Button(calcDivideRect.x, calcDivideRect.bottom, calcDivideRect.width, calcDivideRect.height, ORANGE, 'X', parentApp='calculatorMain', showOutline=True)
+calcMultiplyButton = Button(calcDivideRect.x, calcDivideRect.bottom, calcDivideRect.width, calcDivideRect.height, ORANGE, '*', parentApp='calculatorMain', showOutline=True)
 calcMultiplyRect = calcMultiplyButton.rect
 
 calcMinusButton = Button(calcMultiplyRect.x, calcMultiplyRect.bottom, calcMultiplyRect.width, calcMultiplyRect.height, ORANGE, '-', parentApp='calculatorMain', showOutline=True)
@@ -43,6 +59,10 @@ calcAddButton = Button(calcMinusRect.x, calcMinusRect.bottom, calcMinusRect.widt
 calcAddRect = calcAddButton.rect
 
 calcEqualButton = Button(calcAddRect.x, calcAddRect.bottom, calcAddRect.width, calcAddRect.height, ORANGE, '=', parentApp='calculatorMain', showOutline=True)
+def calcEqualFunct():
+    calcMainInput.eraseAll = True
+    calcMainInput.text = doMath(calcMainInput.text)
+calcEqualButton.onClickFunction = calcEqualFunct
 
 calcSevenButton = Button(0, clearCalcRect.bottom, (clearCalcRect.width / 2), clearCalcRect.height, GREEN, '7', parentApp='calculatorMain', showOutline=True)
 calcSevenRect = calcSevenButton.rect
@@ -76,3 +96,8 @@ calcZeroButton.rect.right = clearCalcRect.right
 calcZeroRect = calcZeroButton.rect
 
 calcPeriodButton = Button(calcZeroRect.right, calcZeroRect.y, calcZeroRect.width, calcZeroRect.height, GREEN, '.', parentApp='calculatorMain', showOutline=True)
+
+for button in Button.instances:
+    if button.parentApp == 'calculatorMain':
+        if button not in [clearCalcButton, calcHomeButton, calcEqualButton]:
+            button.group = ['calc', calcMainInput]

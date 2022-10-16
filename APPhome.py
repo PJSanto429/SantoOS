@@ -9,6 +9,7 @@ from toggle import Toggle
 from clock import Clock
 from loading import Loading
 from randomFuncts import handleQuit
+from APPgameTest import game
 from user import *
 from variables import *
 
@@ -85,7 +86,10 @@ def openCalculatorFunct():
     allApps['calculatorMain'] = True
 openCalculatorButton.onClickFunction = openCalculatorFunct
 
-testAppButton = Button((openCalculatorButton.rect.right + spacer), (openNotesAppButton.rect.y), (openNotesAppButton.rect.width), (openNotesAppButton.rect.height), GREEN, 'Other', parentApp='homeLoggedIn')
+openGameButton = Button((openCalculatorButton.rect.right + spacer), (openNotesAppButton.rect.y), (openNotesAppButton.rect.width), (openNotesAppButton.rect.height), GREEN, 'Game Test', parentApp='homeLoggedIn')
+def openGameFunct():
+    game.running = True
+openGameButton.onClickFunction = openGameFunct
 
 openAllSettingsButton = Button(0, 0, 125, 125, BLACK, '', WHITE, parentApp='homeLoggedIn', picture='assets/settingsLogo2.png')
 openAllSettingsButton.rect.bottom = screen_height

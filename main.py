@@ -19,6 +19,7 @@ from variables import *
 from APPnotes import *
 from APPhome import *
 from APPcalculator import *
+from APPgameTest import *
 
 if __name__ == '__main__':
     pg.init()
@@ -96,11 +97,12 @@ if __name__ == '__main__':
     cursorTimer = pg.USEREVENT + 2
     pg.time.set_timer(cursorTimer, 500) #* 500 miliseconds
     
-    # allApps['homeLoading'] = False
+    allApps['homeLoading'] = False
+    allApps['homeLoggedIn'] = True
     # allApps['calculatorMain'] = True
     # allApps['none'] = True
-    # currentUser.loggedIn = True
-    # currentUser.userName = 'pjsanto' 
+    currentUser.loggedIn = True
+    currentUser.userName = 'pjsanto' 
     
     testToggle = Toggle(250, 250, 100, 50, text='test toggle')
     def testToggleFunct():
@@ -116,7 +118,8 @@ if __name__ == '__main__':
             if event.type == pg.QUIT:# or keys[pg.K_ESCAPE]:
                 handleQuit()
             if checkMouseClick(event)[0]:
-                checkClick(mouse)
+                if not game.running:
+                    checkClick(mouse)
             if event.type == pg.KEYDOWN and keys[pg.K_LCTRL] and keys[pg.K_F1]:
                 crt.activateDeactivate()
             #!----timer events----
@@ -130,10 +133,17 @@ if __name__ == '__main__':
             #!input box stuff
             handleEventListener(event, keys)
 
-        screen.fill(TEAL)
+        #screen.fill(TEAL)
         mouse = pg.mouse.get_pos()
+        #! hides the cursor
+        #pg.mouse.set_cursor((8,8),(0,0),(0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0))
 
-        drawEverything(screen)
+        if not game.running:
+            screen.fill(TEAL)
+            drawEverything(screen)
+        else:
+            screen.fill(BLACK)
+            game.run()
         crt.draw()
         
         pg.display.flip()
