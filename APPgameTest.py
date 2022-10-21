@@ -1,29 +1,31 @@
 import pygame as pg
-import sys
+from random import choice
 
 from variables import *
 
 levelMap1 = [
-    '                                                                              ',
-    '                                                                              ',
-    '       XX    XXX       XX    XXX       XX    XXX       XX    XXX       XX    X',
-    '       XX              XX              XX              XX              XX     ',
-    '   PXX XXXX         XX XXXX         XX XXXX         XX XXXX         XX XXXX   ',
-    '  XX   XXXX       XX   XXXX       XX   XXXX       XX   XXXX       XX   XXXX   ',
-    'XXXX   XX    X  XXXX   XX    X  XXXX   XX    X  XXXX   XX    X  XXXX   XX    X',
-    'XXXX        XX  XXXX        XX  XXXX        XX  XXXX        XX  XXXX        XX',
-    'XXXXXX    XXXX  XXXXXX    XXXX  XXXXXX    XXXX  XXXXXX    XXXX  XXXXXX    XXXX',
-    'XXXXXXXXXXXXXX  XXXXXXXXXXXXXX  XXXXXXXXXXXXXX  XXXXXXXXXXXXXX  XXXXXXXXXXXXXX',
-    '       XX      X       XX    XXX       XX    XXX       XX    XXX       XX    X',
-    '       XX     X        XX              XX              XX              XX     ',
-    '   XX XXXX  X      XX XXXX         XX XXXX         XX XXXX         XX XXXX   ',
-    '  XX   XXXX X     XX   XXXX       XX   XXXX       XX   XXXX       XX   XXXX   ',
-    'XXXX   XX    X  XXXX   XX    X  XXXX   XX    X  XXXX   XX    X  XXXX   XX    X',
-    'XXXX        XX  XXXX        XX  XXXX        XX  XXXX        XX  XXXX        XX',
-    'XXXXXX    XXXX  XXXXXX    XXXX  XXXXXX    XXXX  XXXXXX    XXXX  XXXXXX    XXXX',
-    'XXXXXXXXXXXXXX  XXXXXXXXXXXXXX  XXXXXXXXXXXXXX  XXXXXXXXXXXXXX  XXXXXXXXXXXXXX',
+    #'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+    '                                                                             ',
+    '                                                                             ',
+    '        X    XXX       XX    XXX       XX    XXX       XX    XXX       XX    ',
+    '       XX              XX              XX              XX              XX    ',
+    '    XX XXX          XX XXXX         XX XXXX         XX XXXX         XX XXXX  ',
+    ' PXX   XXXXX      XX   XXXX       XX   XXXX       XX   XXXX       XX   XXXX  ',
+    'WXXX   XX    X  XXXX   XX    X  XXXX   XX    X  XXXX   XX    X  XXXX   XX    W',
+    'WXXX        XX  XXXX        XX  XXXX        XX  XXXX        XX  XXXX        XW',
+    '   XXX    XXXX  XXXXXX    XXXX  XXXXXX    XXXX  XXXXXX    XXXX  XXXXXX    XXX ',
+    '    XXXXXXXX    XXXXXXXXXXXXXX  XXXXXXXXXXXXXX  XXXXXXXXXXXXXX  XXXXXXXXXXXXX ',
+    '       XX      X      XX      XX      XX      XX      XX      XX      XX      ',
+    '              X              X               X               X                ',
+    '    X XXXX         X XXXX  X       X XXXX  X       X XXXX  X       X XXXX  X  ',
+    '   XX  XXX  XX    XX  XXX   X     XX  XXX   X     XX  XXX   X     XX  XXX   X ',
+    'WX     XX    X  X     XX    X   X     XX    X   X     XX    X   X     XX    XW',
+    'WXXX        X   XXX        XX   XXX        XX   XXX        XX   XXX        XXW',
+    'WXXXXX    XX    XXXXX    XXXX   XXXXX    XXXX   XXXXX    XXXX   XXXXX    XXXXW',
+    'W            XX                                                              W',
+    #'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
 ]
-tileSize = 30
+tileSize = screen_width / 20
 
 class Game:
     def __init__(self):
@@ -39,7 +41,10 @@ class Tile(pg.sprite.Sprite):
         super().__init__()
         self.__class__.instances.append(self)
         self.image = pg.Surface((size, size))
-        self.image.fill(WHITE)
+        choiceColor = choice(allColors)
+        while choiceColor in [BLACK, GREEN, GREY, LIGHTGREY, DARKGREY, VERYDARKGREY]:
+            choiceColor = choice(allColors)
+        self.image.fill(choiceColor)
         self.rect = self.image.get_rect(topleft = position)
         
     def update(self, xShift):
@@ -56,10 +61,10 @@ class Player(pg.sprite.Sprite):
         
         #* movement stuff
         self.direction = pg.math.Vector2(0, 0)
-        self.speed = 4
+        self.speed = 3
         self.ogSpeed = self.speed
         self.gravity = 0.2
-        self.jumpSpeed = -5
+        self.jumpSpeed = -4.5
         self.jumped = False
         
     def getInput(self):
@@ -76,7 +81,8 @@ class Player(pg.sprite.Sprite):
             self.jump()
             
     def applyGravity(self):
-        self.direction.y += self.gravity
+        if self.direction.y <= 5:
+            self.direction.y += self.gravity
         self.rect.y += self.direction.y
         
     def jump(self):
@@ -103,7 +109,7 @@ class Level():
             for colIndex, cell in enumerate(row):
                 x = colIndex * tileSize
                 y = rowIndex * tileSize
-                if cell == 'X':
+                if cell in ['X', 'W']:
                     tile = Tile((x, y), tileSize)
                     self.tiles.add(tile)
                 if cell == 'P':
@@ -117,15 +123,16 @@ class Level():
     
         if playerX < (screen_width / 6) and directionX < 0:
             self.worldShift = player.ogSpeed
-            # player.rect.left = (screen_width / 6)
             player.speed = 0
         elif playerX > screen_width - (screen_width / 6) and directionX > 0:
             self.worldShift = -player.ogSpeed
-            # player.rect.right = screen_width - (screen_width / 6)
             player.speed = 0
         else:
             self.worldShift = 0
-            player.speed = 3
+            player.speed = player.ogSpeed
+            
+    def scrollY(self):
+        pass
             
     def horizMoveCollision(self):
         player = self.player.sprite
@@ -133,6 +140,7 @@ class Level():
         
         for sprite in self.tiles.sprites():
             if sprite.rect.colliderect(player.rect):
+                sprite.image.fill(GREEN)
                 if player.direction.x < 0:
                     player.rect.left = sprite.rect.right
                 elif player.direction.x > 0:
@@ -144,12 +152,13 @@ class Level():
         
         for sprite in self.tiles.sprites():
             if sprite.rect.colliderect(player.rect):
-                #* top collisition
+                sprite.image.fill(GREEN)
+                #* top collision
                 if player.direction.y < 0:
                     player.rect.top = sprite.rect.bottom
                     player.direction.y = 0
                 #* bottom collision
-                elif player.direction.y > 0:
+                if player.direction.y > 0:
                     player.rect.bottom = sprite.rect.top
                     player.jumped = False
                     player.direction.y = 0

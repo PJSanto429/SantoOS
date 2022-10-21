@@ -8,6 +8,7 @@ screen = pg.display.set_mode((screen_width, screen_height))
 pg.display.set_caption('Santo OS')
 pg.display.set_icon(pg.image.load('assets/greenSnake.png').convert_alpha())
 clock = pg.time.Clock()
+tickSpeed = 60
 
 #colors
 WHITE = (255, 255, 255)
@@ -33,6 +34,29 @@ GREY = (128, 128, 128)
 LIGHTGREY = (170, 170, 170)
 DARKGREY = (100, 100, 100)
 VERYDARKGREY = (40, 40, 40)
+
+allColors = [
+    WHITE,
+    BLACK, 
+    GREEN, 
+    BLUE, 
+    PINK, 
+    ORANGE, 
+    RED, 
+    DARKRED, 
+    FUCHSIA, 
+    LIME, 
+    MAROON, 
+    NAVYBLUE, 
+    OLIVE, 
+    PURPLE, 
+    TEAL, 
+    LIGHTTEAL, 
+    GREY, 
+    LIGHTGREY, 
+    DARKGREY, 
+    VERYDARKGREY
+]
 
 activeColor = BLACK
 inactiveColor = LIGHTGREY
@@ -141,13 +165,16 @@ allApps = {
     "notesMain": False,
     "notesEdit": False,
     #!----calculator ----
-    "calculatorMain": False, #not made yet
+    "calculatorMain": False,
     #!----bomb game----
     "bombGameMain": False, #not made yet
+    #!----paint----
+    "paintMain": False
 }
 
 defaultButtonFont = allFonts['largeConsolas']
 defaultTextInputFont = allFonts['largeConsolas']
 defaultClockFont = allFonts['largeConsolas']
 defaultLoaderFont = allFonts['largeConsolas']
+defaultSliderFont = allFonts['largeConsolas']
 defaultToggleFont = allFonts['mediumConsolas']

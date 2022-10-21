@@ -94,6 +94,7 @@ class Button():
                     self.onClickFunction()
     
     def draw_button(self, screen):
+        self.image.fill(self.color)
         screen.blit(self.image, self.rect)
         if self.picture:
             screen.blit(self.picture, self.rect)

@@ -25,6 +25,7 @@ class InputBox:
         parent = False,
         parentApp = 'none',
         maxChars = 1000,
+        allowedChars = 'all',
         group = 'input box',
         center = False,
         allowWrap = False,
@@ -39,6 +40,7 @@ class InputBox:
         self.inactiveColor = inactiveColor
         self.text = text
         self.maxChars = maxChars
+        self.allowedChars = allowedChars
         self.allowWrap = allowWrap
         self.showRect = showRect
         self.textFont = allFonts[textFont] if textFont in allFonts else defaultTextInputFont
@@ -47,6 +49,7 @@ class InputBox:
         self.changable = changeable
         self.static = False
         self.edited = False
+        self.useCursor = True
         self.cursor = False
         self.full = False
         self.onChange = False
@@ -71,7 +74,20 @@ class InputBox:
     def onChange(self):
         pass
     
-    def handle_event(self, event, keys): #keys not being used yet
+    def charCheck(self, character):
+        charAllowed = True
+        if self.allowedChars == 'int':
+            if not character.isdigit:
+                charAllowed = False
+        
+        return charAllowed
+    
+    def validate(self, character):
+        if len(self.text) < self.maxChars and self.charCheck(character):
+            return True
+        return False
+    
+    def handle_event(self, event):
         try:
             maxChars = floor(self.rect.width / (self.textFont.size(' ')[0]))
             if checkMouseClick(event)[0]:
@@ -85,10 +101,6 @@ class InputBox:
                     if len(self.text) > 0:
                         self.text = self.text[:-1] if self.text[-1] == '|' else self.text
                 self.color = self.activeColor if self.active else self.inactiveColor
-            #if pg.mouse.get_pressed()[2]:
-            #    if self.rect.collidepoint(event.pos):
-            #        self.active = False
-            #    self.color = self.activeColor if self.active else self.inactiveColor
             
             if event.type == pg.KEYDOWN:
                 if self.active and self.changable:
@@ -96,15 +108,19 @@ class InputBox:
                         self.edited = True
                         self.text = ''
                     if event.key == pg.K_BACKSPACE:
-                        if len(self.text) > 1:
-                            self.text = self.text[:-1] if self.text[-1] != '|' else self.text[:-2]
-                    if (event.unicode).isprintable() and event.unicode != '|' and not self.full:
-                        if len(self.text) > 0 and self.text[-1] == '|':
-                            self.text = self.text[:-1]
-                        if not self.allowWrap and len(self.text) >= maxChars:
-                            self.text = self.text
+                        if self.useCursor:
+                            if len(self.text) > 1:
+                                self.text = self.text[:-1] if self.text[-1] != '|' else self.text[:-2]
                         else:
-                            self.text += event.unicode
+                            self.text = self.text[:-1]# if self.text[-1] != '|' else self.text[:-2]
+                    if (event.unicode).isprintable() and event.unicode != '|' and not self.full:
+                        if self.validate(event.unicode):
+                            if len(self.text) > 0 and self.text[-1] == '|':
+                                self.text = self.text[:-1]
+                            if not self.allowWrap and len(self.text) >= maxChars:
+                                self.text = self.text
+                            else:
+                                self.text += event.unicode
                     self.onChange()
         except:
             pass
@@ -132,7 +148,7 @@ class InputBox:
             
     def showHideCursor(self):
         try:
-            if self.active:
+            if self.active and self.useCursor:
                 if not self.cursor:
                     textWidth = self.textFont.size(' ')[0]
                     if not self.allowWrap:

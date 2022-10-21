@@ -39,7 +39,8 @@ class User:
                     "encryptNotes": "False",
                     "createdNotes": [],
                     "sharedNotes": [],
-                    "dateCreated": currentTime()
+                    "dateCreated": currentTime(),
+                    "availableApps": ["notes", "calculator"]
                     }
                 ]
             }
@@ -99,6 +100,14 @@ class User:
         sharedNotes = inData[self.userName][0]['sharedNotes']
         if noteId in myNotes + sharedNotes:
             return noteData
+        
+    def getMyApps(self, appName = False):
+        with open('allNotes/allUsers.json', 'r') as infile:
+            inData = json.load(infile)
+        myApps = inData[self.userName][0]['availableApps']
+        if appName:
+            return appName in myApps
+        return myApps
         
     def getCreatedNotes(self, setNotes = True) -> list:
         with open('allNotes/allUsers.json', 'r') as infile:
@@ -224,8 +233,6 @@ loginModal = Modal(100, 100, 400, 400, 'log in', parentApp='homeNotLoggedIn')
 userNameInput = InputBox(loginModal.rect.left, (loginModal.rect.top + 75), (loginModal.rect.width), 50, 'username', parent = loginModal, parentApp='homeNotLoggedIn')
 passwordInput = InputBox((loginModal.rect.left), (userNameInput.rect.bottom + 25), (loginModal.rect.width), 50, 'password', parent = loginModal, parentApp='homeNotLoggedIn')
 
-#testButton = Button(0, 0, 400, 400, picture='assets/icon.png', parent=loginModal, parentApp='homeNotLoggedIn')
-
 cancelLoginButton = Button((loginModal.rect.left), (loginModal.rect.bottom - 25), (loginModal.rect.width / 2), 50, RED, 'Cancel', parent=loginModal, parentApp='homeNotLoggedIn')
 def cancelLoginButtonFunct():
     userNameInput.text = ''
@@ -240,14 +247,11 @@ loginButton = Button((cancelLoginButton.rect.right), (cancelLoginButton.rect.y),
 def loginButtonFunct():
     if loginModal.active:
         loggedIn, status = currentUser.loginUser(userNameInput.text, passwordInput.text)
-        #print(f'logged in == {loggedIn}')
-        #print(f'status == {status}')
         currentUser.loggedIn = loggedIn
         if currentUser.loggedIn:
             loginStatusBox.text = 'user logged in'
             currentUser.userName = userNameInput.text
-            allApps['homeNotLoggedIn'] = False
-            loginModal.active = False
+            loginModal.active = allApps['homeNotLoggedIn'] = False
             allApps['homeLoggedIn'] = True
         else:
             loginStatusBox.text = 'login failed'

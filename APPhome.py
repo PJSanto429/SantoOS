@@ -81,6 +81,7 @@ def openNotesButtonFunct():
 openNotesAppButton.onClickFunction = openNotesButtonFunct
 
 openCalculatorButton = Button((openNotesAppButton.rect.right + spacer), (openNotesAppButton.rect.y), (openNotesAppButton.rect.width), (openNotesAppButton.rect.height), BLUE, 'Calc.', parentApp='homeLoggedIn')
+# openCalculatorButton.showOutline = True
 def openCalculatorFunct():
     allApps['homeLoggedIn'] = False
     allApps['calculatorMain'] = True

@@ -20,6 +20,7 @@ from APPnotes import *
 from APPhome import *
 from APPcalculator import *
 from APPgameTest import *
+from APPpaint import *
 
 if __name__ == '__main__':
     pg.init()
@@ -48,16 +49,16 @@ if __name__ == '__main__':
         for loader in Loading.instances:
             if not loader.parent and allApps[loader.parentApp]:
                 loader.update(screen)   
+                
+        for toggle in Toggle.instances:
+            if not toggle.parent and allApps[toggle.parentApp]:
+                toggle.draw(screen)
 
         for modal in Modal.instances:
             if allApps[modal.parentApp]:
                 modal.update(screen)
             else:
                 modal.active = False
-                
-        for toggle in Toggle.instances:
-            if not toggle.parent and allApps[toggle.parentApp]:
-                toggle.draw(screen)
 
         #! custom button/input box stuff that will be changed
         userNameHeader.text = currentUser.userName
@@ -75,7 +76,7 @@ if __name__ == '__main__':
             passwordInput.text = 'password'
             userNameInput.edited = passwordInput.edited = False
 
-    def handleEventListener(event, keys):
+    def handleEventListener(event):
         for box in InputBox.instances:
             modalsActive = False
             for modal in Modal.instances:
@@ -88,7 +89,7 @@ if __name__ == '__main__':
                     parentActive = True
             
             if not modalsActive or parentActive:
-                box.handle_event(event, keys)
+                box.handle_event(event)
 
     #!----timers-----
     cowGifTimer = pg.USEREVENT + 1
@@ -97,12 +98,18 @@ if __name__ == '__main__':
     cursorTimer = pg.USEREVENT + 2
     pg.time.set_timer(cursorTimer, 500) #* 500 miliseconds
     
-    allApps['homeLoading'] = False
-    allApps['homeLoggedIn'] = True
-    # allApps['calculatorMain'] = True
-    # allApps['none'] = True
-    currentUser.loggedIn = True
-    currentUser.userName = 'pjsanto' 
+    testTimer = pg.USEREVENT + 3
+    pg.time.set_timer(testTimer, 500)
+    
+    #!---------------
+    
+    # allApps['homeLoading'] = False
+    # # game.running = True
+    # allApps['paintMain'] = True
+    # mainPaint.running = True
+    # # allApps['none'] = True
+    # currentUser.loggedIn = True
+    # currentUser.userName = 'pjsanto' 
     
     testToggle = Toggle(250, 250, 100, 50, text='test toggle')
     def testToggleFunct():
@@ -111,11 +118,11 @@ if __name__ == '__main__':
     testInput = InputBox(0, 100, 600, 50, 'Not Active', changeable=False, inactiveColor=BLACK, showRect=False, center=True)
 
     while True:
-        #ticks = pg.time.get_ticks()
+        mouse = pg.mouse.get_pos()
         allEvents = pg.event.get()
         keys = pg.key.get_pressed()
         for event in allEvents:
-            if event.type == pg.QUIT:# or keys[pg.K_ESCAPE]:
+            if event.type == pg.QUIT:
                 handleQuit()
             if checkMouseClick(event)[0]:
                 if not game.running:
@@ -123,6 +130,9 @@ if __name__ == '__main__':
             if event.type == pg.KEYDOWN and keys[pg.K_LCTRL] and keys[pg.K_F1]:
                 crt.activateDeactivate()
             #!----timer events----
+            # if event.type == testTimer:
+            #     # redColorValueInput.text = 'wow' if redColorValueInput.text != 'wow' else 'nope'
+            #     print(redColorValueInput.text)
             if event.type == cowGifTimer:
                 currentCowImage += 1 if currentCowImage < 20 else -20
                 dancingCowGif.picture = pg.image.load(f'assets/dancingCow/frame_{currentCowImage}.gif').convert_alpha()
@@ -131,20 +141,32 @@ if __name__ == '__main__':
                 for box in InputBox.instances:
                     box.showHideCursor()
             #!input box stuff
-            handleEventListener(event, keys)
+            handleEventListener(event)
+            
+            # for box in InputBox.instances:
+            #     if box.parentApp == 'paintMain' and allApps['paintMain']:
+            #         # box.handle_event(event)
+            #         box.update()
+            #         box.draw(screen)
 
-        #screen.fill(TEAL)
-        mouse = pg.mouse.get_pos()
         #! hides the cursor
         #pg.mouse.set_cursor((8,8),(0,0),(0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0))
 
-        if not game.running:
-            screen.fill(TEAL)
-            drawEverything(screen)
-        else:
+        if game.running:
             screen.fill(BLACK)
             game.run()
+            crt.active = True
+        elif mainPaint.running:
+            crt.active = False
+            screen.fill(TEAL)
+            drawEverything(screen)
+            mainPaint.run(mouse)
+        else:
+            crt.active = True
+            screen.fill(TEAL)
+            drawEverything(screen)
+            #? x = 5
         crt.draw()
         
         pg.display.flip()
-        clock.tick(60)
+        clock.tick(tickSpeed) if not mainPaint.running else clock.tick(mainPaint.tickSpeed)
