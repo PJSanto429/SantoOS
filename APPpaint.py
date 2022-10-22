@@ -1,15 +1,15 @@
 import json
-from random import choice, randint
 import pygame as pg
 
 from inputBox import InputBox
 from modal import Modal
+from slider import Slider
 from button import Button
 from variables import *
 from randomFuncts import *
 
-paintMainHeader = InputBox(0, 10, screen_width, 40, 'Paint', showRect=False, changeable=False, inactiveColor=BLACK, parentApp='paintMain', center=True)
-paintMainRect = paintMainHeader.rect
+# paintMainHeader = InputBox(0, 10, screen_width, 40, 'Paint', showRect=False, changeable=False, inactiveColor=BLACK, parentApp='paintMain', center=True)
+# paintMainRect = paintMainHeader.rect
 
 class paintApp():
     def __init__(self, mainBody, resetStuff, colorInputs):
@@ -58,9 +58,7 @@ class paintApp():
         self.backgroundDrawn = True
         screen.fill(TEAL)
         try:
-            for i in self.colorInputs:
-                i.text = '255' if int(i.text) > 255 else i.text 
-            self.paintColor = (int(self.colorInputs[0].text), int(self.colorInputs[1].text), int(self.colorInputs[2].text))
+            self.paintColor = (int(self.colorInputs[0].value), int(self.colorInputs[1].value), int(self.colorInputs[2].value))
             paintShowColorButton.color = self.paintColor
         except:
             pass
@@ -69,6 +67,8 @@ class paintApp():
                 group.draw_button(screen)
             if type(group) == InputBox:
                 group.draw(screen)
+            if type(group) == Slider:
+                group.update(screen)
         screen.blit(self.mainPaintBodyImage, self.mainPaintBodyRect)
 
     def checkClick(self, mouse):
@@ -81,48 +81,43 @@ class paintApp():
         self.drawPainting()
         self.checkClick(mouse)
 
-mainPaintBodyImage = pg.Surface([screen_width, 450])
+mainPaintBodyImage = pg.Surface([screen_width, 440])
 mainPaintBodyImage.fill(WHITE)
-mainPaintBodyRect = mainPaintBodyImage.get_rect(topleft = (0, (paintMainRect.bottom + 10)))
+mainPaintBodyRect = mainPaintBodyImage.get_rect(topleft = (0, 0))
 
-redColorValueInput = InputBox(0, 0, 150, 50, '0', parentApp='paintMain', maxChars=3, allowedChars='int')
-redColorValueInput.rect.bottom = screen_height
-redColorRect = redColorValueInput.rect
+redColorValueSlider = Slider(0, (mainPaintBodyRect.bottom + 50), (screen_width / 2), 55, 255, activeColor=RED, handleColor=WHITE, parentApp='paintMain')
+redColorRect = redColorValueSlider.rect
 
-blueColorValueInput = InputBox(redColorRect.right, redColorRect.y, redColorRect.width, redColorRect.height, '0', parentApp='paintMain', maxChars=3, allowedChars='int')
-blueColorRect = blueColorValueInput.rect
+greenColorValueSlider = Slider(0, redColorRect.bottom, redColorRect.width, redColorRect.height, 255, activeColor=GREEN, handleColor=WHITE, parentApp='paintMain')
+greenColorRect = greenColorValueSlider.rect
 
-greenColorValueInput = InputBox(blueColorRect.right, redColorRect.y, redColorRect.width, redColorRect.height, '0', parentApp='paintMain', maxChars=3, allowedChars='int')
-greenColorRect = greenColorValueInput.rect
+blueColorValueSlider = Slider(redColorRect.right, greenColorRect.y, redColorRect.width, redColorRect.height, 255, activeColor=BLUE, handleColor=WHITE, parentApp='paintMain')
+blueColorRect = blueColorValueSlider.rect
 
-redColorValueInput.edited = blueColorValueInput.edited = greenColorValueInput.edited = True
-redColorValueInput.useCursor = blueColorValueInput.useCursor = greenColorValueInput.useCursor = False
+paintShowColorButton = Button(0, 0, 50, 50, BLACK, parentApp='paintMain')
+paintShowColorButton.rect.centerx = blueColorRect.centerx
+paintShowColorButton.rect.bottom = blueColorRect.top - 5
 
-resetSize = mainPaintBodyRect.top
-mainPaintResetButton = Button(0, 0, resetSize, resetSize, picture='assets/resetLogo.png', parentApp='paintMain')
-
-paintShowColorButton = Button(greenColorRect.right, (screen_height - 50), 50, 50, BLACK, parentApp='paintMain')
-# paintShowColorButton.rect.bottom = screen_height
-# paintShowColorButton.rect.height = greenColorRect.height
+resetSize = 50
+mainPaintResetButton = Button(0, mainPaintBodyRect.bottom, resetSize * 2, resetSize, picture='assets/resetLogo.png', parentApp='paintMain')
 
 mainPaint = paintApp(
     [mainPaintBodyImage, mainPaintBodyRect],
     (
-        paintMainHeader,
+        # paintMainHeader,
         mainPaintResetButton,
         paintShowColorButton,
-        redColorValueInput,
-        greenColorValueInput,
-        blueColorValueInput
+        redColorValueSlider,
+        greenColorValueSlider,
+        blueColorValueSlider
     ),
     (
-        redColorValueInput,
-        greenColorValueInput,
-        blueColorValueInput
+        redColorValueSlider,
+        greenColorValueSlider,
+        blueColorValueSlider
     )
 )
 
 def mainPaintResetFunct():
-    print(mainPaint.circles)
     mainPaint.circles = {}
 mainPaintResetButton.onClickFunction = mainPaintResetFunct

@@ -12,6 +12,7 @@ from modal import Modal
 from loading import Loading
 from toggle import Toggle
 from user import currentUser
+from slider import Slider
 from clock import Clock
 from graphics import *
 from variables import *
@@ -35,7 +36,7 @@ if __name__ == '__main__':
         for toggle in Toggle.instances:
             if allApps[toggle.parentApp]:
                 toggle.checkClick(mouse, Modal.instances)
-            
+
     def drawEverything(screen):
         for button in Button.instances:
             if not button.parent and allApps[button.parentApp]:
@@ -53,6 +54,10 @@ if __name__ == '__main__':
         for toggle in Toggle.instances:
             if not toggle.parent and allApps[toggle.parentApp]:
                 toggle.draw(screen)
+                
+        for slider in Slider.instances:
+            if not slider.parent and allApps[slider.parentApp]:
+                slider.update(screen)
 
         for modal in Modal.instances:
             if allApps[modal.parentApp]:
@@ -103,22 +108,31 @@ if __name__ == '__main__':
     
     #!---------------
     
+    # ? --------------------- Test stuff on 'allApps['none'] --------------------
+    
     # allApps['homeLoading'] = False
     # # game.running = True
     # allApps['paintMain'] = True
     # mainPaint.running = True
     # # allApps['none'] = True
     # currentUser.loggedIn = True
-    # currentUser.userName = 'pjsanto' 
+    # currentUser.userName = 'pjsanto'
     
-    testToggle = Toggle(250, 250, 100, 50, text='test toggle')
+    testInput = InputBox(0, 10, 600, 50, 'Not Active', changeable=False, inactiveColor=BLACK, showRect=False, center=True)
+    testToggle = Toggle(250, 50, 100, 50, text='test toggle', textLocation='bottom')
     def testToggleFunct():
         testInput.text = 'Active' if testToggle.on else 'Not Active'
     testToggle.onChangeEvent = testToggleFunct
-    testInput = InputBox(0, 100, 600, 50, 'Not Active', changeable=False, inactiveColor=BLACK, showRect=False, center=True)
+    testToggleRect = testToggle.rect
+    
+    testSlider = Slider(20, (testToggleRect.bottom  + 125), (screen_width - 100), 50, title=['slider here', 'top'], showValue=[True, 'bottom'], maxVal=255, handleColor=GREY)
+    
+    #? ------------------------------------------------------------------------
 
     while True:
         mouse = pg.mouse.get_pos()
+        #! hides the cursor
+        # pg.mouse.set_cursor((8,8),(0,0),(0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0))
         allEvents = pg.event.get()
         keys = pg.key.get_pressed()
         for event in allEvents:
@@ -143,15 +157,10 @@ if __name__ == '__main__':
             #!input box stuff
             handleEventListener(event)
             
-            # for box in InputBox.instances:
-            #     if box.parentApp == 'paintMain' and allApps['paintMain']:
-            #         # box.handle_event(event)
-            #         box.update()
-            #         box.draw(screen)
-
-        #! hides the cursor
-        #pg.mouse.set_cursor((8,8),(0,0),(0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0))
-
+            for slider in Slider.instances:
+                if allApps[slider.parentApp]:
+                    slider.moveHandle(mouse)
+            
         if game.running:
             screen.fill(BLACK)
             game.run()

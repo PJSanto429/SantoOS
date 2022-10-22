@@ -45,7 +45,8 @@ class Loading():
         self.loadedImage.fill(self.loadedColor)
         self.parentApp = parentApp
         self.parent = parent
-        self.active = self.finished = False
+        self.active = False
+        self.finished = False
         self.dist = (self.width - self.offset) / self.time
         self.activationTime = 0
         self.doneLoadingFunct = doneEventFunct
