@@ -1,4 +1,5 @@
 import json
+from time import sleep
 import pygame as pg
 
 from inputBox import InputBox
@@ -8,14 +9,10 @@ from button import Button
 from variables import *
 from randomFuncts import *
 
-# paintMainHeader = InputBox(0, 10, screen_width, 40, 'Paint', showRect=False, changeable=False, inactiveColor=BLACK, parentApp='paintMain', center=True)
-# paintMainRect = paintMainHeader.rect
-
 class paintApp():
-    def __init__(self, mainBody, resetStuff, colorInputs):
-        self.tickSpeed = 6000
+    def __init__(self, mainBody, resetStuff, colorInputs, sizeInput):
+        self.tickSpeed = 0
         self.running = False
-        self.backgroundDrawn = False
         self.paintColor = BLACK
         self.circles = {}
         
@@ -24,15 +21,12 @@ class paintApp():
         
         self.resetStuff = resetStuff
         self.colorInputs = colorInputs
-
-        self.brushSizes = {
-            "small": 5,
-            "medium": 10,
-            "large": 20
-        }
-        self.brushSize = self.brushSizes['small']
+        
+        self.sizeInput = sizeInput
+        self.brushSize = 10
         
     def drawPainting(self):
+        screen.blit(self.mainPaintBodyImage, self.mainPaintBodyRect)
         for i in self.circles:
             try:
                 data = self.circles[i]
@@ -55,8 +49,7 @@ class paintApp():
                 pass
         
     def resetScreen(self):
-        self.backgroundDrawn = True
-        screen.fill(TEAL)
+        screen.blit(backGroundHiderImage, backGroundHiderRect)
         try:
             self.paintColor = (int(self.colorInputs[0].value), int(self.colorInputs[1].value), int(self.colorInputs[2].value))
             paintShowColorButton.color = self.paintColor
@@ -69,55 +62,86 @@ class paintApp():
                 group.draw(screen)
             if type(group) == Slider:
                 group.update(screen)
-        screen.blit(self.mainPaintBodyImage, self.mainPaintBodyRect)
-
-    def checkClick(self, mouse):
-        if mainPaintBodyRect.collidepoint(mouse) and pg.mouse.get_pressed()[0]:
-            self.circles[len(self.circles)] = f'{self.paintColor}|{mouse}|{self.brushSize}'
-            pg.draw.circle(screen, self.paintColor, mouse, self.brushSize)
-
+    
+    def checkCollide(self, mouse):
+        self.brushSize = int(self.sizeInput.value)
+        self.brushSize = 5 if self.brushSize < 5 else self.brushSize
+        if mainPaintBodyRect.collidepoint(mouse):
+            pg.draw.circle(screen, self.paintColor, mouse, self.brushSize, 2)
+            if pg.mouse.get_pressed()[0]:
+                self.circles[len(self.circles)] = f'{self.paintColor}|{mouse}|{self.brushSize}'
+                pg.draw.circle(screen, self.paintColor, mouse, self.brushSize)
+    
     def run(self, mouse):
-        self.resetScreen()
         self.drawPainting()
-        self.checkClick(mouse)
+        self.resetScreen()
+        self.checkCollide(mouse)
 
 mainPaintBodyImage = pg.Surface([screen_width, 440])
 mainPaintBodyImage.fill(WHITE)
 mainPaintBodyRect = mainPaintBodyImage.get_rect(topleft = (0, 0))
 
-redColorValueSlider = Slider(0, (mainPaintBodyRect.bottom + 50), (screen_width / 2), 55, 255, activeColor=RED, handleColor=WHITE, parentApp='paintMain')
+backGroundHiderImage = pg.Surface([screen_width, (screen_height - mainPaintBodyRect.bottom)])
+backGroundHiderImage.fill(TEAL)
+backGroundHiderRect = backGroundHiderImage.get_rect(topleft = (0, mainPaintBodyRect.bottom))
+
+redColorValueSlider = Slider(0, (mainPaintBodyRect.bottom + 50), (screen_width / 2), 55, 255, activeColor=RED, handleColor=RED, parentApp='paintMain')
 redColorRect = redColorValueSlider.rect
 
-greenColorValueSlider = Slider(0, redColorRect.bottom, redColorRect.width, redColorRect.height, 255, activeColor=GREEN, handleColor=WHITE, parentApp='paintMain')
+greenColorValueSlider = Slider(0, redColorRect.bottom, redColorRect.width, redColorRect.height, 255, activeColor=GREEN, handleColor=GREEN, parentApp='paintMain')
 greenColorRect = greenColorValueSlider.rect
 
-blueColorValueSlider = Slider(redColorRect.right, greenColorRect.y, redColorRect.width, redColorRect.height, 255, activeColor=BLUE, handleColor=WHITE, parentApp='paintMain')
+blueColorValueSlider = Slider(redColorRect.right, greenColorRect.y, redColorRect.width, redColorRect.height, 255, activeColor=BLUE, handleColor=BLUE, parentApp='paintMain')
 blueColorRect = blueColorValueSlider.rect
 
-paintShowColorButton = Button(0, 0, 50, 50, BLACK, parentApp='paintMain')
-paintShowColorButton.rect.centerx = blueColorRect.centerx
-paintShowColorButton.rect.bottom = blueColorRect.top - 5
+brushSizeValueSlider = Slider(redColorRect.right, redColorRect.y, redColorRect.width, redColorRect.height, maxVal=25, activeColor=WHITE, handleColor=LIGHTGREY, parentApp='paintMain')
 
 resetSize = 50
 mainPaintResetButton = Button(0, mainPaintBodyRect.bottom, resetSize * 2, resetSize, picture='assets/resetLogo.png', parentApp='paintMain')
+mainPaintResetRect = mainPaintResetButton.rect
+
+loadPaintButton = Button(mainPaintResetRect.right, mainPaintResetRect.y, mainPaintResetRect.width, mainPaintResetRect.height, BLACK, 'load', parentApp='paintMain')
+loadPaintRect = loadPaintButton.rect
+def loadPaintFunct():
+    try:
+        with open('allNotes/paintTestsa.json', 'r') as infile:
+            inData = json.load(infile)
+            mainPaint.circles = inData
+    except:
+        pass
+loadPaintButton.onClickFunction = loadPaintFunct
+
+paintShowColorButton = Button(loadPaintRect.right, loadPaintRect.y, 50, 50, BLACK, parentApp='paintMain')
+paintShowColorButton.showOutline, paintShowColorButton.outlineColor = [True, WHITE]
 
 mainPaint = paintApp(
     [mainPaintBodyImage, mainPaintBodyRect],
     (
-        # paintMainHeader,
         mainPaintResetButton,
         paintShowColorButton,
+        loadPaintButton,
         redColorValueSlider,
         greenColorValueSlider,
-        blueColorValueSlider
+        blueColorValueSlider,
+        brushSizeValueSlider
     ),
     (
         redColorValueSlider,
         greenColorValueSlider,
         blueColorValueSlider
+    ),
+    (
+        brushSizeValueSlider
     )
 )
 
 def mainPaintResetFunct():
+    print(len(mainPaint.circles))
+    # try:
+    #     with open(f'allNotes/paintTest.json', 'w') as outfile:
+    #         x = json.dumps(mainPaint.circles)
+    #         outfile.write(x)
+    # except:
+    #     pass
     mainPaint.circles = {}
 mainPaintResetButton.onClickFunction = mainPaintResetFunct

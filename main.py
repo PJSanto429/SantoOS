@@ -114,7 +114,7 @@ if __name__ == '__main__':
     # # game.running = True
     # allApps['paintMain'] = True
     # mainPaint.running = True
-    # # allApps['none'] = True
+    # # allApps['homeLoggedIn'] = True
     # currentUser.loggedIn = True
     # currentUser.userName = 'pjsanto'
     
@@ -144,9 +144,6 @@ if __name__ == '__main__':
             if event.type == pg.KEYDOWN and keys[pg.K_LCTRL] and keys[pg.K_F1]:
                 crt.activateDeactivate()
             #!----timer events----
-            # if event.type == testTimer:
-            #     # redColorValueInput.text = 'wow' if redColorValueInput.text != 'wow' else 'nope'
-            #     print(redColorValueInput.text)
             if event.type == cowGifTimer:
                 currentCowImage += 1 if currentCowImage < 20 else -20
                 dancingCowGif.picture = pg.image.load(f'assets/dancingCow/frame_{currentCowImage}.gif').convert_alpha()
@@ -168,7 +165,7 @@ if __name__ == '__main__':
         elif mainPaint.running:
             crt.active = False
             screen.fill(TEAL)
-            drawEverything(screen)
+            # drawEverything(screen)
             mainPaint.run(mouse)
         else:
             crt.active = True

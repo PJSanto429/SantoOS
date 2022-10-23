@@ -10,6 +10,7 @@ from clock import Clock
 from loading import Loading
 from randomFuncts import handleQuit
 from APPgameTest import game
+from APPpaint import mainPaint
 from user import *
 from variables import *
 
@@ -75,6 +76,7 @@ userNameHeader = InputBox(0, 0, 50, 0, '', 'extraLargeHPSimplified', False, inac
 userNameHeaderSize = userNameHeader.textFont.size(userNameHeader.text)
 
 openNotesAppButton = Button(spacer, (userNameHeaderSize[1] + 35), 175, 75, RED, 'Notes', parentApp='homeLoggedIn')
+openNotesAppRect = openNotesAppButton.rect
 def openNotesButtonFunct():
     allApps['homeLoggedIn'] = False
     allApps['notesMain'] = True
@@ -91,6 +93,13 @@ openGameButton = Button((openCalculatorButton.rect.right + spacer), (openNotesAp
 def openGameFunct():
     game.running = True
 openGameButton.onClickFunction = openGameFunct
+
+openPaintButton = Button(openNotesAppRect.x, (openNotesAppRect.bottom + spacer), openNotesAppRect.width, openNotesAppRect.height, PURPLE, 'Paint', parentApp='homeLoggedIn')
+def openPaintFunct():
+    allApps['homeLoggedIn'] = False
+    allApps['paintMain'] = True
+    mainPaint.running = True
+openPaintButton.onClickFunction = openPaintFunct
 
 openAllSettingsButton = Button(0, 0, 125, 125, BLACK, '', WHITE, parentApp='homeLoggedIn', picture='assets/settingsLogo2.png')
 openAllSettingsButton.rect.bottom = screen_height

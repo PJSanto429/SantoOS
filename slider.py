@@ -90,10 +90,7 @@ class Slider:
             self.valueRect = self.image.get_rect(centery = self.rect.centery, left = self.rect.right + 10)
         else:
             self.showValue = False
-            
-    def getValue(self):
-        return
-    
+
     def moveHandle(self, pos):
         if self.rect.collidepoint(pos) and pg.mouse.get_pressed()[0]:
             self.handleRect.centerx = pos[0]
