@@ -92,7 +92,12 @@ class Slider:
             self.showValue = False
 
     def moveHandle(self, pos):
-        if self.rect.collidepoint(pos) and pg.mouse.get_pressed()[0]:
+        parentOpen = True
+        if self.parent:
+            if not self.parent.active:
+                parentOpen = False
+        # modalClick = False
+        if self.rect.collidepoint(pos) and pg.mouse.get_pressed()[0] and parentOpen:
             self.handleRect.centerx = pos[0]
             if self.handleRect.left < self.rect.left + self.offset:
                 self.handleRect.left = self.rect.left + self.offset / 2

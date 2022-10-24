@@ -176,7 +176,7 @@ class Level():
         self.player.draw(screen)
 
 #!game
-game = Game()
+simpleGame = Game()
 
 #!level
 level = Level(levelMap1, screen)

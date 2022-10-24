@@ -9,7 +9,7 @@ from toggle import Toggle
 from clock import Clock
 from loading import Loading
 from randomFuncts import handleQuit
-from APPgameTest import game
+from APPgameTest import simpleGame
 from APPpaint import mainPaint
 from user import *
 from variables import *
@@ -91,14 +91,16 @@ openCalculatorButton.onClickFunction = openCalculatorFunct
 
 openGameButton = Button((openCalculatorButton.rect.right + spacer), (openNotesAppButton.rect.y), (openNotesAppButton.rect.width), (openNotesAppButton.rect.height), GREEN, 'Game Test', parentApp='homeLoggedIn')
 def openGameFunct():
-    game.running = True
+    pass
+    # simpleGame.running = True
 openGameButton.onClickFunction = openGameFunct
 
 openPaintButton = Button(openNotesAppRect.x, (openNotesAppRect.bottom + spacer), openNotesAppRect.width, openNotesAppRect.height, PURPLE, 'Paint', parentApp='homeLoggedIn')
 def openPaintFunct():
-    allApps['homeLoggedIn'] = False
-    allApps['paintMain'] = True
-    mainPaint.running = True
+    pass
+    # allApps['homeLoggedIn'] = False
+    # allApps['paintMain'] = True
+    # mainPaint.running = True
 openPaintButton.onClickFunction = openPaintFunct
 
 openAllSettingsButton = Button(0, 0, 125, 125, BLACK, '', WHITE, parentApp='homeLoggedIn', picture='assets/settingsLogo2.png')

@@ -109,12 +109,10 @@ if __name__ == '__main__':
     #!---------------
     
     # ? --------------------- Test stuff on 'allApps['none'] --------------------
-    
     # allApps['homeLoading'] = False
-    # # game.running = True
+    # # simpleGame.running = True
     # allApps['paintMain'] = True
     # mainPaint.running = True
-    # # allApps['homeLoggedIn'] = True
     # currentUser.loggedIn = True
     # currentUser.userName = 'pjsanto'
     
@@ -139,7 +137,7 @@ if __name__ == '__main__':
             if event.type == pg.QUIT:
                 handleQuit()
             if checkMouseClick(event)[0]:
-                if not game.running:
+                if not simpleGame.running:
                     checkClick(mouse)
             if event.type == pg.KEYDOWN and keys[pg.K_LCTRL] and keys[pg.K_F1]:
                 crt.activateDeactivate()
@@ -158,20 +156,19 @@ if __name__ == '__main__':
                 if allApps[slider.parentApp]:
                     slider.moveHandle(mouse)
             
-        if game.running:
+        if simpleGame.running:
             screen.fill(BLACK)
-            game.run()
+            simpleGame.run()
             crt.active = True
         elif mainPaint.running:
             crt.active = False
-            screen.fill(TEAL)
-            # drawEverything(screen)
+            # screen.fill(TEAL)
             mainPaint.run(mouse)
+            drawEverything(screen)
         else:
             crt.active = True
             screen.fill(TEAL)
             drawEverything(screen)
-            #? x = 5
         crt.draw()
         
         pg.display.flip()

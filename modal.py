@@ -4,6 +4,7 @@ import pygame as pg
 from variables import *
 from errorHandler import handleError
 from randomFuncts import *
+from slider import Slider
 from button import Button
 from toggle import Toggle
 from inputBox import InputBox
@@ -79,6 +80,10 @@ class Modal:
                 if toggle.parent:
                     if toggle.parent == self:
                         toggle.draw(screen)
+            for slider in Slider.instances:
+                if slider.parent:
+                    if slider.parent == self:
+                        slider.update(screen)
             for modal in Modal.instances:
                 if modal.parent:
                     if modal.parent == self:
