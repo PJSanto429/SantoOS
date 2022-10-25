@@ -64,6 +64,15 @@ if __name__ == '__main__':
                 modal.update(screen)
             else:
                 modal.active = False
+                
+        # pg.draw.aaline(screen, BLACK, (0, 0), mouse)
+        # pg.draw.aaline(screen, BLACK, (screen_width / 2, 0), mouse)
+        # pg.draw.aaline(screen, BLACK, (screen_width, 0), mouse)
+        # pg.draw.aaline(screen, BLACK, (screen_width, screen_height / 2), mouse)
+        # pg.draw.aaline(screen, BLACK, (0, screen_height / 2), mouse)
+        # pg.draw.aaline(screen, BLACK, (0, screen_height), mouse)
+        # pg.draw.aaline(screen, BLACK, (screen_width / 2, screen_height), mouse)
+        # pg.draw.aaline(screen, BLACK, (screen_width, screen_height), mouse)
 
         #! custom button/input box stuff that will be changed
         userNameHeader.text = currentUser.userName
@@ -103,14 +112,12 @@ if __name__ == '__main__':
     cursorTimer = pg.USEREVENT + 2
     pg.time.set_timer(cursorTimer, 500) #* 500 miliseconds
     
-    testTimer = pg.USEREVENT + 3
-    pg.time.set_timer(testTimer, 500)
-    
     #!---------------
     
     # ? --------------------- Test stuff on 'allApps['none'] --------------------
     # allApps['homeLoading'] = False
     # # simpleGame.running = True
+    # crt.active = False
     # allApps['paintMain'] = True
     # mainPaint.running = True
     # currentUser.loggedIn = True
@@ -151,7 +158,7 @@ if __name__ == '__main__':
                     box.showHideCursor()
             #!input box stuff
             handleEventListener(event)
-            
+            #! slider stuff
             for slider in Slider.instances:
                 if allApps[slider.parentApp]:
                     slider.moveHandle(mouse)
@@ -159,14 +166,11 @@ if __name__ == '__main__':
         if simpleGame.running:
             screen.fill(BLACK)
             simpleGame.run()
-            crt.active = True
         elif mainPaint.running:
-            crt.active = False
-            # screen.fill(TEAL)
+            screen.fill(TEAL)
             mainPaint.run(mouse)
             drawEverything(screen)
         else:
-            crt.active = True
             screen.fill(TEAL)
             drawEverything(screen)
         crt.draw()

@@ -10,7 +10,7 @@ from variables import *
 from randomFuncts import *
 
 class paintApp():
-    def __init__(self, mainBody, resetStuff, colorInputs, sizeInput):
+    def __init__(self, mainBody, colorInputs, sizeInput):
         self.tickSpeed = 0
         self.running = False
         self.paintColor = BLACK
@@ -19,7 +19,6 @@ class paintApp():
         self.mainPaintBodyImage = mainBody[0]
         self.mainPaintBodyRect = mainBody[1]
         
-        self.resetStuff = resetStuff
         self.colorInputs = colorInputs
         
         self.sizeInput = sizeInput
@@ -53,100 +52,124 @@ class paintApp():
         
     def resetScreen(self):
         screen.blit(backGroundHiderImage, backGroundHiderRect)
+        screen.blit(backGroundHider2Image, backGroundHider2Rect)
         try:
             self.paintColor = (int(self.colorInputs[0].value), int(self.colorInputs[1].value), int(self.colorInputs[2].value))
+            # self.paintColor = (randint(1, 255), randint(1, 255), randint(1, 255))
             paintShowColorButton.color = self.paintColor
-        except Exception as err:
-            print('error ==> ', err)
-        # for group in self.resetStuff:
-        #     if not group.parent:
-        #         if type(group) == Button:
-        #             group.draw_button(screen)
-        #         if type(group) == InputBox:
-        #             group.draw(screen)
-        #         if type(group) == Slider:
-        #             group.update(screen)
-        #         if type(group) == Modal:
-        #             group.update(screen)
+        except:
+            pass
+        
+    def drawLines(self, mouse, moving = False, static = False):
+        if static:
+            pg.draw.line(screen, BLACK, (0, 0), ((mainPaintBodyRect.w / 2), mainPaintBodyRect.h / 2))
+            pg.draw.line(screen, BLACK, (screen_width / 2, 0), ((mainPaintBodyRect.w / 2), mainPaintBodyRect.h / 2))
+            pg.draw.line(screen, BLACK, (screen_width, 0), ((mainPaintBodyRect.w / 2), mainPaintBodyRect.h / 2))
+            pg.draw.line(screen, BLACK, (screen_width, mainPaintBodyRect.height / 2), ((mainPaintBodyRect.w / 2), mainPaintBodyRect.h / 2))
+            pg.draw.line(screen, BLACK, (0, mainPaintBodyRect.height / 2), ((mainPaintBodyRect.w / 2), mainPaintBodyRect.h / 2))
+            pg.draw.line(screen, BLACK, (0, mainPaintBodyRect.bottom), ((mainPaintBodyRect.w / 2), mainPaintBodyRect.h / 2))
+            pg.draw.line(screen, BLACK, (mainPaintBodyRect.width / 2, mainPaintBodyRect.bottom), ((mainPaintBodyRect.w / 2), mainPaintBodyRect.h / 2))
+            pg.draw.line(screen, BLACK, (screen_width, mainPaintBodyRect.bottom), ((mainPaintBodyRect.w / 2), mainPaintBodyRect.h / 2))
+        
+        if moving:
+            pg.draw.aaline(screen, BLACK, (0, 0), mouse)
+            pg.draw.aaline(screen, BLACK, (screen_width / 2, 0), mouse)
+            pg.draw.aaline(screen, BLACK, (screen_width, 0), mouse)
+            pg.draw.aaline(screen, BLACK, (screen_width, mainPaintBodyRect.height / 2), mouse)
+            pg.draw.aaline(screen, BLACK, (0, mainPaintBodyRect.height / 2), mouse)
+            pg.draw.aaline(screen, BLACK, (0, mainPaintBodyRect.bottom), mouse)
+            pg.draw.aaline(screen, BLACK, (mainPaintBodyRect.width / 2, mainPaintBodyRect.bottom), mouse)
+            pg.draw.aaline(screen, BLACK, (screen_width, mainPaintBodyRect.bottom), mouse)
     
     def checkCollide(self, mouse):
         self.brushSize = int(self.sizeInput.value)
         self.brushSize = 5 if self.brushSize < 5 else self.brushSize
+        # self.brushSize = (self.brushSize + 1) if (self.brushSize < 50) else 2
         
-        modalClick = False
-        for thing in self.resetStuff:
-            if type(thing) == Modal:
-                if thing.active:# and thing.rect.collidepoint(mouse):
-                    modalClick = True
-        
-        if mainPaintBodyRect.collidepoint(mouse) and not modalClick:
+        if mainPaintBodyRect.collidepoint(mouse) and not paintChangeColorModal.active:
+            pg.mouse.set_visible(False)
+            # circColor = ((255 - self.paintColor[0]), (255 - self.paintColor[1]), (255 - self.paintColor[2]))
             pg.draw.circle(screen, self.paintColor, mouse, self.brushSize, 2)
             if pg.mouse.get_pressed()[0]:
                 self.circles[len(self.circles)] = f'{self.paintColor}|{mouse}|{self.brushSize}'
-                pg.draw.circle(screen, self.paintColor, mouse, self.brushSize)
-    
+                # pg.draw.circle(screen, self.paintColor, mouse, self.brushSize)
+        else:
+            pg.mouse.set_visible(True)
+        
     def run(self, mouse):
         self.drawPainting()
         self.resetScreen()
         self.checkCollide(mouse)
+        self.drawLines(mouse, False, False)
+        
+mainPaintHeader = InputBox(0, 5, screen_width, 50, 'Paint', changeable=False, parentApp='paintMain', center=True, showRect=False, inactiveColor=BLACK)
 
-mainPaintBodyImage = pg.Surface([screen_width, 440])
+paintHomeButton = Button(0, 0, 100, 50, BLUE, 'Home', WHITE, parentApp='paintMain', showOutline=True)
+def paintHomeFunct():
+    mainPaint.running = False
+    allApps['paintMain'] = False
+    allApps['homeLoggedIn'] = True
+paintHomeButton.onClickFunction = paintHomeFunct
+
+mainPaintBodyImage = pg.Surface([screen_width, 450])
 mainPaintBodyImage.fill(WHITE)
-mainPaintBodyRect = mainPaintBodyImage.get_rect(topleft = (0, 0))
+mainPaintBodyRect = mainPaintBodyImage.get_rect(topleft = (0, 50))
 
 backGroundHiderImage = pg.Surface([screen_width, (screen_height - mainPaintBodyRect.bottom)])
 backGroundHiderImage.fill(TEAL)
 backGroundHiderRect = backGroundHiderImage.get_rect(topleft = (0, mainPaintBodyRect.bottom))
 
+backGroundHider2Image = pg.Surface([screen_width, mainPaintBodyRect.top])
+backGroundHider2Image.fill(TEAL)
+backGroundHider2Rect = backGroundHider2Image.get_rect(topleft = (0, 0))
+
 paintChangeColorModal = Modal(0, 0, 400, 400, 'Brush Settings', parentApp='paintMain', textColor=WHITE)
+paintChangeColorModal.active = True
 paintChangeColorModal.rect.center = (screen_width / 2, screen_height / 2)
 paintChangeColorRect = paintChangeColorModal.rect
 
-brushSizeValueSlider = Slider(paintChangeColorRect.x, (paintChangeColorRect.y + 50), (paintChangeColorRect.width - 50), 55, maxVal=25, activeColor=WHITE, handleColor=LIGHTGREY, parentApp='paintMain', parent=paintChangeColorModal)
+closePaintColorButton = Button(0, 0, 50, 50, RED, parentApp='paintMain', parent=paintChangeColorModal, picture='assets/closeXLogo.png')
+closePaintColorButton.rect.topright = paintChangeColorRect.topright
+def closePaintColorFunct():
+    paintChangeColorModal.active = False
+closePaintColorButton.onClickFunction = closePaintColorFunct
+
+brushSizeValueSlider = Slider(0, mainPaintBodyRect.bottom, (paintChangeColorRect.width - 50), 35, maxVal=30, activeColor=WHITE, handleColor=LIGHTGREY, parentApp='paintMain')#, parent=paintChangeColorModal)
 brushSizeValueRect = brushSizeValueSlider.rect
 
-redColorValueSlider = Slider(brushSizeValueRect.x, brushSizeValueRect.bottom, brushSizeValueRect.width, brushSizeValueRect.height, 255, activeColor=RED, handleColor=RED, parentApp='paintMain', parent=paintChangeColorModal)
+redColorValueSlider = Slider(paintChangeColorRect.x, (paintChangeColorRect.y + 85), (paintChangeColorRect.width - 70), 55, 255, ['Red', 'top'], [True, 'right'], activeColor=RED, handleColor=RED, parentApp='paintMain', parent=paintChangeColorModal)
 redColorRect = redColorValueSlider.rect
 
-greenColorValueSlider = Slider(redColorRect.x, redColorRect.bottom, redColorRect.width, redColorRect.height, 255, activeColor=GREEN, handleColor=GREEN, parentApp='paintMain', parent=paintChangeColorModal)
+greenColorValueSlider = Slider(redColorRect.x, (redColorRect.bottom + 50), redColorRect.width, redColorRect.height, 255, ['Green', 'top'], [True, 'right'], activeColor=GREEN, handleColor=GREEN, parentApp='paintMain', parent=paintChangeColorModal)
 greenColorRect = greenColorValueSlider.rect
 
-blueColorValueSlider = Slider(redColorRect.x, greenColorRect.bottom, redColorRect.width, redColorRect.height, 255, activeColor=BLUE, handleColor=BLUE, parentApp='paintMain', parent=paintChangeColorModal)
+blueColorValueSlider = Slider(redColorRect.x, (greenColorRect.bottom + 50), redColorRect.width, redColorRect.height, 255, ['Blue', 'top'], [True, 'right'], activeColor=BLUE, handleColor=BLUE, parentApp='paintMain', parent=paintChangeColorModal)
 blueColorRect = blueColorValueSlider.rect
 
-resetSize = 50 * 2
-mainPaintResetButton = Button(0, 0, resetSize, resetSize, picture='assets/resetLogo.png', parentApp='paintMain')
-mainPaintResetButton.rect.bottom = screen_height
+mainPaintResetButton = Button(0, 0, 50, 50, picture='assets/resetLogo.png', parentApp='paintMain')
+mainPaintResetButton.rect.right = screen_width
 mainPaintResetRect = mainPaintResetButton.rect
 
-loadPaintButton = Button(mainPaintResetRect.right, mainPaintResetRect.y, mainPaintResetRect.width, mainPaintResetRect.height, BLACK, 'load', parentApp='paintMain')
-loadPaintRect = loadPaintButton.rect
-def loadPaintFunct():
+customColorInput = InputBox(0, 0, 160, 35, 'Custom Color:', 'smallConsolas', False, inactiveColor=BLACK, parentApp='paintMain', showRect=False)
+customColorInput.rect.bottom = screen_height
+customColorRect = customColorInput.rect
+
+paintShowColorButton = Button(customColorRect.right, customColorRect.y, 50, 50, BLACK, parentApp='paintMain')
+paintShowColorButton.rect.bottom = screen_height
+paintShowColorButton.showOutline, paintShowColorButton.outlineColor = [True, WHITE]
+def paintShowColorFunct():
     try:
         paintChangeColorModal.active = True if not paintChangeColorModal.active else False
+        # pg.image.save(screen, 'allNotes/testImage.png')
         # with open('allNotes/paintTest2.json', 'r') as infile:
         #     inData = json.load(infile)
         #     mainPaint.circles = inData
     except:
-        pass
-loadPaintButton.onClickFunction = loadPaintFunct
-
-paintShowColorButton = Button(loadPaintRect.right, loadPaintRect.y, 50, 50, BLACK, parentApp='paintMain')
-paintShowColorButton.showOutline, paintShowColorButton.outlineColor = [True, WHITE]
-
+        print('error')
+paintShowColorButton.onClickFunction = paintShowColorFunct
 
 mainPaint = paintApp(
     [mainPaintBodyImage, mainPaintBodyRect],
-    (
-        paintChangeColorModal,
-        # mainPaintResetButton,
-        # paintShowColorButton,
-        # loadPaintButton,
-        # redColorValueSlider,
-        # greenColorValueSlider,
-        # blueColorValueSlider,
-        # brushSizeValueSlider
-    ),
     (
         redColorValueSlider,
         greenColorValueSlider,
@@ -160,7 +183,7 @@ mainPaint = paintApp(
 def mainPaintResetFunct():
     print(len(mainPaint.circles))
     # try:
-    #     with open(f'allNotes/paintTest.json', 'w') as outfile:
+    #     with open(f'allNotes/textPaint.json', 'w') as outfile:
     #         x = json.dumps(mainPaint.circles)
     #         outfile.write(x)
     # except:

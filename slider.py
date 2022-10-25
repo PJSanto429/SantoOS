@@ -69,25 +69,25 @@ class Slider:
             
     def getTitleLocation(self):
         if self.titleLocation == 'top':
-            self.titleRect = self.image.get_rect(centerx = self.rect.centerx, bottom = self.rect.top)
+            self.titleRect = self.titleImage.get_rect(centerx = self.rect.centerx, bottom = self.rect.top)
         elif self.titleLocation == 'bottom':
-            self.titleRect = self.image.get_rect(centerx = self.rect.centerx, top = self.rect.bottom + 10)
+            self.titleRect = self.titleImage.get_rect(centerx = self.rect.centerx, top = self.rect.bottom + 10)
         elif self.titleLocation == 'left':
-            self.titleRect = self.image.get_rect(centery = self.rect.centery, right = self.rect.left - 10)
+            self.titleRect = self.titleImage.get_rect(centery = self.rect.centery, right = self.rect.left - 10)
         elif self.titleLocation == 'right':
-            self.titleRect = self.image.get_rect(centery = self.rect.centery, left = self.rect.right + 10)
+            self.titleRect = self.titleImage.get_rect(centery = self.rect.centery, left = self.rect.right + 10)
         else:
             self.title = False
 
     def getValueLocation(self):
         if self.valueLocation == 'top':
-            self.valueRect = self.image.get_rect(centerx = self.rect.centerx, bottom = self.rect.top - 8)
+            self.valueRect = self.valueImage.get_rect(centerx = self.rect.centerx, bottom = self.rect.top - 8)
         elif self.valueLocation == 'bottom':
-            self.valueRect = self.image.get_rect(centerx = self.rect.centerx, top = self.rect.bottom + 10)
+            self.valueRect = self.valueImage.get_rect(centerx = self.rect.centerx, top = self.rect.bottom + 10)
         elif self.valueLocation == 'left':
-            self.valueRect = self.image.get_rect(centery = self.rect.centery, right = self.rect.left - 10)
+            self.valueRect = self.valueImage.get_rect(centery = self.rect.centery, right = self.rect.left - 10)
         elif self.valueLocation == 'right':
-            self.valueRect = self.image.get_rect(centery = self.rect.centery, left = self.rect.right + 10)
+            self.valueRect = self.valueImage.get_rect(centery = self.rect.centery, left = self.rect.right + 8)
         else:
             self.showValue = False
 
