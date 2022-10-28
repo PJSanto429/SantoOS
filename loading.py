@@ -1,9 +1,6 @@
 #from modal import *
 from variables import *
 
-def doneEventFunct():
-    print('done loading')
-
 class Loading():
     instances = []
     def __init__(
@@ -49,7 +46,6 @@ class Loading():
         self.finished = False
         self.dist = (self.width - self.offset) / self.time
         self.activationTime = 0
-        self.doneLoadingFunct = doneEventFunct
         self.doneloadingFunctDone = False
         
     def activate(self):
@@ -62,6 +58,9 @@ class Loading():
         self.active = False
         self.activationTime = round(pg.time.get_ticks()/1000)
         self.setTime = 0
+        
+    def doneLoadingFunct(self):
+        print('done loading')
     
     def loadingDone(self):
         if not self.doneloadingFunctDone:

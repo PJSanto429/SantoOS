@@ -22,6 +22,7 @@ from APPhome import *
 from APPcalculator import *
 from APPgameTest import *
 from APPpaint import *
+from APPpong import *
 
 if __name__ == '__main__':
     pg.init()
@@ -64,15 +65,6 @@ if __name__ == '__main__':
                 modal.update(screen)
             else:
                 modal.active = False
-                
-        # pg.draw.aaline(screen, BLACK, (0, 0), mouse)
-        # pg.draw.aaline(screen, BLACK, (screen_width / 2, 0), mouse)
-        # pg.draw.aaline(screen, BLACK, (screen_width, 0), mouse)
-        # pg.draw.aaline(screen, BLACK, (screen_width, screen_height / 2), mouse)
-        # pg.draw.aaline(screen, BLACK, (0, screen_height / 2), mouse)
-        # pg.draw.aaline(screen, BLACK, (0, screen_height), mouse)
-        # pg.draw.aaline(screen, BLACK, (screen_width / 2, screen_height), mouse)
-        # pg.draw.aaline(screen, BLACK, (screen_width, screen_height), mouse)
 
         #! custom button/input box stuff that will be changed
         userNameHeader.text = currentUser.userName
@@ -116,12 +108,16 @@ if __name__ == '__main__':
     
     # ? --------------------- Test stuff on 'allApps['none'] --------------------
     # allApps['homeLoading'] = False
-    # # simpleGame.running = True
-    # crt.active = False
-    # allApps['paintMain'] = True
-    # mainPaint.running = True
+    # # allApps['homeLoggedIn'] = True
+    # # crt.active = False
+    
+    # # simpleGame.running = allApps['testGameMain'] = True
+    # pongGame.running = allApps['pongMain'] = True
+    # # mainPaint.running = allApps['paintMain'] = True
+    
     # currentUser.loggedIn = True
     # currentUser.userName = 'pjsanto'
+    # ? ------------------------------------------------------------------------
     
     testInput = InputBox(0, 10, 600, 50, 'Not Active', changeable=False, inactiveColor=BLACK, showRect=False, center=True)
     testToggle = Toggle(250, 50, 100, 50, text='test toggle', textLocation='bottom')
@@ -136,16 +132,13 @@ if __name__ == '__main__':
 
     while True:
         mouse = pg.mouse.get_pos()
-        #! hides the cursor
-        # pg.mouse.set_cursor((8,8),(0,0),(0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0))
         allEvents = pg.event.get()
         keys = pg.key.get_pressed()
         for event in allEvents:
             if event.type == pg.QUIT:
                 handleQuit()
             if checkMouseClick(event)[0]:
-                if not simpleGame.running:
-                    checkClick(mouse)
+                checkClick(mouse)
             if event.type == pg.KEYDOWN and keys[pg.K_LCTRL] and keys[pg.K_F1]:
                 crt.activateDeactivate()
             #!----timer events----
@@ -163,16 +156,14 @@ if __name__ == '__main__':
                 if allApps[slider.parentApp]:
                     slider.moveHandle(mouse)
             
-        if simpleGame.running:
-            screen.fill(BLACK)
-            simpleGame.run()
-        elif mainPaint.running:
+        simpleGame.run()
+        mainPaint.run()
+        pongGame.run()
+        
+        if not any([simpleGame.running, mainPaint.running, pongGame.running]):
             screen.fill(TEAL)
-            mainPaint.run(mouse)
-            drawEverything(screen)
-        else:
-            screen.fill(TEAL)
-            drawEverything(screen)
+
+        drawEverything(screen)
         crt.draw()
         
         pg.display.flip()

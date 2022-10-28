@@ -166,10 +166,14 @@ allApps = {
     "notesEdit": False,
     #!----calculator ----
     "calculatorMain": False,
+    #!----paint----
+    "paintMain": False,
+    #!----pong game----
+    "pongMain": False,
+    #!----test game----
+    "testGameMain": False,
     #!----bomb game----
     "bombGameMain": False, #not made yet
-    #!----paint----
-    "paintMain": False
 }
 
 defaultButtonFont = allFonts['largeConsolas']

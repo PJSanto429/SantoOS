@@ -15,6 +15,7 @@ class paintApp():
         self.running = False
         self.paintColor = BLACK
         self.circles = {}
+        self.delayTime = 0
         
         self.mainPaintBodyImage = mainBody[0]
         self.mainPaintBodyRect = mainBody[1]
@@ -60,7 +61,8 @@ class paintApp():
         except:
             pass
         
-    def drawLines(self, mouse, moving = False, static = False):
+    def drawLines(self, moving = False, static = False):
+        mouse = pg.mouse.get_pos()
         if static:
             pg.draw.line(screen, BLACK, (0, 0), ((mainPaintBodyRect.w / 2), mainPaintBodyRect.h / 2))
             pg.draw.line(screen, BLACK, (screen_width / 2, 0), ((mainPaintBodyRect.w / 2), mainPaintBodyRect.h / 2))
@@ -72,35 +74,41 @@ class paintApp():
             pg.draw.line(screen, BLACK, (screen_width, mainPaintBodyRect.bottom), ((mainPaintBodyRect.w / 2), mainPaintBodyRect.h / 2))
         
         if moving:
-            pg.draw.aaline(screen, BLACK, (0, 0), mouse)
-            pg.draw.aaline(screen, BLACK, (screen_width / 2, 0), mouse)
-            pg.draw.aaline(screen, BLACK, (screen_width, 0), mouse)
-            pg.draw.aaline(screen, BLACK, (screen_width, mainPaintBodyRect.height / 2), mouse)
-            pg.draw.aaline(screen, BLACK, (0, mainPaintBodyRect.height / 2), mouse)
-            pg.draw.aaline(screen, BLACK, (0, mainPaintBodyRect.bottom), mouse)
-            pg.draw.aaline(screen, BLACK, (mainPaintBodyRect.width / 2, mainPaintBodyRect.bottom), mouse)
-            pg.draw.aaline(screen, BLACK, (screen_width, mainPaintBodyRect.bottom), mouse)
+            size = (mainPaintBodyRect.height / 2) + mainPaintBodyRect.top
+            pg.draw.aaline(screen, BLACK, (mainPaintBodyRect.topleft), mouse)                                 #top left
+            pg.draw.aaline(screen, BLACK, (screen_width, mainPaintBodyRect.top), mouse)                       #top right
+            pg.draw.aaline(screen, BLACK, (0, mainPaintBodyRect.bottom), mouse)                               #bottom left
+            pg.draw.aaline(screen, BLACK, (screen_width, mainPaintBodyRect.bottom), mouse)                    #bottom right
+            pg.draw.aaline(screen, BLACK, (screen_width / 2, mainPaintBodyRect.top), mouse)                   #top center
+            pg.draw.aaline(screen, BLACK, (mainPaintBodyRect.width / 2, mainPaintBodyRect.bottom), mouse)     #bottom center
+            pg.draw.aaline(screen, BLACK, (0, size), mouse)                                                   #center left
+            pg.draw.aaline(screen, BLACK, (screen_width, size), mouse)                                        #center right
     
-    def checkCollide(self, mouse):
+    def checkCollide(self):
+        mouse = pg.mouse.get_pos()
         self.brushSize = int(self.sizeInput.value)
         self.brushSize = 5 if self.brushSize < 5 else self.brushSize
+        currTicks = pg.time.get_ticks()
         # self.brushSize = (self.brushSize + 1) if (self.brushSize < 50) else 2
         
         if mainPaintBodyRect.collidepoint(mouse) and not paintChangeColorModal.active:
-            pg.mouse.set_visible(False)
-            # circColor = ((255 - self.paintColor[0]), (255 - self.paintColor[1]), (255 - self.paintColor[2]))
-            pg.draw.circle(screen, self.paintColor, mouse, self.brushSize, 2)
-            if pg.mouse.get_pressed()[0]:
-                self.circles[len(self.circles)] = f'{self.paintColor}|{mouse}|{self.brushSize}'
-                # pg.draw.circle(screen, self.paintColor, mouse, self.brushSize)
+            if (currTicks - self.delayTime) / 1000 > .5:
+                pg.mouse.set_visible(False)
+                # circColor = ((255 - self.paintColor[0]), (255 - self.paintColor[1]), (255 - self.paintColor[2]))
+                pg.draw.circle(screen, self.paintColor, mouse, self.brushSize, 2)
+                if pg.mouse.get_pressed()[0]:
+                    self.circles[len(self.circles)] = f'{self.paintColor}|{mouse}|{self.brushSize}'
+                    # pg.draw.circle(screen, self.paintColor, mouse, self.brushSize)
         else:
             pg.mouse.set_visible(True)
         
-    def run(self, mouse):
-        self.drawPainting()
-        self.resetScreen()
-        self.checkCollide(mouse)
-        self.drawLines(mouse, False, False)
+    def run(self):
+        if self.running:
+            screen.fill(TEAL)
+            self.drawPainting()
+            self.resetScreen()
+            self.checkCollide()
+            self.drawLines(False, False)
         
 mainPaintHeader = InputBox(0, 5, screen_width, 50, 'Paint', changeable=False, parentApp='paintMain', center=True, showRect=False, inactiveColor=BLACK)
 
@@ -124,7 +132,7 @@ backGroundHider2Image.fill(TEAL)
 backGroundHider2Rect = backGroundHider2Image.get_rect(topleft = (0, 0))
 
 paintChangeColorModal = Modal(0, 0, 400, 400, 'Brush Settings', parentApp='paintMain', textColor=WHITE)
-paintChangeColorModal.active = True
+# paintChangeColorModal.active = True
 paintChangeColorModal.rect.center = (screen_width / 2, screen_height / 2)
 paintChangeColorRect = paintChangeColorModal.rect
 
@@ -132,6 +140,7 @@ closePaintColorButton = Button(0, 0, 50, 50, RED, parentApp='paintMain', parent=
 closePaintColorButton.rect.topright = paintChangeColorRect.topright
 def closePaintColorFunct():
     paintChangeColorModal.active = False
+    mainPaint.delayTime = pg.time.get_ticks()
 closePaintColorButton.onClickFunction = closePaintColorFunct
 
 brushSizeValueSlider = Slider(0, mainPaintBodyRect.bottom, (paintChangeColorRect.width - 50), 35, maxVal=30, activeColor=WHITE, handleColor=LIGHTGREY, parentApp='paintMain')#, parent=paintChangeColorModal)
@@ -162,8 +171,8 @@ def paintShowColorFunct():
         paintChangeColorModal.active = True if not paintChangeColorModal.active else False
         # pg.image.save(screen, 'allNotes/testImage.png')
         # with open('allNotes/paintTest2.json', 'r') as infile:
-        #     inData = json.load(infile)
-        #     mainPaint.circles = inData
+        #    inData = json.load(infile)
+        #    mainPaint.circles = inData
     except:
         print('error')
 paintShowColorButton.onClickFunction = paintShowColorFunct

@@ -91,16 +91,17 @@ openCalculatorButton.onClickFunction = openCalculatorFunct
 
 openGameButton = Button((openCalculatorButton.rect.right + spacer), (openNotesAppButton.rect.y), (openNotesAppButton.rect.width), (openNotesAppButton.rect.height), GREEN, 'Game Test', parentApp='homeLoggedIn')
 def openGameFunct():
-    pass
-    # simpleGame.running = True
+    allApps['homeLoggedIn'] = False
+    simpleGame.running = True
 openGameButton.onClickFunction = openGameFunct
 
 openPaintButton = Button(openNotesAppRect.x, (openNotesAppRect.bottom + spacer), openNotesAppRect.width, openNotesAppRect.height, PURPLE, 'Paint', parentApp='homeLoggedIn')
 def openPaintFunct():
     pass
-    # allApps['homeLoggedIn'] = False
-    # allApps['paintMain'] = True
-    # mainPaint.running = True
+    allApps['homeLoggedIn'] = False
+    allApps['paintMain'] = True
+    mainPaint.running = True
+    mainPaint.delayTime = pg.time.get_ticks()
 openPaintButton.onClickFunction = openPaintFunct
 
 openAllSettingsButton = Button(0, 0, 125, 125, BLACK, '', WHITE, parentApp='homeLoggedIn', picture='assets/settingsLogo2.png')

@@ -2,6 +2,7 @@ import pygame as pg
 from random import choice
 
 from variables import *
+from button import Button
 
 levelMap1 = [
     #'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
@@ -32,8 +33,8 @@ class Game:
         self.running = False
         
     def run(self):
-        # if self.running:
-        level.run()
+        if self.running:
+            level.run()
 
 class Tile(pg.sprite.Sprite):
     instances = []
@@ -70,14 +71,14 @@ class Player(pg.sprite.Sprite):
     def getInput(self):
         keys = pg.key.get_pressed()
         
-        if keys[pg.K_RIGHT]:
+        if keys[pg.K_RIGHT] or keys[pg.K_d]:
             self.direction.x = 1
-        elif keys[pg.K_LEFT]:
+        elif keys[pg.K_LEFT] or keys[pg.K_a]:
             self.direction.x = -1
         else:
             self.direction.x = 0
             
-        if keys[pg.K_SPACE]:
+        if keys[pg.K_SPACE] or keys[pg.K_w]:
             self.jump()
             
     def applyGravity(self):
@@ -97,7 +98,9 @@ class Player(pg.sprite.Sprite):
 class Level():
     def __init__(self, levelData, displaySurf):
         self.displaySurf = displaySurf
-        self.setUpLevel(levelData)
+        self.levelDrawn = False
+        self.levelData = levelData
+        # self.setUpLevel(levelData)
         
         self.worldShift = 0
         
@@ -164,6 +167,10 @@ class Level():
                     player.direction.y = 0
         
     def run(self):
+        screen.fill(BLACK)
+        if not self.levelDrawn:
+            self.levelDrawn = True
+            self.setUpLevel(self.levelData)
         #! tiles stuff
         self.tiles.update(self.worldShift)
         self.tiles.draw(screen)
@@ -180,4 +187,11 @@ simpleGame = Game()
 
 #!level
 level = Level(levelMap1, screen)
-        
+
+testGameHomeButton = Button(0, 0, 100, 50, RED, 'Home', BLACK, showOutline=True, outlineColor=WHITE, parentApp='testGameMain')
+def testGameHomeFunct():
+    simpleGame.running = False
+    level.levelDrawn = False
+    allApps['homeLoggedIn'] = True
+    allApps['testGameMain'] = False
+testGameHomeButton.onClickFunction = testGameHomeFunct
