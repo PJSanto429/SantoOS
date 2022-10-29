@@ -11,6 +11,7 @@ from loading import Loading
 from randomFuncts import handleQuit
 from APPgameTest import simpleGame
 from APPpaint import mainPaint
+from APPpong import pongGame
 from user import *
 from variables import *
 
@@ -96,13 +97,20 @@ def openGameFunct():
 openGameButton.onClickFunction = openGameFunct
 
 openPaintButton = Button(openNotesAppRect.x, (openNotesAppRect.bottom + spacer), openNotesAppRect.width, openNotesAppRect.height, PURPLE, 'Paint', parentApp='homeLoggedIn')
+openPaintRect = openPaintButton.rect
 def openPaintFunct():
-    pass
     allApps['homeLoggedIn'] = False
     allApps['paintMain'] = True
     mainPaint.running = True
     mainPaint.delayTime = pg.time.get_ticks()
 openPaintButton.onClickFunction = openPaintFunct
+
+openPongButton = Button((openPaintRect.right + spacer), openPaintRect.y, openPaintRect.width, openPaintRect.height, BLACK, 'Pong', textColor=WHITE, parentApp='homeLoggedIn')
+def openPongFunct():
+    allApps['homeLoggedIn'] = False
+    allApps['pongMain'] = True
+    pongGame.running = True
+openPongButton.onClickFunction = openPongFunct
 
 openAllSettingsButton = Button(0, 0, 125, 125, BLACK, '', WHITE, parentApp='homeLoggedIn', picture='assets/settingsLogo2.png')
 openAllSettingsButton.rect.bottom = screen_height

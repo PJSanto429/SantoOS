@@ -22,7 +22,6 @@ class Modal:
         width: int,
         height: int,
         title,
-        #children: list = [],
         textColor = BLACK,
         textFont = defaultTextInputFont,
         backgroundColor = DARKGREY,

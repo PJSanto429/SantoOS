@@ -107,16 +107,16 @@ if __name__ == '__main__':
     #!---------------
     
     # ? --------------------- Test stuff on 'allApps['none'] --------------------
-    # allApps['homeLoading'] = False
-    # # allApps['homeLoggedIn'] = True
-    # # crt.active = False
+    allApps['homeLoading'] = False
+    # allApps['homeLoggedIn'] = True
+    # crt.active = False
     
-    # # simpleGame.running = allApps['testGameMain'] = True
-    # pongGame.running = allApps['pongMain'] = True
-    # # mainPaint.running = allApps['paintMain'] = True
+    # simpleGame.running = allApps['testGameMain'] = True
+    pongGame.running = allApps['pongMain'] = True
+    # mainPaint.running = allApps['paintMain'] = True
     
-    # currentUser.loggedIn = True
-    # currentUser.userName = 'pjsanto'
+    currentUser.loggedIn = True
+    currentUser.userName = 'pjsanto'
     # ? ------------------------------------------------------------------------
     
     testInput = InputBox(0, 10, 600, 50, 'Not Active', changeable=False, inactiveColor=BLACK, showRect=False, center=True)
