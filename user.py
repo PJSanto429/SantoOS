@@ -272,7 +272,7 @@ def loginButtonFunct():
             if status == 'userAlreadyMade':
                 loginStatusMessageBox.text = 'user already exists'
             
-loginButton.onClickFunction = loginButtonFunct
+passwordInput.enterEvent = loginButton.onClickFunction = loginButtonFunct
 
 loginStatusBox = InputBox((loginModal.rect.left + 15), (passwordInput.rect.bottom + 25), (loginModal.rect.width - 30), 0, changeable=False, parent=loginModal, parentApp='homeNotLoggedIn')
 loginStatusRect = loginStatusBox.rect

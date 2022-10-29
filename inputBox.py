@@ -74,6 +74,9 @@ class InputBox:
     def onChange(self):
         pass
     
+    def enterEvent(self):
+        pass
+    
     def charCheck(self, character):
         charAllowed = True
         if self.allowedChars == 'int':
@@ -111,9 +114,13 @@ class InputBox:
                         if self.useCursor:
                             if len(self.text) > 1:
                                 self.text = self.text[:-1] if self.text[-1] != '|' else self.text[:-2]
+                            elif len(self.text) == 1 and self.text[-1] != '|':
+                                self.text = self.text[:-1]
                         else:
                             self.text = self.text[:-1]# if self.text[-1] != '|' else self.text[:-2]
-                    if (event.unicode).isprintable() and event.unicode != '|' and not self.full:
+                    elif event.key == pg.K_RETURN:
+                        self.enterEvent()
+                    elif (event.unicode).isprintable() and event.unicode != '|' and not self.full:
                         if self.validate(event.unicode):
                             if len(self.text) > 0 and self.text[-1] == '|':
                                 self.text = self.text[:-1]
