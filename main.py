@@ -23,6 +23,7 @@ from APPcalculator import *
 from APPgameTest import *
 from APPpaint import *
 from APPpong import *
+from APPsnake import *
 
 if __name__ == '__main__':
     pg.init()
@@ -44,7 +45,7 @@ if __name__ == '__main__':
                 button.draw_button(screen)
                 
         for box in InputBox.instances:
-            if not button.parent and allApps[box.parentApp]:
+            if not box.parent and allApps[box.parentApp]:
                 box.update()
                 box.draw(screen)
             
@@ -108,13 +109,14 @@ if __name__ == '__main__':
     
     # ? --------------------- Test stuff on 'allApps['none'] --------------------
     # allApps['homeLoading'] = False
-    # # allApps['homeLoggedIn'] = True
-    # allApps['homeNotLoggedIn'] = True
+    # allApps['homeLoggedIn'] = True
+    # # allApps['homeNotLoggedIn'] = True
     # # crt.active = False
     
     # # simpleGame.running = allApps['testGameMain'] = True
     # # pongGame.running = allApps['pongMain'] = True
     # # mainPaint.running = allApps['paintMain'] = True
+    # # snakeGame.running = allApps['snakeGameMain'] = True
     
     # currentUser.loggedIn = True
     # currentUser.userName = 'pjsanto'
@@ -160,8 +162,14 @@ if __name__ == '__main__':
         simpleGame.run()
         mainPaint.run()
         pongGame.run()
+        snakeGame.run()
         
-        if not any([simpleGame.running, mainPaint.running, pongGame.running]):
+        if not any([
+            simpleGame.running,
+            mainPaint.running,
+            pongGame.running,
+            snakeGame.running
+        ]):
             screen.fill(TEAL)
 
         drawEverything(screen)

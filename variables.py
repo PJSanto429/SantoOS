@@ -172,8 +172,10 @@ allApps = {
     "pongMain": False,
     #!----test game----
     "testGameMain": False,
-    #!----bomb game----
-    "bombGameMain": False, #not made yet
+    #!----snake game----
+    "snakeGameMain": False,
+    # ----bomb game----
+    # "bombGameMain": False, #not made yet
 }
 
 defaultButtonFont = allFonts['largeConsolas']

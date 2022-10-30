@@ -12,6 +12,7 @@ from randomFuncts import handleQuit
 from APPgameTest import simpleGame
 from APPpaint import mainPaint
 from APPpong import pongGame
+from APPsnake import snakeGame
 from user import *
 from variables import *
 
@@ -106,11 +107,19 @@ def openPaintFunct():
 openPaintButton.onClickFunction = openPaintFunct
 
 openPongButton = Button((openPaintRect.right + spacer), openPaintRect.y, openPaintRect.width, openPaintRect.height, BLACK, 'Pong', textColor=WHITE, parentApp='homeLoggedIn')
+openPongrect = openPongButton.rect
 def openPongFunct():
     allApps['homeLoggedIn'] = False
     allApps['pongMain'] = True
     pongGame.running = True
 openPongButton.onClickFunction = openPongFunct
+
+openSnakeGameButton = Button((openPongrect.right + spacer), openPongrect.y, openPongrect.width, openPongrect.height, PINK, 'Snake', textColor=BLACK, parentApp='homeLoggedIn')
+def openSnakeGameFunct():
+    allApps['homeLoggedIn'] = False
+    allApps['snakeGameMain'] = True
+    snakeGame.running = True
+openSnakeGameButton.onClickFunction = openSnakeGameFunct
 
 openAllSettingsButton = Button(0, 0, 125, 125, BLACK, '', WHITE, parentApp='homeLoggedIn', picture='assets/settingsLogo2.png')
 openAllSettingsButton.rect.bottom = screen_height
