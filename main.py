@@ -109,14 +109,14 @@ if __name__ == '__main__':
     
     # ? --------------------- Test stuff on 'allApps['none'] --------------------
     # allApps['homeLoading'] = False
-    # allApps['homeLoggedIn'] = True
+    # # allApps['homeLoggedIn'] = True
     # # allApps['homeNotLoggedIn'] = True
     # # crt.active = False
     
     # # simpleGame.running = allApps['testGameMain'] = True
     # # pongGame.running = allApps['pongMain'] = True
     # # mainPaint.running = allApps['paintMain'] = True
-    # # snakeGame.running = allApps['snakeGameMain'] = True
+    # snakeGame.running = allApps['snakeGameMain'] = True
     
     # currentUser.loggedIn = True
     # currentUser.userName = 'pjsanto'

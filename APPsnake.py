@@ -5,45 +5,78 @@ from button import Button
 from variables import *
 from inputBox import InputBox
 
-cellSize = 15
+cellSize = 25
 cellNum = (screen_width / cellSize)
 
 class SnakeGame:
     def __init__(self):
         self.running = False
         self.paused = False
-        self.pauseTime = pg.time.get_ticks()
+        self.failed = False
         
+        self.pauseTime = pg.time.get_ticks()
         self.score = 0
         
         self.snake = Snake()
         self.fruit = Fruit()
-        
+
+    def start(self):
+        self.paused = True
+        snakeHomeButton.parentApp = snakeStatusBox.parentApp = 'snakeGameMain'
+        snakeStatusBox.text = 'Press Space to Start'
+
+    def drawGrid(self):
+        color = VERYDARKGREY
+        for row in range(int(cellNum)):
+            if row % 2 == 0:
+                for col in range(int(cellNum)):
+                    if col % 2 == 0:
+                        xPos = row * cellSize
+                        yPos = col * cellSize
+                        rect = pg.Rect(xPos, yPos, cellSize, cellSize)
+                        pg.draw.rect(screen, color, rect)
+            else:
+                for col in range(int(cellNum)):
+                    if col % 2 != 0:
+                        xPos = row * cellSize
+                        yPos = col * cellSize
+                        rect = pg.Rect(xPos, yPos, cellSize, cellSize)
+                        pg.draw.rect(screen, color, rect)
+
     def checkCollision(self):
         if self.fruit.pos == self.snake.body[0]:
             self.snake.newBlock = True
             self.fruit.randomPos()
+            
+        for block in self.snake.body[1:]:
+            if block == self.fruit.pos:
+                self.fruit.randomPos()
         
     def run(self):
         if self.running:
             #screen.fill(choice(allColors)) #! crazy mode
             screen.fill(BLACK)
+            self.drawGrid()
             self.checkCollision()
             self.fruit.update()
             self.snake.update()
     
 class Snake:
     def __init__(self):
-        self.body = [Vector2(5, 10), Vector2(6, 10), Vector2(7, 10)]
-        self.direction = Vector2(1, 0)
+        self.reset()
         self.newBlock = False
         self.moveTime = pg.time.get_ticks()
         self.headDrawn = False
         
-    # def drawGrid(self):
-    #     for row in cellNum:
-    #         for col in cellNum:
-    #             pass
+    def getColor(self):
+        self.color = choice(allColors)
+        while self.color in [BLACK, VERYDARKGREY, DARKGREY, GREY, BLUE, RED]:
+            self.color = choice(allColors)
+        
+    def reset(self):
+        self.getColor()
+        self.body = [Vector2(7, 10), Vector2(6, 10), Vector2(5, 10)]
+        self.direction = Vector2(1, 0)
         
     def draw(self):
         for block in self.body:
@@ -51,7 +84,7 @@ class Snake:
                 self.headDrawn = True
                 color = BLUE
             else:
-                color = GREEN
+                color = self.color
             xPos = int(block.x * cellSize)
             yPos = int(block.y * cellSize)
             rect = pg.Rect(xPos, yPos, cellSize, cellSize)
@@ -73,9 +106,7 @@ class Snake:
             
     def getInput(self):
         keys = pg.key.get_pressed()
-        # allEvents = pg.event.get()
-        # for event in allEvents:
-        if not snakeGame.paused:
+        if not snakeGame.paused and not snakeGame.failed:
             if keys[pg.K_UP] and self.direction != Vector2(0, 1):
                 self.direction = Vector2(0, -1)
             if keys[pg.K_DOWN] and self.direction != Vector2(0, -1):
@@ -91,19 +122,38 @@ class Snake:
                 if snakeGame.paused:
                     snakeGame.paused = False
                     snakeHomeButton.parentApp = snakeStatusBox.parentApp = 'none'
-                else:
+                elif not snakeGame.paused:
                     snakeGame.paused = True
                     snakeHomeButton.parentApp = snakeStatusBox.parentApp = 'snakeGameMain'
                     snakeStatusBox.text = 'Game Paused'
+                if snakeGame.failed:
+                    snakeGame.failed = False
         
-    # def checkFailure(self):
-    #     pass
+    def checkFailure(self):
+        if not 0 <= self.body[0].x < cellNum:
+            snakeGame.failed = True
+        if not 0 <= self.body[0].y < cellNum:
+            snakeGame.failed = True
+            
+        for part in self.body[1:]:
+            if part == self.body[0]:
+                snakeGame.failed = True
+        
+        if snakeGame.failed:
+            self.gameOver()
 
-    # def gameOver(self):
-    #     pass
+    def gameOver(self):
+        snakeStatusBox.parentApp, snakeStatusBox.text = ['snakeGameMain', 'Game Over']
+        snakeHomeButton.parentApp = 'snakeGameMain'
+        snakeScoreBox.text = '0'
+        snakeGame.score = 0
+        snakeGame.paused = True
+        snakeGame.failed = False
+        self.reset()
         
     def update(self):
         self.getInput()
+        self.checkFailure()
         self.draw()
         self.move()
         
@@ -112,8 +162,8 @@ class Fruit:
         self.randomPos()
         
     def randomPos(self):
-        self.x = randint(0, cellNum - 1)
-        self.y = randint(0, cellNum - 1)
+        self.x = randint(1, cellNum - 2)
+        self.y = randint(1, cellNum - 2)
         self.pos = Vector2(self.x, self.y)
     
     def draw(self):
@@ -139,9 +189,10 @@ snakeStatusBox.inactiveColor = snakeScoreBox.inactiveColor = WHITE
 snakeScoreBox.parentApp = 'snakeGameMain'
 
 snakeHomeButton = Button(0, 0, 100, 50, BLUE, 'Home')
-snakeHomeButton.rect.center = (screen_width / 2, (screen_height / 2) - 120)
+snakeHomeButton.rect.center = (screen_width / 2, (screen_height / 2) + 200)
 def snakeHomeFunct():
     snakeGame.paused = snakeGame.running = False
+    snakeGame.snake.reset()
     snakeHomeButton.parentApp = snakeStatusBox.parentApp = 'none'
     snakeGame.score = 0
     snakeScoreBox.text = '0'

@@ -12,7 +12,7 @@ from randomFuncts import handleQuit
 from APPgameTest import simpleGame
 from APPpaint import mainPaint
 from APPpong import pongGame
-from APPsnake import snakeGame
+from APPsnake import *
 from user import *
 from variables import *
 
@@ -94,6 +94,7 @@ openCalculatorButton.onClickFunction = openCalculatorFunct
 openGameButton = Button((openCalculatorButton.rect.right + spacer), (openNotesAppButton.rect.y), (openNotesAppButton.rect.width), (openNotesAppButton.rect.height), GREEN, 'Game Test', parentApp='homeLoggedIn')
 def openGameFunct():
     allApps['homeLoggedIn'] = False
+    allApps['testGameMain'] = True
     simpleGame.running = True
 openGameButton.onClickFunction = openGameFunct
 
@@ -119,6 +120,9 @@ def openSnakeGameFunct():
     allApps['homeLoggedIn'] = False
     allApps['snakeGameMain'] = True
     snakeGame.running = True
+    snakeGame.paused = True
+    snakeHomeButton.parentApp = snakeStatusBox.parentApp = 'snakeGameMain'
+    snakeStatusBox.text = 'Press Space to Start'
 openSnakeGameButton.onClickFunction = openSnakeGameFunct
 
 openAllSettingsButton = Button(0, 0, 125, 125, BLACK, '', WHITE, parentApp='homeLoggedIn', picture='assets/settingsLogo2.png')
