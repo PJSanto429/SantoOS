@@ -47,12 +47,12 @@ class DodgerGame:
             
             self.checkCollide()
             
-            # self.bg.update()
-            # self.bg.draw(screen)
+            self.bg.update()
+            self.bg.draw(screen)
             
-            # self.createEnemy()
-            # self.enemies.draw(screen)
-            # self.enemies.update()
+            self.createEnemy()
+            self.enemies.draw(screen)
+            self.enemies.update()
             
             self.player.draw(screen)
             self.player.update()
