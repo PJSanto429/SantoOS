@@ -69,20 +69,24 @@ class Snake:
         self.headDrawn = False
         
     def getColor(self):
+        noColors = [BLACK, VERYDARKGREY, DARKGREY, GREY, RED]
+        self.headColor = choice(allColors)
+        while self.headColor in noColors:
+            self.headColor = choice(allColors)
         self.color = choice(allColors)
-        while self.color in [BLACK, VERYDARKGREY, DARKGREY, GREY, BLUE, RED]:
+        while self.color in noColors or self.color == self.headColor:
             self.color = choice(allColors)
         
     def reset(self):
         self.getColor()
         self.body = [Vector2(7, 10), Vector2(6, 10), Vector2(5, 10)]
-        self.direction = Vector2(1, 0)
+        self.direction = Vector2(0, 0)
         
     def draw(self):
         for block in self.body:
             if not self.headDrawn:
                 self.headDrawn = True
-                color = BLUE
+                color = self.headColor
             else:
                 color = self.color
             xPos = int(block.x * cellSize)
@@ -92,7 +96,7 @@ class Snake:
         self.headDrawn = False
             
     def move(self):
-        if (pg.time.get_ticks() - self.moveTime) >= 75 and not snakeGame.paused:
+        if (pg.time.get_ticks() - self.moveTime) >= 100 and not snakeGame.paused and not self.direction == Vector2(0, 0):
             self.moveTime = pg.time.get_ticks()
             if self.newBlock:
                 self.newBlock = False

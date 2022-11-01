@@ -174,6 +174,8 @@ allApps = {
     "testGameMain": False,
     #!----snake game----
     "snakeGameMain": False,
+    #!----dodge game----
+    "dodgerGameMain": False,
     # ----bomb game----
     # "bombGameMain": False, #not made yet
 }
