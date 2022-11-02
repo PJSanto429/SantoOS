@@ -115,6 +115,7 @@ mainPaintHeader = InputBox(0, 5, screen_width, 50, 'Paint', changeable=False, pa
 paintHomeButton = Button(0, 0, 100, 50, BLUE, 'Home', WHITE, parentApp='paintMain', showOutline=True)
 def paintHomeFunct():
     mainPaint.running = False
+    mainPaint.circles = {}
     allApps['paintMain'] = False
     allApps['homeLoggedIn'] = True
 paintHomeButton.onClickFunction = paintHomeFunct

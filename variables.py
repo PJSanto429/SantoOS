@@ -16,7 +16,8 @@ BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 PINK = (255, 122, 146)
-ORANGE = (255,165,0)
+ORANGE = (255, 165, 0)
+YELLOW = (255, 255, 0)
 
 RED = (255, 0, 0)
 DARKRED = (128, 0, 0)
@@ -152,11 +153,36 @@ allFonts = {
     "smallHPSimplified": pg.font.SysFont('hpsimplified', 20),
     "smallArial": pg.font.SysFont('arial', 20),
 }
+
+largeFonts = [
+    "largeAlgerian",
+    "largeBauhaus",
+    "largeConsolas",
+    "largeImpact",
+    "largeLucidaConsole",
+    "largeSegoeuiBlack",
+    "largeAgencyfb",
+    "largeBlackAdderitc",
+    "largeBritannic",
+    "largeCastellar",
+    "largeColonna",
+    "largeEngravers",
+    "largeLucidaHandwriting",
+    "largeLucidaSansTypewriter",
+    "largeMagneto",
+    "largeNiagaraSolid",
+    "largeOldEnglishText",
+    "largeStencil",
+    "largeHPSimplifiedBDIT",
+    "largeHPSimplified",
+    "largeArial"
+]
 #allPygameFonts = pg.font.get_fonts()
 
 allApps = {
     "none": False, #? pretty much a testbed
     "all": True,
+    # "testBed": False,
     #!----home----
     "homeLoading": True,
     "homeNotLoggedIn": False,

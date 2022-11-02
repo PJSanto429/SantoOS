@@ -110,8 +110,10 @@ if __name__ == '__main__':
     
     # ? --------------------- Test stuff on 'allApps['none'] --------------------
     # allApps['homeLoading'] = False
-    # # allApps['homeLoggedIn'] = True
     # # allApps['homeNotLoggedIn'] = True
+    # # allApps['homeLoggedIn'] = True
+    # # allApps['none'] = True
+    
     # # crt.active = False
     
     # # simpleGame.running = allApps['testGameMain'] = True
@@ -125,6 +127,7 @@ if __name__ == '__main__':
     # ? ------------------------------------------------------------------------
     
     testInput = InputBox(0, 10, 600, 50, 'Not Active', changeable=False, inactiveColor=BLACK, showRect=False, center=True)
+
     testToggle = Toggle(250, 50, 100, 50, text='test toggle', textLocation='bottom')
     def testToggleFunct():
         testInput.text = 'Active' if testToggle.on else 'Not Active'
@@ -132,6 +135,19 @@ if __name__ == '__main__':
     testToggleRect = testToggle.rect
     
     testSlider = Slider(20, (testToggleRect.bottom  + 125), (screen_width - 100), 50, title=['slider here', 'top'], showValue=[True, 'bottom'], maxVal=255, handleColor=GREY)
+    
+    # inputTest = InputBox(50, 100, 200, 50, largeFonts[0], largeFonts[0], False, parentApp='testBed', showRect=False,inactiveColor=BLACK)
+    # buttonTest = Button(50, 250, 50, 50, RED, '0', parentApp='testBed')
+    # def buttonFunct():
+    #     fontNum = int(buttonTest.text)
+    #     if fontNum + 1 == len(largeFonts):
+    #         fontNum = 0
+    #     else:
+    #         fontNum += 1
+    #     buttonTest.text = str(fontNum)
+    #     inputTest.text = largeFonts[fontNum]
+    #     inputTest.textFont = allFonts[largeFonts[fontNum]]
+    # buttonTest.onClickFunction = buttonFunct
     
     #? ------------------------------------------------------------------------
 
