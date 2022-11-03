@@ -1,2 +1,11 @@
-this is an operating system made in pygame. still in early stages
-![axelHead](https://user-images.githubusercontent.com/86988750/188249014-79efb860-bda8-4ffa-af75-5b17a943ff94.png)
+This is an operating system made in pygame. some applications include notes, paint, digital table tennis, and more.
+
+#------------------------------------- To run ---------------------------------------------
+
+1. pull main
+2. in terminal(or editor of your choosing) run main.py
+3. enjoy
+
+#-------------------------------------------------------------------------------------------
+
+if there are any problems you encounter, create and issue and I will get to it ASAP!
