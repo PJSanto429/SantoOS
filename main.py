@@ -14,6 +14,7 @@ from toggle import Toggle
 from user import currentUser
 from slider import Slider
 from clock import Clock
+from firstStartup import firstStartUp
 from graphics import *
 from variables import *
 #?------- apps --------------------
@@ -29,6 +30,7 @@ from APPdodger import *
 if __name__ == '__main__':
     pg.init()
     pg.font.init()
+    firstStartUp()
     
     #*--------------------------------------
     def checkClick(mouse):

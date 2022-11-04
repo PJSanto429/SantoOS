@@ -9,10 +9,13 @@ from toggle import Toggle
 from clock import Clock
 from loading import Loading
 from randomFuncts import handleQuit
+#* -------- apps ----------
 from APPgameTest import simpleGame
 from APPpaint import mainPaint
 from APPpong import pongGame
 from APPsnake import *
+from APPdodger import *
+#*----------------------
 from user import *
 from variables import *
 
@@ -124,6 +127,14 @@ def openSnakeGameFunct():
     snakeHomeButton.parentApp = snakeStatusBox.parentApp = 'snakeGameMain'
     snakeStatusBox.text = 'Press Space to Start'
 openSnakeGameButton.onClickFunction = openSnakeGameFunct
+
+openDodgerButton = Button(openPaintRect.x, (openPaintRect.bottom + spacer), openPaintRect.width, openPaintRect.height, GREY, 'FarSpace', parentApp='homeLoggedIn')
+openDodgerButton.textFont = allFonts['mediumConsolas']
+def openDodgeFunct():
+    dodgerGame.running = True
+    allApps['homeLoggedIn'] = False
+    allApps['dodgerGameMain'] = True
+openDodgerButton.onClickFunction = openDodgeFunct
 
 openAllSettingsButton = Button(0, 0, 125, 125, BLACK, '', WHITE, parentApp='homeLoggedIn', picture='assets/settingsLogo2.png')
 openAllSettingsButton.rect.bottom = screen_height

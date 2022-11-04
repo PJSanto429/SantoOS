@@ -4,6 +4,7 @@ from random import choice, randint
 from glob import glob
 from variables import *
 from inputBox import InputBox
+from button import Button
 
 dodgerFilePath = 'assets/dodgeGame/'
 dodgerFont = 'largeLucidaSansTypewriter'
@@ -52,10 +53,13 @@ class DodgerGame:
         self.paused = False
         self.setup = False
         self.started = False
-        
+
         self.lives = 3
+        self.health = 100
         self.score = 0
+        self.lastScore = 0
         self.failed = False
+        self.gameOver = False
         
         self.enemyFired = 1000
         self.failedTimer = 0
@@ -69,6 +73,10 @@ class DodgerGame:
     def setupLevel(self):
         if not self.setup:
             self.setup = True
+            self.score = 0
+            self.health = 100
+            self.started = False
+            self.paused = False
             self.enemies = pg.sprite.Group()
             self.bg = pg.sprite.Group()
             self.explosions = pg.sprite.Group()
@@ -81,6 +89,7 @@ class DodgerGame:
         if playerLasers:
             for laser in playerLasers:
                 if pg.sprite.spritecollide(laser, self.enemies, True):
+                    self.score += 5
                     self.explosions.add(DodgerExplosion(laser.rect))
                     laser.kill()
                     
@@ -88,25 +97,33 @@ class DodgerGame:
         if enemyLasers:
             for laser in enemyLasers:
                 if pg.sprite.spritecollide(laser, self.player, False):
-                    self.gameFailed()
+                    laser.kill()
+                    self.health -= 5
+                    # self.explosions.add(DodgerExplosion(self.player.sprite.rect))
+                    if self.health <= -5:
+                        self.gameFailed()
                     
     def gameFailed(self):
         self.failed = True
+        self.health = 100
+        self.lastScore = self.score
         self.lives -= 1
-        if not self.lives < 0:
-            self.failedTimer = pg.time.get_ticks()
-            killAll = [
-                self.player.sprite.lasers,
-                self.enemies,
-                self.enemyLasers,
-                self.explosions
-            ]
-            for group in killAll:
-                for thing in group:
-                    thing.kill()
+        self.failedTimer = pg.time.get_ticks()
+        killAll = [
+            self.player.sprite.lasers,
+            self.enemies,
+            self.enemyLasers,
+            self.explosions
+        ]
+        for group in killAll:
+            for thing in group:
+                thing.kill()
 
-        else:
+        if self.lives == 0:
+            self.gameOver = True
+            self.pausedTimer = pg.time.get_ticks()
             self.lives = 3
+            self.lastScore = self.score
             self.score = 0
         
     def createExplosion(self, enemy):
@@ -150,7 +167,10 @@ class DodgerGame:
             
             dodgerStartBox.parentApp = 'dodgerGameMain' if not self.started else 'none'
             
-            dodgerStatusBox.text = f'{self.lives} extra lives'
+            lifeWord = 'lives' if self.lives > 1 else 'life'
+            dodgerStatusBox.text = f'{self.lives} {lifeWord} remaining'
+            if self.gameOver:
+                dodgerStatusBox.text = f'Game Over   Score: {self.lastScore}'
             dodgerStatusBox.parentApp = 'dodgerGameMain' if self.failed else 'none'
                 
             if self.started:
@@ -181,6 +201,13 @@ class DodgerGame:
                 self.player.draw(screen)
             self.player.sprite.explosion.draw(screen)
             self.player.sprite.explosion.update()
+            
+            dodgerHomeButton.parentApp = 'dodgerGameMain' if (self.failed or self.paused) else 'none'
+            
+            #player score and health
+            # screen.blit(dodgerTopCoverImage, dodgerTopCoverRect)
+            dodgerPlayerInfoBox.text = f'Shield: {self.health}%    Score: {self.score}'
+            dodgerPlayerInfoBox.parentApp = 'dodgerGameMain' if self.started else 'none'
             
 class DodgerBG(pg.sprite.Sprite):
     instances = []
@@ -216,28 +243,32 @@ class DodgerBG(pg.sprite.Sprite):
         self.move()
             
 class DodgerEnemy(pg.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, isLaser = False):
         super().__init__()
+        self.isLaser = isLaser
         self.size = choice(['small', 'medium', 'large'])
-        if self.size == 'small':
-            self.image = smallShip
-        if self.size == 'medium':
-            self.image = mediumShip
-        if self.size == 'large':
-            self.image = largeShip
-        self.rect = self.image.get_rect(center = (randint(5, screen_width - 5), -50))
-        self.zigZag = choice([True, False])
-        if self.zigZag:
-            self.direction = choice(['left', 'right'])
-            self.speed = randint(1, 4)
+        if not self.isLaser:
+            pos = (randint(5, screen_width - 5), -50)
+            if self.size == 'small':
+                self.image = smallShip
+            if self.size == 'medium':
+                self.image = mediumShip
+            if self.size == 'large':
+                self.image = largeShip
+            self.zigZag = choice([True, False])
+            self.moveDown = True
+        self.direction = choice(['left', 'right'])
+        self.speed = randint(1, 4)
+        self.rect = self.image.get_rect(center = (pos))
         
     def move(self):
-        if self.size == 'small':
-            self.rect.y += 5
-        if self.size == 'medium':
-            self.rect.y += 3
-        if self.size == 'large':
-            self.rect.y += 2
+        if self.moveDown:
+            if self.size == 'small':
+                self.rect.y += 5
+            if self.size == 'medium':
+                self.rect.y += 3
+            if self.size == 'large':
+                self.rect.y += 2
             
         if self.zigZag:
             if self.direction == 'right':
@@ -254,6 +285,11 @@ class DodgerEnemy(pg.sprite.Sprite):
                 self.rect.right = screen_width
                 self.direction = 'left'
                 self.speed = randint(1, 4)
+                
+        if self.rect.bottom >= 450:
+            self.bottom = True
+            self.zigZag = True
+            self.moveDown = False
         
     def checkBoundaries(self):
         if self.rect.y > screen_height + 25:
@@ -323,6 +359,8 @@ class DodgerPlayer(pg.sprite.Sprite):
         self.lasers = pg.sprite.Group()
         self.laserTimeout = 0
         
+        self.weapon = 'singleBlaster'
+        
         self.explosion = pg.sprite.GroupSingle()
         self.explosionCreated = False
         
@@ -331,24 +369,24 @@ class DodgerPlayer(pg.sprite.Sprite):
         
     def checkInput(self):
         keys = pg.key.get_pressed()
-        mouse = pg.mouse.get_pressed()
         now = pg.time.get_ticks()
         
-        if (keys[pg.K_SPACE] or mouse[0]) and (now - self.laserTimeout > 100):
+        if (keys[pg.K_SPACE]) and (now - self.laserTimeout > 100):
             if not dodgerGame.paused:
                 self.laserTimeout = now
                 if not dodgerGame.failed:
                     self.lasers.add(DodgerLaser(self.rect.center))
                 else:
                     now = pg.time.get_ticks()
-                    if now - dodgerGame.failedTimer > 1000:
+                    if now - dodgerGame.failedTimer > 1500:
                         dodgerGame.failedTimer = now
                         dodgerGame.failed = False
+                        dodgerGame.gameOver = False
         
         if not dodgerGame.paused and not dodgerGame.failed:
-            if keys[pg.K_LEFT] or keys[pg.K_a]  or mouse[0]:
+            if keys[pg.K_LEFT] or keys[pg.K_a]:
                 self.rect.x -= 5
-            if keys[pg.K_RIGHT] or keys[pg.K_d] or mouse[2]:
+            if keys[pg.K_RIGHT] or keys[pg.K_d]:
                 self.rect.x += 5
             
             if self.rect.left <= 0:
@@ -369,7 +407,20 @@ class DodgerPlayer(pg.sprite.Sprite):
         
 dodgerGame = DodgerGame()
 
+dodgerTopCoverImage = pg.Surface([screen_width, 75])
+dodgerTopCoverRect = dodgerTopCoverImage.get_rect(topleft = (0, 0))
+
+dodgerPlayerInfoBox = InputBox(0, 0, 150, 50, '', dodgerFont, False, inactiveColor=WHITE, showRect=False)
+
 dodgerStartBox = InputBox(0, 450, screen_width, 50, 'Press Space to Start', dodgerFont, False, inactiveColor=WHITE, showRect=False, center=True)
 dodgerStartRect = dodgerStartBox.rect
 
 dodgerStatusBox = InputBox(0, (dodgerStartRect.top - 100), screen_width, 50, '', dodgerFont, False, inactiveColor=WHITE, showRect=False, center=True)
+
+dodgerHomeButton = Button(0, 0, 100, 50, BLUE, 'Home')
+dodgerHomeButton.rect.center = (screen_width / 2, 450)
+def dodgerHomeFunct():
+    dodgerGame.setup = dodgerGame.running = allApps['dodgerGameMain'] = False
+    allApps['homeLoggedIn'] = True
+    dodgerHomeButton.parentApp = 'none'
+dodgerHomeButton.onClickFunction = dodgerHomeFunct
