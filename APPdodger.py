@@ -114,7 +114,7 @@ class DodgerGame:
             for laser in enemyLasers:
                 if pg.sprite.spritecollide(laser, self.player, False):
                     laser.kill()
-                    # self.health -= 5
+                    self.health -= 5
                     if self.health <= -5:
                         self.gameFailed()
                     
@@ -239,13 +239,15 @@ class DodgerGame:
             
             #player score and health
             screen.blit(dodgerTopCoverImage, dodgerTopCoverRect)
-            dodgerPlayerInfoBox.text = f'Shield: {self.health}%    Score: {self.score}'
+            dodgerPlayerInfoBox.text = f'Shield: {self.health}%    Score: {self.score}    Lives: {self.lives}'
+            
             doubleAmmo = str(self.player.sprite.ammo['doubleBlaster'])
             laserAmmo = str(self.player.sprite.ammo['superLaser'])
-            dodgerAmmoBox.text = f'Blaster(2): {doubleAmmo}    Laser(3): {laserAmmo}'
+            
+            dodgerAmmoBox.text = f'Single(1): X    Double(2): {doubleAmmo}    Laser(3): {laserAmmo}'
             dodgerPlayerInfoBox.parentApp = 'dodgerGameMain' if self.started else 'none'
             dodgerAmmoBox.parentApp = 'dodgerGameMain' if self.started else 'none'
-            
+
 class DodgerBG(pg.sprite.Sprite):
     instances = []
     def __init__(self):
