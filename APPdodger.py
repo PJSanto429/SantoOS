@@ -1,6 +1,6 @@
 import pygame as pg
 from pygame.math import Vector2
-from random import choice, randint
+from random import choice, randint, choices
 from glob import glob
 from variables import *
 from inputBox import InputBox
@@ -10,72 +10,39 @@ dodgerFilePath = 'assets/dodgeGame/'
 dodgerFont = 'largeLucidaSansTypewriter'
 smallDodgerFont = 'smallLucidaSansTypewriter'
 
-planetImages = {}
-for i, f in enumerate(glob(dodgerFilePath + 'planets/*')):
-    img = pg.transform.smoothscale(pg.image.load(f).convert_alpha(), [100, 100])
-    img.fill((50, 50, 50), special_flags=pg.BLEND_RGB_ADD)
-    planetImages[i] = img
-
-redCircleExplosionImages = {}
-expFiles = glob(dodgerFilePath + 'explosions/redCircle/*')
-for i, f in enumerate(expFiles):
-    img = pg.transform.smoothscale(pg.image.load(f).convert_alpha(), [100, 100])
-    img.fill((50, 50, 50), special_flags=pg.BLEND_RGB_ADD)
-    redCircleExplosionImages[i] = img
-
-blueCircleExplosionImages = {}
-expFiles = glob(dodgerFilePath + 'explosions/blueCircle/*')
-for i, f in enumerate(expFiles):
-    img = pg.transform.smoothscale(pg.image.load(f).convert_alpha(), [100, 100])
-    img.fill((50, 50, 50), special_flags=pg.BLEND_RGB_ADD)
-    blueCircleExplosionImages[i] = img
-
-gassCircleExplosionImages = {}
-expFiles = glob(dodgerFilePath + 'explosions/gasExplosion/*')
-for i, f in enumerate(expFiles):
-    img = pg.transform.smoothscale(pg.image.load(f).convert_alpha(), [100, 100])
-    img.fill((50, 50, 50), special_flags=pg.BLEND_RGB_ADD)
-    gassCircleExplosionImages[i] = img
-    
-explosionTypes = [redCircleExplosionImages, blueCircleExplosionImages, gassCircleExplosionImages]
-
 class DodgerGame:
     def __init__(self):
         self.running = False
         self.paused = False
         self.setup = False
-        # self.started = False
-
-        self.lives = 3
-        # self.health = 100
-        # self.score = 0
-        self.lastScore = 0
-        self.failed = False
+        self.started = False
         self.gameOver = False
-        
-        self.powerupCreated = 1500
-        
-        self.enemyFired = 1000
-        self.failedTimer = 0
         self.pausedTimer = 0
-        self.lastEnemyCreated = 0
-        self.bgTimer = 0
-        
-        self.startGameImage = pg.transform.scale(pg.image.load(dodgerFilePath + 'text/startGame.png'), [350, 50])
-        self.startGameRect = self.startGameImage.get_rect(center = (screen_width / 2, 400))
         
     def setupLevel(self):
         if not self.setup:
             self.enemyTime = 125
-            self.maxEnemies = 125
             self.enemyShootTime = 250
+            self.maxEnemies = 125
             self.difficultyTime = 0
+            
+            self.powerupTime = 2500
+            self.powerupCreated = 1500
             
             self.setup = True
             self.score = 0
             self.health = 100
             self.started = False
             self.paused = False
+            
+            self.enemyFired = 1000
+            self.failedTimer = pg.time.get_ticks()
+            self.lastEnemyCreated = 0
+            self.bgTimer = 0
+            self.lives = 3
+            
+            self.lastScore = 0
+            self.failed = False
             
             self.enemies = pg.sprite.Group()
             self.bg = pg.sprite.Group()
@@ -94,10 +61,18 @@ class DodgerGame:
     def checkCollide(self):
         playerLasers = self.player.sprite.lasers
         #* getting powerups
+        
         getPowerup = pg.sprite.groupcollide(self.powerups, playerLasers, True, True)
         if getPowerup:
             self.player.sprite.handleGetPowerup(list(getPowerup)[0])
             self.explosions.add(DodgerExplosion(list(getPowerup)[0].rect))
+            
+        getPowerup = pg.sprite.groupcollide(self.powerups, self.player, True, False)
+        if getPowerup:
+            self.player.sprite.handleGetPowerup(list(getPowerup)[0])
+            self.explosions.add(DodgerExplosion(list(getPowerup)[0].rect))
+            
+        pg.sprite.groupcollide(self.enemyLasers, playerLasers, True, True)
 
         #* player shooting
         if playerLasers:
@@ -120,7 +95,6 @@ class DodgerGame:
                     
     def gameFailed(self):
         self.failed = True
-        self.setup = False
         self.health = 100
         self.lastScore = self.score
         self.lives -= 1
@@ -137,6 +111,7 @@ class DodgerGame:
                 thing.kill()
 
         if self.lives == 0:
+            self.setup = False
             self.gameOver = True
             self.pausedTimer = pg.time.get_ticks()
             self.lives = 3
@@ -147,6 +122,7 @@ class DodgerGame:
         now = pg.time.get_ticks()
         if now - self.difficultyTime > 5000:
             self.difficultyTime = now
+            self.powerupTime -= 5
             self.enemyTime -= 1
             self.enemyShootTime -= 1
             self.maxEnemies += 1
@@ -160,21 +136,23 @@ class DodgerGame:
         
     def checkPause(self):
         keys = pg.key.get_pressed()
-        if keys[pg.K_SPACE]:
-            self.paused = False
+        if (keys[pg.K_SPACE] or keys[pg.K_ESCAPE]) and pg.time.get_ticks() - self.pausedTimer > 1000:
+            self.pausedTimer = pg.time.get_ticks()
+            if keys[pg.K_SPACE]:
+                self.paused = False
+            if keys[pg.K_ESCAPE]:
+                self.paused = not self.paused
             if not self.started:
                 self.started = True
-        if keys[pg.K_ESCAPE] and pg.time.get_ticks() - self.pausedTimer > 500:
-            self.pausedTimer = pg.time.get_ticks()
-            self.paused = not self.paused
 
     def createPowerUp(self):
         now  = pg.time.get_ticks()
-        if now - self.powerupCreated > 2500:
+        if now - self.powerupCreated > self.powerupTime:
             self.powerupCreated = now
             self.powerups.add(DodgerPowerup())
             
     def createEnemy(self):
+        # if (pg.time.get_ticks() - self.lastEnemyCreated > 1) and (not len(self.enemies) >= 9999999999):
         if (pg.time.get_ticks() - self.lastEnemyCreated > self.enemyTime) and (not len(self.enemies) >= self.maxEnemies):
             self.lastEnemyCreated = pg.time.get_ticks()
             self.enemies.add(DodgerEnemy())
@@ -238,9 +216,9 @@ class DodgerGame:
             dodgerHomeButton.parentApp = 'dodgerGameMain' if (self.failed or self.paused) else 'none'
             
             #player score and health
-            screen.blit(dodgerTopCoverImage, dodgerTopCoverRect)
-            dodgerPlayerInfoBox.text = f'Shield: {self.health}%    Score: {self.score}    Lives: {self.lives}'
+            pg.draw.rect(screen, BLACK, [0, 0, screen_height, 75])
             
+            dodgerPlayerInfoBox.text = f'Shield: {self.health}%    Score: {self.score}    Lives: {self.lives}'
             doubleAmmo = str(self.player.sprite.ammo['doubleBlaster'])
             laserAmmo = str(self.player.sprite.ammo['superLaser'])
             
@@ -249,6 +227,12 @@ class DodgerGame:
             dodgerAmmoBox.parentApp = 'dodgerGameMain' if self.started else 'none'
 
 class DodgerBG(pg.sprite.Sprite):
+    planetImages = {}
+    for i, f in enumerate(glob(dodgerFilePath + 'planets/*')):
+        img = pg.transform.smoothscale(pg.image.load(f).convert_alpha(), [100, 100])
+        img.fill((50, 50, 50), special_flags=pg.BLEND_RGB_ADD)
+        planetImages[i] = img
+
     instances = []
     def __init__(self):
         super().__init__()
@@ -261,7 +245,7 @@ class DodgerBG(pg.sprite.Sprite):
             
         if self.group == 'planet':
             self.startTime = pg.time.get_ticks()
-            self.image = choice(planetImages)
+            self.image = choice(self.__class__.planetImages)
 
         self.rect = self.image.get_rect(center = (randint(0, screen_width), -65))
         
@@ -282,6 +266,7 @@ class DodgerBG(pg.sprite.Sprite):
         self.move()
             
 class DodgerEnemy(pg.sprite.Sprite):
+    #* class-wide images, only loaded one time(for performance)
     largeShip = pg.image.load(f'{dodgerFilePath}enemyShip_large.png').convert_alpha()
     largeShip = pg.transform.smoothscale(largeShip, [55, 55])
     largeShip.fill((50, 50, 50), special_flags=pg.BLEND_RGB_ADD)
@@ -304,23 +289,31 @@ class DodgerEnemy(pg.sprite.Sprite):
         super().__init__()
         self.isLaser = isLaser
         self.size = choice(['small', 'medium', 'large'])
+        moveAmount = {
+            'small': 5,
+            'medium': 3,
+            'large': 2
+        }
+        self.lowestPoint = randint(425, 500)
+        self.moveDistance = moveAmount[self.size]
         if not self.isLaser:
             pos = (randint(5, screen_width - 5), -50)
             self.image = self.__class__.enemyShipImages[self.size]
             self.zigZag = choice([True, False])
             self.moveDown = True
+            self.moveUp = False
+            self.reachedCenter = False
         self.direction = choice(['left', 'right'])
         self.speed = randint(1, 4)
         self.rect = self.image.get_rect(center = (pos))
+        self.moveVert = True
         
     def move(self):
-        if self.moveDown:
-            if self.size == 'small':
-                self.rect.y += 5
-            if self.size == 'medium':
-                self.rect.y += 3
-            if self.size == 'large':
-                self.rect.y += 2
+        if self.rect.centery >= screen_width / 2:
+            self.reachedCenter = True
+        
+        if self.moveVert:
+            self.rect.y += self.moveDistance if self.moveDown else self.moveDistance * -1
             
         if self.zigZag:
             if self.direction == 'right':
@@ -337,11 +330,18 @@ class DodgerEnemy(pg.sprite.Sprite):
                 self.rect.right = screen_width
                 self.direction = 'left'
                 self.speed = randint(1, 4)
-                
-        if self.rect.bottom >= 450:
-            self.bottom = True
-            self.zigZag = True
+
+        if self.rect.bottom >= self.lowestPoint:
+            self.zigZag = choice([True, False])
+            self.moveVert = choice([True, False])
             self.moveDown = False
+            self.moveUp = True
+            
+        if self.rect.top <= 75 and self.reachedCenter:
+            self.zigZag = choice([True, False])
+            self.moveVert = choice([True, False])
+            self.moveDown = True
+            self.moveUp = False
         
     def checkBoundaries(self):
         if self.rect.y > screen_height + 25:
@@ -351,10 +351,34 @@ class DodgerEnemy(pg.sprite.Sprite):
         self.move()
         
 class DodgerExplosion(pg.sprite.Sprite):
+    #* class-wide images, only loaded one time(for performance)
+    redCircleExplosionImages = {}
+    expFiles = glob(dodgerFilePath + 'explosions/redCircle/*')
+    for i, f in enumerate(expFiles):
+        img = pg.transform.smoothscale(pg.image.load(f).convert_alpha(), [100, 100])
+        img.fill((50, 50, 50), special_flags=pg.BLEND_RGB_ADD)
+        redCircleExplosionImages[i] = img
+
+    blueCircleExplosionImages = {}
+    expFiles = glob(dodgerFilePath + 'explosions/blueCircle/*')
+    for i, f in enumerate(expFiles):
+        img = pg.transform.smoothscale(pg.image.load(f).convert_alpha(), [100, 100])
+        img.fill((50, 50, 50), special_flags=pg.BLEND_RGB_ADD)
+        blueCircleExplosionImages[i] = img
+
+    gassCircleExplosionImages = {}
+    expFiles = glob(dodgerFilePath + 'explosions/gasExplosion/*')
+    for i, f in enumerate(expFiles):
+        img = pg.transform.smoothscale(pg.image.load(f).convert_alpha(), [100, 100])
+        img.fill((50, 50, 50), special_flags=pg.BLEND_RGB_ADD)
+        gassCircleExplosionImages[i] = img
+        
+    explosionTypes = [redCircleExplosionImages, blueCircleExplosionImages, gassCircleExplosionImages]
+    
     def __init__(self, rect):
         super().__init__()
         self.imageNum = 0
-        self.explosionType = choice(explosionTypes)
+        self.explosionType = choice(self.__class__.explosionTypes)
         self.image = self.explosionType[self.imageNum]
         self.pos = rect.center
         self.rect = self.image.get_rect(center = rect.center)
@@ -543,9 +567,6 @@ class DodgerPlayer(pg.sprite.Sprite):
         self.explode()
         
 dodgerGame = DodgerGame()
-
-dodgerTopCoverImage = pg.Surface([screen_width, 75])
-dodgerTopCoverRect = dodgerTopCoverImage.get_rect(topleft = (0, 0))
 
 dodgerPlayerInfoBox = InputBox(0, 0, 150, 50, '', smallDodgerFont, False, inactiveColor=WHITE, showRect=False)
 
