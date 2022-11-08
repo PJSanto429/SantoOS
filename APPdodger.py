@@ -49,9 +49,7 @@ class DodgerGame:
             self.explosions = pg.sprite.Group()
             self.powerups = pg.sprite.Group()
             self.enemyLasers = pg.sprite.Group()
-            self.player = pg.sprite.GroupSingle()
-            
-            self.player.add(DodgerPlayer())
+            self.player = pg.sprite.GroupSingle(DodgerPlayer())
             self.player.sprite.ammo = {
                 'singleBlaster': 0,
                 'doubleBlaster': 50,
@@ -82,14 +80,15 @@ class DodgerGame:
                     self.score += 5
                     self.explosions.add(DodgerExplosion(laser.rect))
                     laser.kill()
-        
+                    
         #* enemy shooting player
         enemyLasers = self.enemyLasers
         if enemyLasers:
             for laser in enemyLasers:
                 if pg.sprite.spritecollide(laser, self.player, False):
                     laser.kill()
-                    self.health -= 5
+                    if not self.player.sprite.firing and self.player.sprite.weapon != 'superLaser':
+                        self.health -= 5
                     if self.health <= -5:
                         self.gameFailed()
                     
@@ -137,10 +136,10 @@ class DodgerGame:
     def checkPause(self):
         keys = pg.key.get_pressed()
         if (keys[pg.K_SPACE] or keys[pg.K_ESCAPE]) and pg.time.get_ticks() - self.pausedTimer > 1000:
-            self.pausedTimer = pg.time.get_ticks()
             if keys[pg.K_SPACE]:
                 self.paused = False
             if keys[pg.K_ESCAPE]:
+                self.pausedTimer = pg.time.get_ticks()
                 self.paused = not self.paused
             if not self.started:
                 self.started = True
@@ -353,22 +352,19 @@ class DodgerEnemy(pg.sprite.Sprite):
 class DodgerExplosion(pg.sprite.Sprite):
     #* class-wide images, only loaded one time(for performance)
     redCircleExplosionImages = {}
-    expFiles = glob(dodgerFilePath + 'explosions/redCircle/*')
-    for i, f in enumerate(expFiles):
+    for i, f in enumerate(glob(dodgerFilePath + 'explosions/redCircle/*')):
         img = pg.transform.smoothscale(pg.image.load(f).convert_alpha(), [100, 100])
         img.fill((50, 50, 50), special_flags=pg.BLEND_RGB_ADD)
         redCircleExplosionImages[i] = img
 
     blueCircleExplosionImages = {}
-    expFiles = glob(dodgerFilePath + 'explosions/blueCircle/*')
-    for i, f in enumerate(expFiles):
+    for i, f in enumerate(glob(dodgerFilePath + 'explosions/blueCircle/*')):
         img = pg.transform.smoothscale(pg.image.load(f).convert_alpha(), [100, 100])
         img.fill((50, 50, 50), special_flags=pg.BLEND_RGB_ADD)
         blueCircleExplosionImages[i] = img
 
     gassCircleExplosionImages = {}
-    expFiles = glob(dodgerFilePath + 'explosions/gasExplosion/*')
-    for i, f in enumerate(expFiles):
+    for i, f in enumerate(glob(dodgerFilePath + 'explosions/gasExplosion/*')):
         img = pg.transform.smoothscale(pg.image.load(f).convert_alpha(), [100, 100])
         img.fill((50, 50, 50), special_flags=pg.BLEND_RGB_ADD)
         gassCircleExplosionImages[i] = img
@@ -477,6 +473,7 @@ class DodgerPlayer(pg.sprite.Sprite):
         self.lasers = pg.sprite.Group()
         self.laserTimeout = 0
         
+        self.firing = False
         self.weapon = 'singleBlaster'
         self.rechargeTime = 100
         
@@ -534,13 +531,10 @@ class DodgerPlayer(pg.sprite.Sprite):
             if not dodgerGame.paused:
                 self.laserTimeout = now
                 if not dodgerGame.failed:
+                    self.firing = True
                     self.shootWeapon()
-                else:
-                    now = pg.time.get_ticks()
-                    if now - dodgerGame.failedTimer > 1500:
-                        dodgerGame.failedTimer = now
-                        dodgerGame.failed = False
-                        dodgerGame.gameOver = False
+        else:
+            self.firing = False
         
         if not dodgerGame.paused and not dodgerGame.failed:
             if keys[pg.K_LEFT] or keys[pg.K_a]:

@@ -15,6 +15,7 @@ from APPpaint import mainPaint
 from APPpong import pongGame
 from APPsnake import *
 from APPdodger import *
+from APPbreakout import *
 #*----------------------
 from user import *
 from variables import *
@@ -129,12 +130,21 @@ def openSnakeGameFunct():
 openSnakeGameButton.onClickFunction = openSnakeGameFunct
 
 openDodgerButton = Button(openPaintRect.x, (openPaintRect.bottom + spacer), openPaintRect.width, openPaintRect.height, GREY, 'FarSpace', parentApp='homeLoggedIn')
+openDodgerRect = openDodgerButton.rect
 openDodgerButton.textFont = allFonts['mediumConsolas']
 def openDodgeFunct():
     dodgerGame.running = True
     allApps['homeLoggedIn'] = False
     allApps['dodgerGameMain'] = True
 openDodgerButton.onClickFunction = openDodgeFunct
+
+openBreakoutButton = Button(openPongrect.x, openDodgerRect.y, openPaintRect.width, openPaintRect.height, ORANGE, 'Breakout', parentApp='homeLoggedIn')
+openBreakoutButton.textFont = allFonts['mediumConsolas']
+def openBreakoutFunct():
+    breakoutGame.running = True
+    allApps['homeLoggedIn'] = False
+    allApps['breakoutMain'] = True
+openBreakoutButton.onClickFunction = openBreakoutFunct
 
 openAllSettingsButton = Button(0, 0, 125, 125, BLACK, '', WHITE, parentApp='homeLoggedIn', picture='assets/settingsLogo2.png')
 openAllSettingsButton.rect.bottom = screen_height
