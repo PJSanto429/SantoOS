@@ -27,6 +27,7 @@ from APPpong import *
 from APPsnake import *
 from APPdodger import *
 from APPbreakout import *
+from APPrps import *
 
 if __name__ == '__main__':
     pg.init()
@@ -109,27 +110,28 @@ if __name__ == '__main__':
     cursorTimer = pg.USEREVENT + 2
     pg.time.set_timer(cursorTimer, 500) #* 500 miliseconds
     
-    #!---------------
+    #!---------------------------------------------
     
-    # ? --------------------- Test stuff on 'allApps['none'] --------------------
+    # ? ------------------------------------------------------------------------
     # allApps['homeLoading'] = False
     # # allApps['homeNotLoggedIn'] = True
     # # allApps['homeLoggedIn'] = True
     # # allApps['none'] = True
-    
+
     # # crt.active = False
     
     # # simpleGame.running = allApps['testGameMain'] = True
     # # pongGame.running = allApps['pongMain'] = True
     # # mainPaint.running = allApps['paintMain'] = True
     # # snakeGame.running = allApps['snakeGameMain'] = True
-    # # dodgerGame.running = allApps['dodgerGameMain'] = True
-    # breakoutGame.running = allApps['breakoutMain'] = True
+    # dodgerGame.running = allApps['dodgerGameMain'] = True
+    # # breakoutGame.running = allApps['breakoutMain'] = True
+    # # rockPaperScissors.running = allApps['rpsMain'] = True
     
     # currentUser.loggedIn = True
     # currentUser.userName = 'pjsanto'
-    # ? ------------------------------------------------------------------------
     
+    # ? ---------------- Test stuff on 'allApps['none'] ---------------------------------
     testInput = InputBox(0, 10, 600, 50, 'Not Active', changeable=False, inactiveColor=BLACK, showRect=False, center=True)
 
     testToggle = Toggle(250, 50, 100, 50, text='test toggle', textLocation='bottom')
@@ -187,6 +189,7 @@ if __name__ == '__main__':
         snakeGame.run()
         dodgerGame.run()
         breakoutGame.run()
+        rockPaperScissors.run()
         
         if not any([
             simpleGame.running,
@@ -194,7 +197,8 @@ if __name__ == '__main__':
             pongGame.running,
             snakeGame.running,
             dodgerGame.running,
-            breakoutGame.running
+            breakoutGame.running,
+            rockPaperScissors.running,
         ]):
             screen.fill(TEAL)
 

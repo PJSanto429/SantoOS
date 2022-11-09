@@ -35,6 +35,9 @@ class DodgerGame:
             self.started = False
             self.paused = False
             
+            self.laserReady = False
+            self.laserOnScreen = False
+            
             self.enemyFired = 1000
             self.failedTimer = pg.time.get_ticks()
             self.lastEnemyCreated = 0
@@ -45,6 +48,7 @@ class DodgerGame:
             self.failed = False
             
             self.enemies = pg.sprite.Group()
+            self.laserEnemy = pg.sprite.Group()
             self.bg = pg.sprite.Group()
             self.explosions = pg.sprite.Group()
             self.powerups = pg.sprite.Group()
@@ -80,7 +84,7 @@ class DodgerGame:
                     self.score += 5
                     self.explosions.add(DodgerExplosion(laser.rect))
                     laser.kill()
-                    
+
         #* enemy shooting player
         enemyLasers = self.enemyLasers
         if enemyLasers:
@@ -97,7 +101,7 @@ class DodgerGame:
         self.health = 100
         self.lastScore = self.score
         self.lives -= 1
-        self.failedTimer = pg.time.get_ticks()
+        self.pausedTimer = self.failedTimer = pg.time.get_ticks()
         killAll = [
             self.player.sprite.lasers,
             self.powerups,
@@ -127,12 +131,13 @@ class DodgerGame:
             self.maxEnemies += 1
         
     def enemyShoot(self):
-        now = pg.time.get_ticks()
-        if now - self.enemyFired > self.enemyShootTime and self.enemies.sprites:
-            self.enemyFired = now
-            enemy = choice(self.enemies.sprites())
-            self.enemyLasers.add(DodgerLaser(enemy.rect.center, 'enemy'))
-        
+        if self.enemies:
+            now = pg.time.get_ticks()
+            if now - self.enemyFired > self.enemyShootTime and self.enemies.sprites:
+                self.enemyFired = now
+                enemy = choice(self.enemies.sprites())
+                self.enemyLasers.add(DodgerLaser(enemy.rect.center, 'enemy'))
+
     def checkPause(self):
         keys = pg.key.get_pressed()
         if (keys[pg.K_SPACE] or keys[pg.K_ESCAPE]) and pg.time.get_ticks() - self.pausedTimer > 1000:
@@ -143,6 +148,8 @@ class DodgerGame:
                 self.paused = not self.paused
             if not self.started:
                 self.started = True
+            if self.failed:
+                self.failed = False
 
     def createPowerUp(self):
         now  = pg.time.get_ticks()
@@ -171,12 +178,6 @@ class DodgerGame:
             
             dodgerStartBox.parentApp = 'dodgerGameMain' if not self.started else 'none'
             
-            lifeWord = 'lives' if self.lives > 1 else 'life'
-            dodgerStatusBox.text = f'{self.lives} {lifeWord} remaining'
-            if self.gameOver:
-                dodgerStatusBox.text = f'Game Over   Score: {self.lastScore}'
-            dodgerStatusBox.parentApp = 'dodgerGameMain' if self.failed else 'none'
-                
             if self.started:
                 if not self.paused and not self.failed:
                     self.createBG()
@@ -212,6 +213,12 @@ class DodgerGame:
             self.player.sprite.explosion.draw(screen)
             self.player.sprite.explosion.update()
             
+            lifeWord = 'lives' if self.lives > 1 else 'life'
+            dodgerStatusBox.text = f'{self.lives} {lifeWord} remaining'
+            if self.gameOver:
+                dodgerStatusBox.text = f'Game Over   Score: {self.lastScore}'
+            dodgerStatusBox.parentApp = 'dodgerGameMain' if self.failed else 'none'
+            
             dodgerHomeButton.parentApp = 'dodgerGameMain' if (self.failed or self.paused) else 'none'
             
             #player score and health
@@ -221,7 +228,7 @@ class DodgerGame:
             doubleAmmo = str(self.player.sprite.ammo['doubleBlaster'])
             laserAmmo = str(self.player.sprite.ammo['superLaser'])
             
-            dodgerAmmoBox.text = f'Single(1): X    Double(2): {doubleAmmo}    Laser(3): {laserAmmo}'
+            dodgerAmmoBox.text = f'Single(1): 9999 Double(2): {doubleAmmo}    Laser(3): {laserAmmo}'
             dodgerPlayerInfoBox.parentApp = 'dodgerGameMain' if self.started else 'none'
             dodgerAmmoBox.parentApp = 'dodgerGameMain' if self.started else 'none'
 
@@ -293,16 +300,24 @@ class DodgerEnemy(pg.sprite.Sprite):
             'medium': 3,
             'large': 2
         }
-        self.lowestPoint = randint(425, 500)
         self.moveDistance = moveAmount[self.size]
         if not self.isLaser:
+            self.lowestPoint = randint(425, 500)
             pos = (randint(5, screen_width - 5), -50)
             self.image = self.__class__.enemyShipImages[self.size]
             self.zigZag = choice([True, False])
-            self.moveDown = True
-            self.moveUp = False
-            self.reachedCenter = False
+        else:
+            pos = (dodgerGame.player.sprite.rect.centerx, -50)
+            self.image = pg.Surface([35, 35])
+            self.image.fill(RED)
+            self.lowestPoint = 200
+            self.zigZag = False
+            
+        self.moveDown = True
+        self.moveUp = False
+        self.reachedCenter = False
         self.direction = choice(['left', 'right'])
+        
         self.speed = randint(1, 4)
         self.rect = self.image.get_rect(center = (pos))
         self.moveVert = True
@@ -331,12 +346,14 @@ class DodgerEnemy(pg.sprite.Sprite):
                 self.speed = randint(1, 4)
 
         if self.rect.bottom >= self.lowestPoint:
-            self.zigZag = choice([True, False])
-            self.moveVert = choice([True, False])
             self.moveDown = False
-            self.moveUp = True
+            if not self.isLaser:
+                self.zigZag = choice([True, False])
+                self.moveVert = choice([True, False])
+                self.moveUp = True
             
         if self.rect.top <= 75 and self.reachedCenter:
+            # if not self.isLaser:
             self.zigZag = choice([True, False])
             self.moveVert = choice([True, False])
             self.moveDown = True
@@ -477,6 +494,9 @@ class DodgerPlayer(pg.sprite.Sprite):
         self.weapon = 'singleBlaster'
         self.rechargeTime = 100
         
+        self.samePos = 0
+        self.posLoc = [self.rect.left - 5, self.rect.right + 5]
+        
         self.explosion = pg.sprite.GroupSingle()
         self.explosionCreated = False
         
@@ -489,6 +509,16 @@ class DodgerPlayer(pg.sprite.Sprite):
             dodgerGame.health += 5
         else:
             self.ammo[group] += 15
+            
+    def checkPos(self):
+        if self.rect.centerx - 5 > self.posLoc[0] and self.rect.centerx + 5 < self.posLoc[1]:
+            self.samePos += 1
+        else:
+            self.posLoc = [self.rect.left - 5, self.rect.right + 5]
+            self.samePos = 0
+            
+        if self.samePos >= 500:
+            dodgerGame.laserReady = True
         
     def shootWeapon(self):
         if self.ammo[self.weapon]:
@@ -526,15 +556,15 @@ class DodgerPlayer(pg.sprite.Sprite):
     def checkInput(self):
         keys = pg.key.get_pressed()
         now = pg.time.get_ticks()
-        
-        if (keys[pg.K_SPACE]) and (now - self.laserTimeout > self.rechargeTime):
-            if not dodgerGame.paused:
-                self.laserTimeout = now
-                if not dodgerGame.failed:
-                    self.firing = True
-                    self.shootWeapon()
-        else:
-            self.firing = False
+        if (keys[pg.K_SPACE]):
+            if (now - self.laserTimeout > self.rechargeTime):
+                if not dodgerGame.paused:
+                    self.laserTimeout = now
+                    if not dodgerGame.failed:
+                        self.firing = True
+                        self.shootWeapon()
+            else:
+                self.firing = False
         
         if not dodgerGame.paused and not dodgerGame.failed:
             if keys[pg.K_LEFT] or keys[pg.K_a]:
@@ -557,6 +587,7 @@ class DodgerPlayer(pg.sprite.Sprite):
     def update(self):
         self.ammo['singleBlaster'] += 2 #unlimited ammo for single blaster
         self.checkInput()
+        self.checkPos()
         self.changeWeapon()
         self.explode()
         

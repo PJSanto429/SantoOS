@@ -16,6 +16,7 @@ from APPpong import pongGame
 from APPsnake import *
 from APPdodger import *
 from APPbreakout import *
+# from APPrps import rockPaperScissors
 #*----------------------
 from user import *
 from variables import *
@@ -139,6 +140,7 @@ def openDodgeFunct():
 openDodgerButton.onClickFunction = openDodgeFunct
 
 openBreakoutButton = Button(openPongrect.x, openDodgerRect.y, openPaintRect.width, openPaintRect.height, ORANGE, 'Breakout', parentApp='homeLoggedIn')
+openBreakoutRect = openBreakoutButton.rect
 openBreakoutButton.textFont = allFonts['mediumConsolas']
 def openBreakoutFunct():
     breakoutGame.running = True
@@ -146,7 +148,15 @@ def openBreakoutFunct():
     allApps['breakoutMain'] = True
 openBreakoutButton.onClickFunction = openBreakoutFunct
 
-openAllSettingsButton = Button(0, 0, 125, 125, BLACK, '', WHITE, parentApp='homeLoggedIn', picture='assets/settingsLogo2.png')
+# openRPSbutton = Button((openBreakoutRect.right + spacer), openDodgerRect.y, openPaintRect.width, openPaintRect.height, DARKRED, 'RPS', parentApp='homeLoggedIn')
+# def openRPSfunct():
+#     rockPaperScissors.running = True
+#     rockPaperScissors.createGame()
+#     allApps['homeLoggedIn'] = False
+#     allApps['rpsMain'] = True
+# openRPSbutton.onClickFunction = openRPSfunct
+
+openAllSettingsButton = Button(0, 0, 125, 125, BLACK, '', WHITE, parentApp='none', picture='assets/settingsLogo2.png')
 openAllSettingsButton.rect.bottom = screen_height
 
 logoutButton = Button(0, 0, 250, 50, RED, 'Logout', parentApp='homeLoggedIn')

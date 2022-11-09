@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, randint
 import pygame as pg
 from pygame import Vector2
 from variables import *
@@ -46,8 +46,12 @@ class BreakoutGame:
                 self.ball.sprite.direction.x = -1
             
         ballRect = self.ball.sprite.rect
-        if ballRect.right >= screen_width or ballRect.left <= 0:
-            self.ball.sprite.direction.x *= -1
+        if ballRect.right >= screen_width:
+            self.ball.sprite.direction.x = -1
+            self.ball.sprite.direction.x *= randint(2, 6)
+        if ballRect.left <= 0:
+            self.ball.sprite.direction.x = 1
+            self.ball.sprite.direction.x *= randint(2, 6)
         if ballRect.top <= 0 or ballRect.bottom >= screen_height:
             self.ball.sprite.direction.y *= -1
         
