@@ -14,10 +14,12 @@ tickSpeed = 60
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
 PINK = (255, 122, 146)
 ORANGE = (255, 165, 0)
 YELLOW = (255, 255, 0)
+
+BLUE = (0, 0, 255)
+LIGHTBLUE = (173,216,230)
 
 RED = (255, 0, 0)
 DARKRED = (128, 0, 0)
@@ -49,6 +51,7 @@ allColors = [
     LIME, 
     MAROON, 
     NAVYBLUE, 
+    LIGHTBLUE,
     OLIVE, 
     PURPLE, 
     TEAL, 
@@ -206,6 +209,10 @@ allApps = {
     "breakoutMain": False,
     #!----rock paper scissors----
     "rpsMain": False,
+    #!----flappy bird----
+    "flappyMain": False,
+    # !----shark game----
+    "sharkGameMain": False,
 }
 
 defaultButtonFont = allFonts['largeConsolas']

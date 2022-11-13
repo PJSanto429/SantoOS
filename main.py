@@ -28,6 +28,8 @@ from APPsnake import *
 from APPdodger import *
 from APPbreakout import *
 from APPrps import *
+from APPflappy import *
+from APPsharks import *
 
 if __name__ == '__main__':
     pg.init()
@@ -124,9 +126,11 @@ if __name__ == '__main__':
     # # pongGame.running = allApps['pongMain'] = True
     # # mainPaint.running = allApps['paintMain'] = True
     # # snakeGame.running = allApps['snakeGameMain'] = True
-    # dodgerGame.running = allApps['dodgerGameMain'] = True
+    # # dodgerGame.running = allApps['dodgerGameMain'] = True
     # # breakoutGame.running = allApps['breakoutMain'] = True
-    # # rockPaperScissors.running = allApps['rpsMain'] = True
+    # # rockPaperScissors.running = allApps['rpsMain'] = True 
+    # # flappyGame.running = allApps['flappyMain'] = True
+    # sharkGame.running = allApps['sharkGameMain'] = True
     
     # currentUser.loggedIn = True
     # currentUser.userName = 'pjsanto'
@@ -190,6 +194,8 @@ if __name__ == '__main__':
         dodgerGame.run()
         breakoutGame.run()
         rockPaperScissors.run()
+        flappyGame.run()
+        sharkGame.run()
         
         if not any([
             simpleGame.running,
@@ -199,6 +205,8 @@ if __name__ == '__main__':
             dodgerGame.running,
             breakoutGame.running,
             rockPaperScissors.running,
+            flappyGame.running,
+            sharkGame.running,
         ]):
             screen.fill(TEAL)
 
