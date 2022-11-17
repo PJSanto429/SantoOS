@@ -13,6 +13,7 @@ tickSpeed = 60
 #colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+BROWN = (101, 53, 15)
 GREEN = (0, 255, 0)
 PINK = (255, 122, 146)
 ORANGE = (255, 165, 0)

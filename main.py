@@ -166,7 +166,7 @@ if __name__ == '__main__':
         allEvents = pg.event.get()
         keys = pg.key.get_pressed()
         for event in allEvents:
-            if event.type == pg.QUIT:
+            if event.type == pg.QUIT or (keys[pg.K_LCTRL] and keys[pg.K_c]):
                 handleQuit()
             if checkMouseClick(event)[0]:
                 checkClick(mouse)
