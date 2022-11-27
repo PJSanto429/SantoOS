@@ -30,6 +30,7 @@ from APPbreakout import *
 from APPrps import *
 from APPflappy import *
 from APPsharks import *
+from APPFlight import *
 
 if __name__ == '__main__':
     pg.init()
@@ -130,7 +131,8 @@ if __name__ == '__main__':
     # # breakoutGame.running = allApps['breakoutMain'] = True
     # # rockPaperScissors.running = allApps['rpsMain'] = True 
     # # flappyGame.running = allApps['flappyMain'] = True
-    # sharkGame.running = allApps['sharkGameMain'] = True
+    # # sharkGame.running = allApps['sharkGameMain'] = True
+    # flightGame.running = allApps['flightGameMain'] = True
     
     # currentUser.loggedIn = True
     # currentUser.userName = 'pjsanto'
@@ -144,7 +146,7 @@ if __name__ == '__main__':
     testToggle.onChangeEvent = testToggleFunct
     testToggleRect = testToggle.rect
     
-    testSlider = Slider(20, (testToggleRect.bottom  + 125), (screen_width - 100), 50, title=['slider here', 'top'], showValue=[True, 'bottom'], maxVal=255, handleColor=GREY)
+    # testSlider = Slider(20, (testToggleRect.bottom  + 125), (screen_width - 100), 50, title=['slider here', 'top'], showValue=[True, 'bottom'], maxVal=255, handleColor=GREY)
     
     # inputTest = InputBox(50, 100, 200, 50, largeFonts[0], largeFonts[0], False, parentApp='testBed', showRect=False,inactiveColor=BLACK)
     # buttonTest = Button(50, 250, 50, 50, RED, '0', parentApp='testBed')
@@ -196,6 +198,7 @@ if __name__ == '__main__':
         rockPaperScissors.run()
         flappyGame.run()
         sharkGame.run()
+        flightGame.run()
         
         if not any([
             simpleGame.running,
@@ -207,6 +210,7 @@ if __name__ == '__main__':
             rockPaperScissors.running,
             flappyGame.running,
             sharkGame.running,
+            flightGame.running,
         ]):
             screen.fill(TEAL)
 

@@ -20,7 +20,8 @@ ORANGE = (255, 165, 0)
 YELLOW = (255, 255, 0)
 
 BLUE = (0, 0, 255)
-LIGHTBLUE = (173,216,230)
+LIGHTBLUE = (173, 216, 230)
+FLIGHTBLUE = (63, 191, 255)
 
 RED = (255, 0, 0)
 DARKRED = (128, 0, 0)
@@ -30,9 +31,13 @@ LIME = (0, 128, 0)
 MAROON = (128, 0, 0)
 NAVYBLUE = (0, 0, 128)
 OLIVE = (128, 128, 0)
-PURPLE = (128, 0, 128)
+
+
 TEAL = (0,128,128)
 LIGHTTEAL = (0, 255, 240)
+
+PURPLE = (128, 0, 128)
+LIGHTPURPLE = (95, 151, 255)
 
 GREY = (128, 128, 128)
 LIGHTGREY = (170, 170, 170)
@@ -41,25 +46,26 @@ VERYDARKGREY = (40, 40, 40)
 
 allColors = [
     WHITE,
-    BLACK, 
-    GREEN, 
-    BLUE, 
-    PINK, 
-    ORANGE, 
-    RED, 
-    DARKRED, 
-    FUCHSIA, 
-    LIME, 
-    MAROON, 
-    NAVYBLUE, 
+    BLACK,
+    GREEN,
+    BLUE,
+    PINK,
+    ORANGE,
+    RED,
+    DARKRED,
+    FUCHSIA,
+    LIME,
+    MAROON,
+    NAVYBLUE,
     LIGHTBLUE,
-    OLIVE, 
-    PURPLE, 
-    TEAL, 
-    LIGHTTEAL, 
-    GREY, 
-    LIGHTGREY, 
-    DARKGREY, 
+    OLIVE,
+    PURPLE,
+    LIGHTPURPLE,
+    TEAL,
+    LIGHTTEAL,
+    GREY,
+    LIGHTGREY,
+    DARKGREY,
     VERYDARKGREY
 ]
 
@@ -214,6 +220,8 @@ allApps = {
     "flappyMain": False,
     # !----shark game----
     "sharkGameMain": False,
+    # !----flight game----
+    "flightGameMain": False,
 }
 
 defaultButtonFont = allFonts['largeConsolas']

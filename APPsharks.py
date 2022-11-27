@@ -11,25 +11,25 @@ boatMapData = [
     'WWWWWW                                   WWWWWWWWWWWWWWWWWWWWWWW',
     'WWWWWW WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW WWWWWWWWWWWWWWWWWWWWWWW',
     'WWWWWW GGGGGGGGGGGGG            BBBBBBB   GGGGGGGGGGGGGGGGWWWWWW',
-    'WWWWWW GGGGGG P GGG              BBBBBB      GGGGGGGGGGGGGWWWWWW',
+    'WWWWWW GGGGGG PDGGG              BBBBBB      GGGGGGGGGGGGGWWWWWW',
     'WWWWWW GGG       G      BBBBBB    BBBBB         GGGGGGGGGGWWWWWW',
     'WWWWWW GGG       G      BBBBBB     GGBBBBB      GGGGGGGGGGWWWWWW',
     'WWWWWW G              BBBBBBBB       GGGGGGGG        GGGGGWWWWWW',
     'WWWWWW GGG                BBBB          GGGGGBBB        GGWWWWWW',
-    'WWWWWW                                       BBBB         WWWWWW',
-    'WWWWWWWGG                                     BBB         WWWWWW',
-    'WWWWWWWGGGGG                        BBBB       BB         WWWWWW',
+    'WWWWWW                                       BBBB        DWWWWWW',
+    'WWWWWWWGG                                     BBB     GGGGWWWWWW',
+    'WWWWWWWGGGGG                        BBBB       BB   GGGGGGWWWWWW',
     'WWWWWWWGGGGGG         GG           BBBBBB      B   BBBBBBBWWWWWW',
     'WWWWWWWGGGG          GGGG         BBBBBBBB          BBBBBBWWWWWW',
     'WWWWWWWGGGG          GGGG         BBBBBBBB          BBBBBBWWWWWW',
     'WWWWWWWGGGG          GGGG         BBBBBBBB          BBBBBBWWWWWW',
     'WWWWWWWGGGG           GG            BBBB               BBBWWWWWW',
-    'WWWWWWWGG                                                BWWWWWW',
-    'WWWWWWWGG                 GGG                            BWWWWWW',
+    'WWWWWWWGGD                                               BWWWWWW',
+    'WWWWWWWGGGGG              GGG                            BWWWWWW',
     'WWWWWWWGG               GGGGBB               GGGGBBB     BWWWWWW',
     'WWWWWWW              GGGGGGGBB            GGGGGBBBBBB     WWWWWW',
     'WWWWWWW           GGGGGGGGBBBBBB         GGGGGGGGGGGBB    WWWWWW',
-    'WWWWWWW         GGGGGGGGGGGBBBBBBBB    GGGGGGGGGGBBBBBBBBBWWWWWW',
+    'WWWWWWW         GGGGGGGGGGGBBBBBBBBD   GGGGGGGGGGBBBBBBBBBWWWWWW',
     'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
     'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
     'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
@@ -51,7 +51,7 @@ class SharkGame:
         if not self.created:
             self.created = True
             self.worldShift = [0, 0]
-            self.activity = 'shooting' # 'shooting' / 'boat'
+            self.activity = 'boat' # 'shooting' / 'boat'
             self.startTime = pg.time.get_ticks()
             self.mapMoved = False
             self.switchTime = 1000
@@ -60,7 +60,7 @@ class SharkGame:
             
             self.playerPower = 1
             self.jawsHealth = 2000
-            self.shells = 0
+            self.shells = 55
             self.score = 0
             
             #* shooting stuff
@@ -78,6 +78,8 @@ class SharkGame:
             self.timeInBoat = pg.time.get_ticks()
             self.boatTimer = randint(8, 18) * 1000
             
+            self.lastUsedDock = False
+            
             self.tiles = pg.sprite.Group()
             self.playerBoat = pg.sprite.Group()
             self.setupMap()
@@ -87,7 +89,7 @@ class SharkGame:
             for colIndex, cell in enumerate(row):
                 x = colIndex * tileSize
                 y = rowIndex * tileSize
-                if cell in 'GWBtblr': # green brown top bottom left right
+                if cell in 'GWBD': # green wall brown dock
                     self.tiles.add(SharkMapTile((x, y), tileSize, cell))
                 if cell == 'P':
                     self.createPlayer(x, y)
@@ -111,6 +113,16 @@ class SharkGame:
                 if createPowerup == 1:
                     self.powerUps.add(SharkPowerup(enemy.rect.center))
                 enemy.kill()
+        
+        for powerup in self.powerUps:
+            if pg.sprite.spritecollide(powerup, self.playerWater, False):
+                if powerup.group == 'shell':
+                    self.shells += 1
+                elif powerup.group == 'star':
+                    self.score += 3
+                elif powerup.group == 'crab':
+                    self.score += 5
+                powerup.kill()
             
     def createEnemy(self):
         now = pg.time.get_ticks()
@@ -135,12 +147,11 @@ class SharkGame:
                 self.stopBoat()
                 
     def stopBoat(self):
-        killAll = [
+        for group in [
             self.enemies,
             self.playerWater.sprite.lasers,
             self.mainShark
-        ]
-        for group in killAll:
+        ]:
             for thing in group:
                 thing.kill()
         
@@ -186,11 +197,21 @@ class SharkGame:
     def checkCollideBoat(self):
         allBoats = self.playerBoat.sprites()
         
+        #colliding with docks and getting powerups
+        for tile in self.tiles:
+            if tile.color == 'D':
+                if pg.sprite.spritecollide(tile, allBoats, False):
+                    if self.shells >= 5 and tile != self.lastUsedDock:
+                        self.lastUsedDock = tile
+                        self.shells -= 5
+                        self.playerPower += 1
+        
         topBoats = allBoats[0].getPosition('topCenter')
         bottomBoats = allBoats[0].getPosition('bottomCenter')
         leftBoats = allBoats[0].getPosition('middleLeft')
         rightBoats = allBoats[0].getPosition('middleRight')
         
+        #colliding will walls/islands
         for tile in self.tiles.sprites():
             if tile.color in 'GWB':
                 for boat in topBoats:
@@ -213,7 +234,7 @@ class SharkGame:
         if self.running:
             screen.fill(BLUE)
             self.createGame()
-            # self.checkGameMode()
+            self.checkGameMode()
             
             if self.activity == 'shooting':
                 self.createEnemy()
@@ -255,14 +276,14 @@ class SharkMapTile(pg.sprite.Sprite):
     colors = {
         'G': GREEN,
         'B': BROWN,
-        'W': DARKGREY
+        'W': DARKGREY,
+        'D': ORANGE
     }
     def __init__(self, pos, size, color):
         super().__init__()
         self.image = pg.Surface([size, size])
         self.color = color
-        if self.color in 'GBW':
-            self.image.fill(self.__class__.colors[self.color])
+        self.image.fill(self.__class__.colors[self.color])
         self.rect = self.image.get_rect(topleft = pos)
         
     def move(self, shift):
@@ -324,7 +345,7 @@ class SharkPowerup(pg.sprite.Sprite):
     
     def __init__(self, pos):
         super().__init__()
-        self.group = choice(['shell', 'star', 'crab'])
+        self.group = choice(['shell', 'shell', 'shell', 'star', 'crab'])
         self.image = pg.Surface([25, 25])
         self.image.fill(self.__class__.colors[self.group])
         self.rect = self.image.get_rect(center = pos)
@@ -550,16 +571,16 @@ class SharkBoatPlayer(pg.sprite.Sprite):
     def getInput(self):
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] and self.canLeft:
-            self.direction.x = -1
+            self.__class__.heldDown += 1
         elif keys[pg.K_RIGHT] and self.canRight:
-            self.direction.x = 1
+            self.__class__.heldDown += 1
         else:
             self.direction.x = 0
             
         if keys[pg.K_UP] and self.canUp:
-            self.direction.y = -1
+            self.__class__.heldDown += 1
         elif keys[pg.K_DOWN] and self.canDown:
-            self.direction.y = 1
+            self.__class__.heldDown += 1
         else:
             self.direction.y = 0
         
