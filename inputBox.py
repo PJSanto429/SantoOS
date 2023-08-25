@@ -129,8 +129,9 @@ class InputBox:
                             else:
                                 self.text += event.unicode
                     self.onChange()
-        except:
-            pass
+        except Exception as err:
+            # print('error ==> ', err)
+            handleError(err)
                     
     def centerText(self):
         textSize = self.textFont.size(self.text)

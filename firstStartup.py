@@ -1,8 +1,9 @@
+import json
 
 def firstStartUp():
     from os import mkdir, path
     from cryptography.fernet import Fernet
-    from errorHandler import handleError
+    # from errorHandler import handleError
 
     if not path.exists('allNotes/'):
         mkdir('allNotes')
@@ -19,4 +20,6 @@ def firstStartUp():
     
     if not path.exists('allNotes/allUsers.json'):
         with open('allNotes/allUsers.json', 'x') as create:
+            jsonObject = json.dumps({})
+            create.write(jsonObject)
             create.close()
