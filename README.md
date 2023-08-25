@@ -8,4 +8,4 @@ This is an operating system made in pygame. some applications include notes, pai
 
 #-------------------------------------------------------------------------------------------
 
-if there are any problems you encounter, create and issue and I will get to it ASAP!
+if there are any problems you encounter, deal with it.
